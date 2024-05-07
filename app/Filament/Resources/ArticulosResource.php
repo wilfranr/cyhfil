@@ -1,0 +1,250 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Models\Articulo;
+use App\Filament\Resources\ArticulosResource\Pages;
+use App\Filament\Resources\ArticulosResource\RelationManagers;
+use App\Models\Lista;
+use Filament\Actions\Action;
+use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\Modal\Actions\ButtonAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Widgets\StatsOverviewWidget;
+use App\Models\Referencia;
+use Faker\Provider\ar_EG\Text;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Wizard;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
+use Illuminate\Database\Eloquent\Model;
+
+class ArticulosResource extends Resource
+{
+    protected static ?string $model = Articulo::class;
+
+    protected static ?string $navigationIcon = 'heroicon-m-cube-transparent';
+
+    protected static ?string $recordTitleAttribute = 'definicion';
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'cruces' => $record->referencias->pluck('referencia')->implode(', '),
+            'juegos' => $record->juegos,
+        ];
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tabs\Tab::make('Detalles de artículo')
+                            ->schema([
+                                Select::make('definicion')
+                                    ->label('Definición')
+                                    ->searchable()
+                                    ->options(
+                                        Lista::query()
+                                            ->where('tipo', 'Definición de artículo')
+                                            ->get()
+                                            ->mapWithKeys(fn ($definicion) => [$definicion->nombre => $definicion->nombre])
+                                            ->toArray()
+                                    )
+                                    ->required(),
+                                TextInput::make('descripcionEspecifica')
+                                    ->label('Decripción específica')
+                                    ->placeholder('Descripción específica del artículo'),
+                                TextInput::make('peso')
+                                    ->label('Peso')
+                                    ->placeholder('Peso del artículo'),
+                                TextInput::make('comentarios')
+                                    ->label('Comentarios')
+                                    ->placeholder('Comentarios del artículo'),
+                                FileUpload::make('fotoDescriptiva')
+                                    ->label('Foto descriptiva')
+                                    ->image()
+                                    ->imageEditor(),
+                                FileUpload::make('fotoMedidas')
+                                    ->label('Foto de Medidas')
+                                    ->image()
+                                    ->imageEditor(),
+                            ])->columns(2),
+
+
+                        Tabs\Tab::make('Referencias Cruzadas')
+                            ->schema([
+                                Repeater::make('referencias')
+                                    ->relationship('referencias')
+                                    ->schema([
+                                        Select::make('referencia')
+                                            ->label('Referencia')
+                                            ->options(
+                                                Referencia::query()->pluck('referencia', 'id')
+                                            )
+                                            ->required(),
+                                            Select::make('marca_id')
+                                            ->label('Marca')
+                                            ->options(
+                                                \App\Models\Marca::pluck('nombre', 'id')
+                                            )
+                                    ])->grid(3),
+                            ]),
+                        Tabs\Tab::make('Juegos')
+                            ->schema([
+                                Repeater::make('articuloJuegos')
+                                    ->relationship()
+                                    ->schema([
+                                        Select::make('juego_id')
+                                            ->options(
+                                                \App\Models\Juego::pluck('nombre', 'id')
+                                            )
+                                            ->required(),
+                                        TextInput::make('cantidad')
+                                            ->label('Cantidad')
+                                            ->required(),
+                                        TextInput::make('comentario')
+                                            ->label('Comentario')
+                                            ->required(),
+                                    ])->grid(3),
+                            ]),
+                    ])->columnSpan('full')
+
+            ]);
+    }
+
+    //funcion para traer el nombre de una defincion desde el modelo Listas
+    public static function getDefinicionName($definicionId)
+    {
+        return Lista::query()
+            ->where('tipo', 'Definición de artículo')
+            ->where('id', $definicionId)
+            ->first()
+            ->nombre;
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('id')
+                    ->label('Id')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('definicion')
+                    ->label('Definición')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('descripcionEspecifica')
+                    ->label('Descripción específica')
+                    ->searchable()
+                    ->limit(50)
+                    ->sortable(),
+                TextColumn::make('peso')
+                    ->label('Peso')
+                    ->searchable()
+                    ->sortable(),
+                //imagen
+                ImageColumn::make('fotoDescriptiva')
+                    ->label('Foto descriptiva'),
+                TextColumn::make('cruces')
+                    ->label('Cruces')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('juegos')
+                    ->label('Juegos')
+                    ->searchable()
+                    ->sortable(),
+
+
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+    public static function infolists(): array
+    {
+        return [
+            'default' => function ($infolist) {
+                // Configuración de la infolist
+                $infolist->title('Artículos');
+                $infolist->model(Articulo::class);
+                $infolist->search(['definicion', 'descripcionEspecifica', 'peso', 'comentarios', 'cruces', 'juegos']);
+                $infolist->filters([
+                    'definicion' => 'Definición',
+                    'descripcionEspecifica' => 'Descripción específica',
+                    'peso' => 'Peso',
+                    'comentarios' => 'Comentarios',
+                    'cruces' => 'Cruces',
+                    'juegos' => 'Juegos',
+                ]);
+                $infolist->columns([
+                    'definicion' => 'Definición',
+                    'descripcionEspecifica' => 'Descripción específica',
+                    'peso' => 'Peso',
+                    'comentarios' => 'Comentarios',
+                    'cruces' => 'Cruces',
+                    'juegos' => 'Juegos',
+                ]);
+                $infolist->recordActions([
+                    'edit' => 'Edit',
+                    'delete' => 'Delete',
+                ]);
+                $infolist->createAction('Create');
+            },
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            WidgetsStatsOverviewWidget::class
+
+        ];
+    }
+
+
+    public static function getRelations(): array
+    {
+        return [
+            // 'referencias' => RelationManagers\ReferenciasRelationManager::class,
+            'medidas' => RelationManagers\MedidasRelationManager::class,
+
+
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListArticulos::route('/'),
+            'create' => Pages\CreateArticulos::route('/create'),
+            'edit' => Pages\EditArticulos::route('/{record}/edit'),
+        ];
+    }
+}
