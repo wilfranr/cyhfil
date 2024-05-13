@@ -26,6 +26,8 @@ class DashboardPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->brandName('CYH')
+            ->brandLogo(asset('images/logo.png'))
             ->id('dashboard')
             ->path('dashboard')
             ->login()

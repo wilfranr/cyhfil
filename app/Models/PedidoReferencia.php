@@ -15,6 +15,7 @@ class PedidoReferencia extends Model
     protected $fillable = [
         'pedido_id',
         'referencia_id',
+        'sistema_id',
         'cantidad',
         'comentario',
         'imagen',
@@ -27,7 +28,7 @@ class PedidoReferencia extends Model
 
 
 
-    public function referencia()
+    public function referencia(): BelongsTo
     {
         return $this->belongsTo(Referencia::class);
     }    

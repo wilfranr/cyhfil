@@ -25,6 +25,7 @@ use App\Actions\ResetStars;
 use App\Models\Articulo;
 use App\Models\Lista;
 use App\Models\Maquina;
+use App\Models\Marca;
 use App\Models\PedidoReferencia;
 use App\Models\Referencia;
 use App\Models\Sistema;
@@ -34,6 +35,7 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -69,7 +71,7 @@ class PedidosResource extends Resource
                 //guardar id de usuario logueado
                 Components\Hidden::make('user_id')->default($user),
                 //función para que se muestre solo si estoy editando
-                Section::make('Informaicón de pedido')
+                Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
                         Components\Hidden::make('user_id')->default(auth()->user()->id),
@@ -111,7 +113,20 @@ class PedidosResource extends Resource
                             ->label('Email'),
                         Select::make('maquina_id')
                             ->label('Máquina')
-                            ->options(Maquina::all()->pluck('serie', 'id'))
+                            ->options(Maquina::all()->pluck('serie', 'id')),
+                        Select::make('estado')
+                            ->label('Estado')
+                            ->options([
+                                'Nuevo' => 'Nuevo',
+                                'En_Costeo' => 'En Costeo',
+                                'Cotizado' => 'Cotizado',
+                                'Enviado' => 'Enviado',
+                                'Entregado' => 'Entregado',
+                                'Cancelado' => 'Cancelado',
+                                'Rechazado' => 'Rechazado',
+                            ])
+                            ->default('Nuevo')
+                            ->required(),
 
                     ])->hiddenOn('create'),
                 Wizard::make(
@@ -180,7 +195,7 @@ class PedidosResource extends Resource
                                             ->required(),
                                         TextInput::make('direccion')
                                             ->label('Dirección')
-                                            
+
                                             ->required(),
                                         TextInput::make('telefono')
                                             ->label('Telefono')
@@ -229,119 +244,212 @@ class PedidosResource extends Resource
                                     ->label('Máquina')
                                     ->relationship('maquina', 'serie')
                                     ->live()
-                                    ->preload('tipo') // Preload the 'tipo' attribute for faster rendering
-                                    ->required(),
+                                    ->preload('tipo'),
+
 
                             ])->hiddenOn('edit'),
 
-                        Step::make('Artículos')
-                            ->icon('heroicon-m-cube-transparent')
-                            ->schema(
-                                [
-                                    Repeater::make('articulos')
-                                        ->relationship()
-                                        ->schema([
-                                            
-                                            Select::make('articulo_id')
-                                                ->label('Artículo')
-                                                ->options(Articulo::query()->pluck('definicion', 'id'))
-                                                ->createOptionForm([
-                                                    Select::make('definicion')
-                                                        ->label('Definición')
-                                                        ->searchable()
-                                                        ->options(
-                                                            Lista::query()
-                                                                ->where('tipo', 'Definición de artículo')
-                                                                ->get()
-                                                                ->mapWithKeys(fn ($definicion) => [$definicion->nombre => $definicion->nombre])
-                                                                ->toArray()
-                                                        )
-                                                        ->required(),
-                                                    TextInput::make('descripcionEspecifica')
-                                                        ->label('Descripción Específica'),
-                                                    TextInput::make('peso')
-                                                        ->label('Peso'),
-                                                    FileUpload::make('imagen')
-                                                        ->label('Imagen')
-                                                        ->image()
-                                                        ->imageEditor(),
-                                                ]),
-                                            TextInput::make('cantidad')
-                                                ->label('Cantidad')
-                                                ->numeric(),
-                                            TextInput::make('comentario')
-                                                ->label('Comentario')
-                                                ->nullable(),
-                                            Select::make('sistema_id')
-                                            ->label('Sistema')
-                                            ->options(
-                                                Sistema::query()->pluck('nombre', 'id')
-                                            ),
-                                            FileUpload::make('imagen')
-                                                ->label('Imagen')
-                                                ->image()
-                                                ->imageEditor()
-                                                ->nullable(),
-                                        ])->columns(5),
+                        // Step::make('Artículos')
+                        //     ->icon('heroicon-m-cube-transparent')
+                        //     ->hiddenOn('create')
+                        //     ->schema(
+                        //         [
+                        //             Repeater::make('articulos')
+                        //                 ->relationship()
+                        //                 ->schema([
 
-                                    Section::make()
-                                        ->schema([
-                                            TextArea::make('referencias')
-                                            ->label('Agregar referencias')
-                                            ->placeholder('Copie referencias en bloque desde excel')
-                                            // ->afterStateUpdated(function ($state, $form) {
-                                            //     // Código para procesar las referencias separadas por salto de línea
-                                            //     $referencias = explode("\n", $state);
-                                        
-                                            //     // Procesar las referencias (guardarlas, validarlas, etc.)
-                                            //     foreach ($referencias as $referencia) {
-                                            //         // Buscar la referencia en la base de datos (opcional)
-                                            //         $referenciaDB = Referencia::find($referencia); // Suponiendo que el valor de la referencia es un ID
-                                                
-                                            //         // Obtener el registro actual
-                                            //         $pedido = $form->getModel();
-                                                
-                                            //         // Crear o actualizar la referencia
-                                            //         $pedidoReferencia = new PedidoReferencia(); // O recupera la instancia existente
-                                            //         $pedidoReferencia->valor = $referencia; // Asignar el valor de la referencia
-                                            //         $pedidoReferencia->cantidad = 1; // Asignar la cantidad por defecto (opcional)
-                                            //         $pedidoReferencia->comentario = ''; // Asignar un comentario vacío por defecto (opcional)
-                                                
-                                            //         // Si la referencia no existe en la base de datos, guardarla
-                                            //         if (!$referenciaDB) {
-                                            //             $pedidoReferencia->referencia_id = $referenciaDB->id; // Asignar el ID de la referencia
-                                            //             $pedidoReferencia->save(); // Guardar la nueva referencia
-                                            //         }
-                                                
-                                            //         // Asociar la referencia al registro actual
-                                            //         $pedido->referencias()->attach($pedidoReferencia->id); // O utilizar sync() para sincronizar las referencias
-                                            //     }
-                                            // })
-                                        ]),
-                                    // Section::make()
-                                    //     ->schema([
-                                    //         Components\TextInput::make('comentario')
-                                    //             ->label('Comentarios del pedido')
-                                    //     ])
-                                ]
-                            ),
+                        //                     Select::make('articulo_id')
+                        //                         ->label('Artículo')
+                        //                         ->options(Articulo::query()->pluck('definicion', 'id'))
+                        //                         ->createOptionForm([
+                        //                             Select::make('definicion')
+                        //                                 ->label('Definición')
+                        //                                 ->searchable()
+                        //                                 ->options(
+                        //                                     Lista::query()
+                        //                                         ->where('tipo', 'Definición de artículo')
+                        //                                         ->get()
+                        //                                         ->mapWithKeys(fn ($definicion) => [$definicion->nombre => $definicion->nombre])
+                        //                                         ->toArray()
+                        //                                 )
+                        //                                 ->required(),
+                        //                             TextInput::make('descripcionEspecifica')
+                        //                                 ->label('Descripción Específica'),
+                        //                             TextInput::make('peso')
+                        //                                 ->label('Peso'),
+                        //                             FileUpload::make('imagen')
+                        //                                 ->label('Imagen')
+                        //                                 ->image()
+                        //                                 ->imageEditor(),
+                        //                         ]),
+                        //                     TextInput::make('cantidad')
+                        //                         ->label('Cantidad')
+                        //                         ->numeric(),
+                        //                     TextInput::make('comentario')
+                        //                         ->label('Comentario')
+                        //                         ->nullable(),
+                        //                     Select::make('sistema_id')
+                        //                     ->label('Sistema')
+                        //                     ->options(
+                        //                         Sistema::query()->pluck('nombre', 'id')
+                        //                     ),
+                        //                     FileUpload::make('imagen')
+                        //                         ->label('Imagen')
+                        //                         ->image()
+                        //                         ->imageEditor()
+                        //                         ->nullable(),
+                        //                 ])->columns(5),
+
+                        //             Section::make()
+                        //                 ->schema([
+                        //                     TextArea::make('referencias')
+                        //                     ->label('Agregar referencias')
+                        //                     ->placeholder('Copie referencias en bloque desde excel')
+                        //                     // ->afterStateUpdated(function ($state, $form) {
+                        //                     //     // Código para procesar las referencias separadas por salto de línea
+                        //                     //     $referencias = explode("\n", $state);
+
+                        //                     //     // Procesar las referencias (guardarlas, validarlas, etc.)
+                        //                     //     foreach ($referencias as $referencia) {
+                        //                     //         // Buscar la referencia en la base de datos (opcional)
+                        //                     //         $referenciaDB = Referencia::find($referencia); // Suponiendo que el valor de la referencia es un ID
+
+                        //                     //         // Obtener el registro actual
+                        //                     //         $pedido = $form->getModel();
+
+                        //                     //         // Crear o actualizar la referencia
+                        //                     //         $pedidoReferencia = new PedidoReferencia(); // O recupera la instancia existente
+                        //                     //         $pedidoReferencia->valor = $referencia; // Asignar el valor de la referencia
+                        //                     //         $pedidoReferencia->cantidad = 1; // Asignar la cantidad por defecto (opcional)
+                        //                     //         $pedidoReferencia->comentario = ''; // Asignar un comentario vacío por defecto (opcional)
+
+                        //                     //         // Si la referencia no existe en la base de datos, guardarla
+                        //                     //         if (!$referenciaDB) {
+                        //                     //             $pedidoReferencia->referencia_id = $referenciaDB->id; // Asignar el ID de la referencia
+                        //                     //             $pedidoReferencia->save(); // Guardar la nueva referencia
+                        //                     //         }
+
+                        //                     //         // Asociar la referencia al registro actual
+                        //                     //         $pedido->referencias()->attach($pedidoReferencia->id); // O utilizar sync() para sincronizar las referencias
+                        //                     //     }
+                        //                     // })
+                        //                 ]),
+                        //             // Section::make()
+                        //             //     ->schema([
+                        //             //         Components\TextInput::make('comentario')
+                        //             //             ->label('Comentarios del pedido')
+                        //             //     ])
+                        //         ]
+                        //     ),
                         Step::make('Referencias')
                             ->icon('heroicon-s-clipboard-document-list')
-                            ->schema(
-                                [
+                            ->schema([
                                     Repeater::make('referencias')
                                         ->relationship()
                                         ->schema([
                                             Select::make('referencia_id')
-                                            ->relationship(name: 'referencia', titleAttribute: 'referencia')
+                                                ->relationship(name: 'referencia', titleAttribute: 'referencia')
                                                 ->label('Referencia')
                                                 ->options(Referencia::query()->pluck('referencia', 'id'))
                                                 ->createOptionForm([
                                                     TextInput::make('referencia')
-                                                        ->label('Referencia')
-                                                        ->required(),
-                                                
-                                                ]),
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Select::make('articulo_id')
+                                                        ->label('Articulo')
+                                                        ->options(
+                                                            \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
+                                                        ),
+
+                                                    Select::make('marca_id')
+                                                        ->label('Marca')
+                                                        ->options(
+                                                            \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                        ),
+                                                ])
+                                                ->editOptionForm([
+                                                    TextInput::make('referencia')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Select::make('articulo_id')
+                                                        ->label('Articulo')
+                                                        ->options(
+                                                            \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
+                                                        ),
+
+                                                    Select::make('marca_id')
+                                                        ->label('Marca')
+                                                        ->options(
+                                                            \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                        ),
+
+                                                ])
+                                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                                    // Retrieve the related 'referencia' record
+                                                    $referencia = Referencia::find($get('referencia_id'));
+                                                    if (!$referencia) {
+                                                        $set('articulo_definicion', null);
+                                                        $set('articulo_id', null);
+                                                        $set('marca_id', null);
+                                                    }
+                                                    if ($referencia) {
+                                                        // traer articulo relacionado
+                                                        $articulo = Articulo::find($referencia->articulo_id);
+                                                        $marca = Marca::find($referencia->marca_id);
+                                                        // dd($marca);
+                                                        if (!$articulo) {
+                                                            $set('articulo_definicion', null);
+                                                            $set('articulo_id', null);
+                                                            return;
+                                                        }
+                                                        $set('articulo_definicion', $articulo->definicion);
+                                                        $set('articulo_id', $articulo->id);
+                                                        $set('marca_id', $marca->id);
+
+                                                        // dump($articulo->definicion);
+                                                    }
+                                                })
+                                                ->afterStateHydrated(function (Set $set, Get $get) {
+                                                    // Retrieve the related 'referencia' record
+                                                    $referencia = Referencia::find($get('referencia_id'));
+                                                    if (!$referencia) {
+                                                        $set('articulo_definicion', null);
+                                                        $set('articulo_id', null);
+                                                    }
+                                                    // traer articulo relacionado
+                                                    if ($referencia) {
+                                                        $articulo = Articulo::find($referencia->articulo_id);
+                                                        $marca = Marca::find($referencia->marca_id);
+                                                        // dd($marca);
+                                                        if (!$articulo) {
+                                                            $set('articulo_definicion', null);
+                                                            $set('articulo_id', null);
+                                                            return;
+                                                        }
+                                                        $set('articulo_definicion', $articulo->definicion);
+                                                        $set('articulo_id', $articulo->id);
+                                                        $set('marca_id', $marca->id);
+                                                    }
+                                                })
+                                                ->required()
+                                                ->live()
+                                                ->searchable()
+                                                ->preload('referencia'),
+                                            Hidden::make('articulo_id')
+                                                ->disabled(),
+                                            TextInput::make('articulo_definicion')
+                                                ->label('Artículo')
+                                                ->disabled(),
+                                            Select::make('sistema_id')
+                                                ->label('Sistema')
+                                                ->options(
+                                                    Sistema::query()->pluck('nombre', 'id')
+                                                ),
+                                            Select::make('marca_id')
+                                                ->label('Marca')
+                                                ->options(
+                                                    \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                ),
                                             TextInput::make('cantidad')
                                                 ->label('Cantidad')
                                                 ->numeric()
@@ -353,11 +461,28 @@ class PedidosResource extends Resource
                                                 ->label('Imagen')
                                                 ->image()
                                                 ->imageEditor(),
-                                        ])->columns(4),
+                                                Section::make()
+                                                ->schema([
+                                                    Select::make('tercero_id')
+                                                        ->label('Provedores')
+                                                        ->options(
+                                                            Tercero::query()->where('tipo', 'Proveedor')->pluck('nombre', 'id')),
+                                                    TextInput::make('valor_unidad')
+                                                        ->label('Valor Unidad')
+                                                        ->numeric(),
+                                                    TextInput::make('valor_total')
+                                                        ->label('Valor Total')
+                                                        ->numeric()
+                                                        ->inputMode('decimal'),
+
+                                                ])->hiddenOn('create')->columns(4),
+                                                
+                                        ])->columns(3)->collapsible(),
+
                                 ]
                             ),
-                            
-                            ]
+
+                    ]
                 )->skippable()->columnSpan('full'),
             ]);
     }
@@ -383,6 +508,8 @@ class PedidosResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Nuevo' => 'primary',
+                        'En_Costeo' => 'gray',
+                        'Cotizado' => 'info',
                         'En proceso' => 'warning',
                         'Enviado' => 'success',
                         'Entregado' => 'success',
@@ -390,6 +517,8 @@ class PedidosResource extends Resource
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Nuevo' => 'heroicon-o-star',
+                        'En_Costeo' => 'heroicon-c-list-bullet',
+                        'Cotizado' => 'heroicon-o-currency-dollar',
                         'En proceso' => 'heroicon-o-clock',
                         'Enviado' => 'heroicon-o-check-circle',
                         'Entregado' => 'heroicon-o-check-circle',
@@ -432,16 +561,13 @@ class PedidosResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-        Action::make('updateAuthor')
-            ->label('Update Author')
-            ->modal();
     }
 
     public static function getRelations(): array
     {
         return [
             // 'referencia' => RelationManagers\ReferenciasRelationManager::class,
-            
+
         ];
     }
 

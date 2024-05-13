@@ -8,7 +8,9 @@ use App\Models\Lista;
 use Faker\Core\File;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -37,15 +39,15 @@ class ListasResource extends Resource
                         'Tipo de Máquina' => 'Tipo de máquina',
                         'Definición de artículo' => 'Definición de artículo',
                         'Unidad de medida' => 'Unidad de medida',
+                        'Tipo de medida' => 'Tipo de medida',
                     ])
                     ->required(),
                 TextInput::make('nombre')
                     ->label('Nombre')
                     ->required()
                     ->placeholder('Nombre de la lista'),
-                TextInput::make('definicion')
+                MarkdownEditor::make('definicion')
                     ->label('Definición')
-                    ->required()
                     ->placeholder('Definición de la lista'),
                 FileUpload::make('foto')
                     ->label('Foto')
@@ -69,17 +71,8 @@ class ListasResource extends Resource
                     ->label('Nombre'),
                 Tables\Columns\TextColumn::make('definicion')
                     ->label('Definición')
-                    ->limit(50)
-                    ->searchable()
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-
-                        if (strlen($state) <= $column->getCharacterLimit()) {
-                            return null;
-                        }
-                        return $state;
-                    }),
-
+                    ->wrap()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('foto')
                     ->label('Foto'),
             ])

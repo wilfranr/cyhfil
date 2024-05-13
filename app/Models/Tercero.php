@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\State;
 use App\Models\Maquina;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tercero extends Model
 {
@@ -58,6 +59,26 @@ class Tercero extends Model
     {
         return $this->hasMany(Contacto::class);
     }
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class);
+    }
+
+    public function sistemas(): BelongsToMany
+    {
+        return $this->belongsToMany(Sistema::class, 'tercero_sistemas', 'tercero_id', 'sistema_id');
+    }
+    
+
+    public function marcas(): BelongsToMany
+    {
+        return $this->belongsToMany(Marca::class, 'tercero_marcas', 'tercero_id', 'marca_id');
+    }
+    // public function marcas()
+    // {
+    //     return $this->hasMany(Marca::class, 'tercero_marcas', 'tercero_id', 'marca_id');
+    // }
 }
 
 

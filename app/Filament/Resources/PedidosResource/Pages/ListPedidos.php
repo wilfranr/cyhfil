@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
+
 class ListPedidos extends ListRecords
 {
     protected static string $resource = PedidosResource::class;
@@ -32,6 +33,12 @@ class ListPedidos extends ListRecords
             'Nuevos' => Tab::make()->query(function (Builder $query) {
                 $query->where('estado', 'Nuevo');
             })->icon('heroicon-o-star'),
+            'Cotizados' => Tab::make()->query(function (Builder $query) {
+                $query->where('estado', 'Cotizado');
+            })->icon('heroicon-o-currency-dollar'),
+            'En Costeo' => Tab::make()->query(function (Builder $query) {
+                $query->where('estado', 'En_Costeo');
+            })->icon('heroicon-c-list-bullet'),
             'Enviados' => Tab::make()->query(function (Builder $query) {
                 $query->where('estado', 'Enviado');
             })->icon('heroicon-o-truck'),

@@ -22,6 +22,8 @@ use Filament\Forms\Components\FileUpload;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Maquina;
+use App\Models\Marca;
+use App\Models\Sistema;
 use App\Models\State;
 use App\Models\TerceroContacto;
 use Filament\Forms\Components\Repeater;
@@ -40,7 +42,7 @@ class TercerosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
     protected static ?string $recordTitleAttribute = 'nombre';
-    
+
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
@@ -63,14 +65,17 @@ class TercerosResource extends Resource
                             TextInput::make('nombre')
                                 ->required()
                                 ->label('Nombre'),
+
                             Select::make('tipo')
                                 ->label('Tipo de Tercero')
                                 ->required()
+                                ->live()
                                 ->options([
                                     'cliente' => 'Cliente',
                                     'proveedor' => 'Proveedor',
                                 ]),
                             Select::make('tipo_documento')
+                                ->live()
                                 ->options([
                                     'cc' => 'Cédula de Ciudadanía',
                                     'ce' => 'Cédula de Extranjería',
@@ -79,6 +84,7 @@ class TercerosResource extends Resource
                                 ->label('Tipo de Documento'),
                             TextInput::make('numero_documento')
                                 ->label('Número de Documento')
+                                ->required()
                                 ->unique('terceros', 'numero_documento', ignoreRecord: true), // Validación única
                             TextInput::make('telefono')
                                 ->label('Teléfono'),
@@ -86,7 +92,9 @@ class TercerosResource extends Resource
                                 ->email()
                                 ->label('Correo Electrónico')
                                 ->unique('terceros', 'email', ignoreRecord: true), // Validación única
-                            TextInput::make('dv')->nullable()->label('Dígito Verificador'),
+                            TextInput::make('dv')->nullable()
+                                ->label('Dígito Verificador')
+                                ->visible(fn (Get $get) => $get('tipo_documento') === 'nit'),
                             Select::make('forma_pago')
                                 ->nullable()
                                 ->label('Forma de Pago')
@@ -98,12 +106,79 @@ class TercerosResource extends Resource
                             TextInput::make('sitio_web')->nullable()->label('Sitio Web'),
                             Select::make('maquina_id')
                                 ->relationship('maquinas', 'serie')
+                                ->createOptionForm(function () {
+                                    return [
+                                        Select::make('tipo')
+                                            ->options([
+                                                'excavadora' => 'Excavadora',
+                                                'retroexcavadora' => 'Retroexcavadora',
+                                                'bulldozer' => 'Bulldozer',
+                                                'grua' => 'Grua',
+                                                'montacargas' => 'Montacargas',
+                                                'compactador' => 'Compactador',
+                                                'motoniveladora' => 'Motoniveladora',
+                                                'rodillo' => 'Rodillo',
+                                                'tractor' => 'Tractor',
+                                                'camion' => 'Camion',
+                                                'volqueta' => 'Volqueta',
+                                                'otro' => 'Otro',
+                                            ])
+                                            ->label('Tipo')
+                                            ->searchable()
+                                            ->required(),
+
+                                        Select::make('marca_id')
+                                            ->relationship('marcas', 'nombre')
+                                            ->label('Marca')
+                                            ->preload()
+                                            ->live()
+                                            ->searchable(),
+
+                                        Forms\Components\TextInput::make('modelo')
+                                            ->label('Modelo')
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('serie')
+                                            ->label('Serie')
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('arreglo')
+                                            ->label('Arreglo')
+                                            ->required(),
+
+                                        Forms\Components\FileUpload::make('foto')
+                                            ->label('Foto'),
+
+                                        Forms\Components\FileUpload::make('fotoId')
+                                            ->label('FotoId')
+                                    ];
+                                })
                                 ->label('Máquina')
                                 ->multiple()
                                 ->preload()
                                 ->live()
+                                ->visible(fn (Get $get) => $get('tipo') === 'cliente')
                                 ->searchable(),
-                      
+
+                            Section::make('Marcas y Ssistemas')
+                                ->schema([
+                                    Select::make('marca_id')
+                                        ->relationship('marcas', 'nombre')
+                                        ->label('Marca')
+                                        ->multiple()
+                                        ->preload()
+                                        ->live()
+                                        ->searchable(),
+                                    Select::make('sistema_id')
+                                        ->relationship('sistemas', 'nombre')
+                                        ->label('Sistema')
+                                        ->multiple()
+                                        ->preload()
+                                        ->live()
+                                        ->searchable(),
+                                ])->columns(2)->visible(fn (Get $get) => $get('tipo') === 'proveedor'),
+
+
 
 
                         ])->columns(3),
@@ -142,7 +217,7 @@ class TercerosResource extends Resource
                                 ->live()
                                 ->preload(),
                         ])->columns(3),
-                 
+
 
                     Wizard\Step::make('Documentos')
                         ->icon('heroicon-o-document-text')
@@ -183,7 +258,15 @@ class TercerosResource extends Resource
                 Tables\Columns\TextColumn::make('tipo')
                     ->label('Tipo')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->badge()
+                    ->color(
+                        fn (string $state): string => match ($state) {
+
+                            'cliente' => 'primary',
+                            'proveedor' => 'info',
+                        }
+                    ),
                 Tables\Columns\TextColumn::make('nombre')
                     ->label('Nombre')
                     ->searchable()

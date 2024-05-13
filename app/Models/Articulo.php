@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Articulo extends Model
@@ -38,6 +39,12 @@ class Articulo extends Model
     {
         return $this->hasMany(ArticuloJuego::class);
     }
+
+    // public function listas(): BelongsTo
+    // {
+    //     // Reference to the listas table
+    //     return $this->belongsTo(Lista::class, 'tipo')->where('tipo', "Definición de artículo");
+    // }
 
 
 

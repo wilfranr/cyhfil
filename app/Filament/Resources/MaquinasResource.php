@@ -16,7 +16,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MaquinasResource\RelationManagers\MarcaRelationManager;
-
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 
 class MaquinasResource extends Resource
 {
@@ -29,21 +32,29 @@ class MaquinasResource extends Resource
         return $form
             ->schema([
                 Select::make('tipo')
-                    ->options([
-                        'excavadora' => 'Excavadora',
-                        'retroexcavadora' => 'Retroexcavadora',
-                        'bulldozer' => 'Bulldozer',
-                        'grua' => 'Grua',
-                        'montacargas' => 'Montacargas',
-                        'compactador' => 'Compactador',
-                        'motoniveladora' => 'Motoniveladora',
-                        'rodillo' => 'Rodillo',
-                        'tractor' => 'Tractor',
-                        'camion' => 'Camion',
-                        'volqueta' => 'Volqueta',
-                        'otro' => 'Otro',
-                    ])
+                    ->relationship('Listas', 'nombre')
+                    ->createOptionForm(function () {
+                        return [
+                            TextInput::make('tipo')
+                                ->default('Tipo de Máquina')
+                                ->readonly()
+                                ->required(),
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Nombre de la lista'),
+                            MarkdownEditor::make('definicion')
+                                ->label('Definición')
+                                ->required()
+                                ->placeholder('Definición de la lista'),
+                            FileUpload::make('foto')
+                                ->label('Foto')
+                                ->image()
+                        ];
+                    })
                     ->label('Tipo')
+                    ->live()
+                    ->preload()
                     ->searchable()
                     ->required(),
 
@@ -67,27 +78,36 @@ class MaquinasResource extends Resource
                     ->required(),
 
                 Forms\Components\FileUpload::make('foto')
-                    ->label('Foto'),
+                    ->label('Foto')
+                    ->image()
+                    ->imageEditor(),
 
                 Forms\Components\FileUpload::make('fotoId')
                     ->label('FotoId')
+                    ->image()
+                    ->imageEditor(),
             ]);
     }
-    
+
 
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tipo')
+                Tables\Columns\ImageColumn::make('foto')
                     ->searchable()
                     ->sortable(),
 
-                //obtener la relacion de la tabla pivot maquina_marca
-                Tables\Columns\TextColumn::make('marca_nombre')
+                Tables\Columns\TextColumn::make('listas.nombre')
+                    ->label('Tipo')
                     ->searchable()
-                    ->label('Marca'),
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('marcas.nombre')
+                    ->label('Marca')
+                    ->searchable()
+                    ->sortable(),
 
 
                 Tables\Columns\TextColumn::make('modelo')
@@ -101,20 +121,17 @@ class MaquinasResource extends Resource
                 Tables\Columns\TextColumn::make('arreglo')
                     ->searchable()
                     ->sortable(),
-
-                Tables\Columns\ImageColumn::make('foto')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\ImageColumn::make('fotoId')
-                    ->searchable()
-                    ->sortable(),
             ])
             ->filters([
-                //
+                // SelectFilter::make('marcas.nombre')
+                //     ->relationship('marcas', 'nombre')
+                //     ->label('Marca'),
+                // SelectFilter::make('listas.nombre')
+                //     ->relationship('listas', 'nombre')
+                //     ->label('Tipo'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

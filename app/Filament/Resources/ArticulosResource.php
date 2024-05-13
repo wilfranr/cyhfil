@@ -57,14 +57,31 @@ class ArticulosResource extends Resource
                             ->schema([
                                 Select::make('definicion')
                                     ->label('Definición')
-                                    ->searchable()
                                     ->options(
-                                        Lista::query()
-                                            ->where('tipo', 'Definición de artículo')
-                                            ->get()
-                                            ->mapWithKeys(fn ($definicion) => [$definicion->nombre => $definicion->nombre])
-                                            ->toArray()
+                                        Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')
                                     )
+                                    ->createOptionForm(function () {
+                                        return [
+                                            TextInput::make('definicion')
+                                                ->default('Definición de artículo')
+                                                ->readonly()
+                                                ->required(),
+                                            TextInput::make('nombre')
+                                                ->label('Nombre')
+                                                ->placeholder('Nombre de la definición'),
+                                            TextInput::make('definicion')
+                                                ->label('Definición')
+                                                ->placeholder('Definición del artículo'),
+                                            FileUpload::make('foto')
+                                                ->label('Foto')
+                                                ->image()
+                                                ->imageEditor(),
+
+                                        ];
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
                                     ->required(),
                                 TextInput::make('descripcionEspecifica')
                                     ->label('Decripción específica')
@@ -95,9 +112,8 @@ class ArticulosResource extends Resource
                                             ->label('Referencia')
                                             ->options(
                                                 Referencia::query()->pluck('referencia', 'id')
-                                            )
-                                            ->required(),
-                                            Select::make('marca_id')
+                                            ),
+                                        Select::make('marca_id')
                                             ->label('Marca')
                                             ->options(
                                                 \App\Models\Marca::pluck('nombre', 'id')
@@ -106,20 +122,18 @@ class ArticulosResource extends Resource
                             ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
+                                
                                 Repeater::make('articuloJuegos')
                                     ->relationship()
                                     ->schema([
                                         Select::make('juego_id')
                                             ->options(
                                                 \App\Models\Juego::pluck('nombre', 'id')
-                                            )
-                                            ->required(),
+                                            ),
                                         TextInput::make('cantidad')
-                                            ->label('Cantidad')
-                                            ->required(),
+                                            ->label('Cantidad'),
                                         TextInput::make('comentario')
-                                            ->label('Comentario')
-                                            ->required(),
+                                            ->label('Comentario'),
                                     ])->grid(3),
                             ]),
                     ])->columnSpan('full')
@@ -127,15 +141,6 @@ class ArticulosResource extends Resource
             ]);
     }
 
-    //funcion para traer el nombre de una defincion desde el modelo Listas
-    public static function getDefinicionName($definicionId)
-    {
-        return Lista::query()
-            ->where('tipo', 'Definición de artículo')
-            ->where('id', $definicionId)
-            ->first()
-            ->nombre;
-    }
 
     public static function table(Table $table): Table
     {
@@ -145,6 +150,8 @@ class ArticulosResource extends Resource
                     ->label('Id')
                     ->searchable()
                     ->sortable(),
+                ImageColumn::make('fotoDescriptiva')
+                    ->label('Foto'),
                 TextColumn::make('definicion')
                     ->label('Definición')
                     ->searchable()
@@ -159,17 +166,14 @@ class ArticulosResource extends Resource
                     ->label('Peso')
                     ->searchable()
                     ->sortable(),
-                //imagen
-                ImageColumn::make('fotoDescriptiva')
-                    ->label('Foto descriptiva'),
-                TextColumn::make('cruces')
-                    ->label('Cruces')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('juegos')
-                    ->label('Juegos')
-                    ->searchable()
-                    ->sortable(),
+                // TextColumn::make('cruces')
+                //     ->label('Cruces')
+                //     ->searchable()
+                //     ->sortable(),
+                // TextColumn::make('juegos')
+                //     ->label('Juegos')
+                //     ->searchable()
+                //     ->sortable(),
 
 
             ])
@@ -177,9 +181,9 @@ class ArticulosResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label(''),
+                Tables\Actions\EditAction::make()->label(''),
+                Tables\Actions\DeleteAction::make()->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
