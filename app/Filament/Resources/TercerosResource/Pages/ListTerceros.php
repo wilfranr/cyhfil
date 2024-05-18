@@ -29,6 +29,9 @@ class ListTerceros extends ListRecords
             'Proveedores' => Tab::make()->query(function (Builder $query) {
                 $query->where('tipo', 'Proveedor');
             }),
+            'Ambos' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Ambos');
+            }),
         ];
     }
 }

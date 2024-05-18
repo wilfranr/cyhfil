@@ -26,9 +26,11 @@ use App\Models\Articulo;
 use App\Models\Lista;
 use App\Models\Maquina;
 use App\Models\Marca;
+use App\Models\TereceroMarca;
 use App\Models\PedidoReferencia;
 use App\Models\Referencia;
 use App\Models\Sistema;
+use App\Models\TerceroMarca;
 use Closure;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
@@ -52,7 +54,9 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\View\TablesRenderHook;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\HtmlString;
+
 
 class PedidosResource extends Resource
 {
@@ -116,6 +120,7 @@ class PedidosResource extends Resource
                             ->options(Maquina::all()->pluck('serie', 'id')),
                         Select::make('estado')
                             ->label('Estado')
+                            ->live()
                             ->options([
                                 'Nuevo' => 'Nuevo',
                                 'En_Costeo' => 'En Costeo',
@@ -125,8 +130,8 @@ class PedidosResource extends Resource
                                 'Cancelado' => 'Cancelado',
                                 'Rechazado' => 'Rechazado',
                             ])
-                            ->default('Nuevo')
                             ->required(),
+
 
                     ])->hiddenOn('create'),
                 Wizard::make(
@@ -344,148 +349,159 @@ class PedidosResource extends Resource
                         Step::make('Referencias')
                             ->icon('heroicon-s-clipboard-document-list')
                             ->schema([
-                                    Repeater::make('referencias')
-                                        ->relationship()
-                                        ->schema([
-                                            Select::make('referencia_id')
-                                                ->relationship(name: 'referencia', titleAttribute: 'referencia')
-                                                ->label('Referencia')
-                                                ->options(Referencia::query()->pluck('referencia', 'id'))
-                                                ->createOptionForm([
-                                                    TextInput::make('referencia')
-                                                        ->required()
-                                                        ->maxLength(255),
-                                                    Select::make('articulo_id')
-                                                        ->label('Articulo')
-                                                        ->options(
-                                                            \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                                                        ),
-
-                                                    Select::make('marca_id')
-                                                        ->label('Marca')
-                                                        ->options(
-                                                            \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
-                                                        ),
-                                                ])
-                                                ->editOptionForm([
-                                                    TextInput::make('referencia')
-                                                        ->required()
-                                                        ->maxLength(255),
-                                                    Select::make('articulo_id')
-                                                        ->label('Articulo')
-                                                        ->options(
-                                                            \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                                                        ),
-
-                                                    Select::make('marca_id')
-                                                        ->label('Marca')
-                                                        ->options(
-                                                            \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
-                                                        ),
-
-                                                ])
-                                                ->afterStateUpdated(function (Set $set, Get $get) {
-                                                    // Retrieve the related 'referencia' record
-                                                    $referencia = Referencia::find($get('referencia_id'));
-                                                    if (!$referencia) {
+                                Repeater::make('referencias')
+                                    ->relationship()
+                                    ->schema([
+                                        Select::make('referencia_id')
+                                            ->relationship(name: 'referencia', titleAttribute: 'referencia')
+                                            ->label('Referencia')
+                                            ->options(Referencia::query()->pluck('referencia', 'id'))
+                                            ->createOptionForm([
+                                                TextInput::make('referencia')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                Select::make('articulo_id')
+                                                    ->label('Articulo')
+                                                    ->options(
+                                                        \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
+                                                    ),
+                                                Select::make('marca_id')
+                                                    ->label('Marca')
+                                                    ->options(
+                                                        \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                    ),
+                                            ])
+                                            ->editOptionForm([
+                                                TextInput::make('referencia')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                Select::make('articulo_id')
+                                                    ->label('Articulo')
+                                                    ->options(
+                                                        \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
+                                                    ),
+                                                Select::make('marca_id')
+                                                    ->label('Marca')
+                                                    ->options(
+                                                        \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                    ),
+                                            ])
+                                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                                $referencia = Referencia::find($get('referencia_id'));
+                                                if (!$referencia) {
+                                                    $set('articulo_definicion', null);
+                                                    $set('articulo_id', null);
+                                                    $set('peso', null);
+                                                    $set('marca_id', null);
+                                                } else {
+                                                    $articulo = Articulo::find($referencia->articulo_id);
+                                                    $marca = Marca::find($referencia->marca_id);
+                                                    if (!$articulo) {
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_id', null);
-                                                        $set('marca_id', null);
+                                                        $set('peso', null);
+                                                        return;
                                                     }
-                                                    if ($referencia) {
-                                                        // traer articulo relacionado
-                                                        $articulo = Articulo::find($referencia->articulo_id);
-                                                        $marca = Marca::find($referencia->marca_id);
-                                                        // dd($marca);
-                                                        if (!$articulo) {
-                                                            $set('articulo_definicion', null);
-                                                            $set('articulo_id', null);
-                                                            return;
-                                                        }
-                                                        $set('articulo_definicion', $articulo->definicion);
-                                                        $set('articulo_id', $articulo->id);
-                                                        $set('marca_id', $marca->id);
-
-                                                        // dump($articulo->definicion);
-                                                    }
-                                                })
-                                                ->afterStateHydrated(function (Set $set, Get $get) {
-                                                    // Retrieve the related 'referencia' record
-                                                    $referencia = Referencia::find($get('referencia_id'));
-                                                    if (!$referencia) {
+                                                    $set('articulo_definicion', $articulo->definicion);
+                                                    $set('articulo_id', $articulo->id);
+                                                    $set('peso', $articulo->peso);
+                                                    $set('marca_id', $marca->id);
+                                                }
+                                            })
+                                            ->afterStateHydrated(function (Set $set, Get $get) {
+                                                $referencia = Referencia::find($get('referencia_id'));
+                                                if (!$referencia) {
+                                                    $set('articulo_definicion', null);
+                                                    $set('articulo_id', null);
+                                                    $set('peso', null);
+                                                } else {
+                                                    $articulo = Articulo::find($referencia->articulo_id);
+                                                    $marca = Marca::find($referencia->marca_id);
+                                                    if (!$articulo) {
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_id', null);
+                                                        $set('peso', null);
+                                                        return;
                                                     }
-                                                    // traer articulo relacionado
-                                                    if ($referencia) {
-                                                        $articulo = Articulo::find($referencia->articulo_id);
-                                                        $marca = Marca::find($referencia->marca_id);
-                                                        // dd($marca);
-                                                        if (!$articulo) {
-                                                            $set('articulo_definicion', null);
-                                                            $set('articulo_id', null);
-                                                            return;
-                                                        }
-                                                        $set('articulo_definicion', $articulo->definicion);
-                                                        $set('articulo_id', $articulo->id);
-                                                        $set('marca_id', $marca->id);
-                                                    }
-                                                })
-                                                ->required()
-                                                ->live()
-                                                ->searchable()
-                                                ->preload('referencia'),
-                                            Hidden::make('articulo_id')
-                                                ->disabled(),
-                                            TextInput::make('articulo_definicion')
-                                                ->label('Artículo')
-                                                ->disabled(),
-                                            Select::make('sistema_id')
-                                                ->label('Sistema')
-                                                ->options(
-                                                    Sistema::query()->pluck('nombre', 'id')
-                                                ),
-                                            Select::make('marca_id')
-                                                ->label('Marca')
-                                                ->options(
-                                                    \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
-                                                ),
-                                            TextInput::make('cantidad')
-                                                ->label('Cantidad')
-                                                ->numeric()
-                                                ->minValue(1)
-                                                ->required(),
-                                            TextInput::make('comentario')
-                                                ->label('Comentario'),
-                                            FileUpload::make('imagen')
-                                                ->label('Imagen')
-                                                ->image()
-                                                ->imageEditor(),
-                                                Section::make()
-                                                ->schema([
-                                                    Select::make('tercero_id')
-                                                        ->label('Provedores')
-                                                        ->options(
-                                                            Tercero::query()->where('tipo', 'Proveedor')->pluck('nombre', 'id')),
-                                                    TextInput::make('valor_unidad')
-                                                        ->label('Valor Unidad')
-                                                        ->numeric(),
-                                                    TextInput::make('valor_total')
-                                                        ->label('Valor Total')
-                                                        ->numeric()
-                                                        ->inputMode('decimal'),
+                                                    $set('articulo_definicion', $articulo->definicion);
+                                                    $set('articulo_id', $articulo->id);
+                                                    $set('peso', $articulo->peso);
+                                                    $set('marca_id', $marca->id);
+                                                    $set('marca_seleccionada', $marca->id);
+                                                }
+                                            })
+                                            ->required()
+                                            ->live()
+                                            ->searchable()
+                                            ->preload('referencia'),
+                                        Hidden::make('articulo_id')->disabled(),
+                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
+                                        TextInput::make('peso')->label('Peso')->disabled(),
+                                        Select::make('sistema_id')
+                                            ->label('Sistema')
+                                            ->options(
+                                                Sistema::query()->pluck('nombre', 'id')
+                                            ),
+                                        Select::make('marca_id')
+                                            ->label('Marca')
+                                            ->options(
+                                                Marca::query()->pluck('nombre', 'id')->toArray()
+                                            )
+                                            ->live(),
+                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required(),
+                                        TextInput::make('comentario')->label('Comentario'),
+                                        FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
+                                        Section::make()
+                                            ->schema([
+                                                Repeater::make('proveedores')
+                                                    ->schema([
+                                                        Select::make('proveedores')
+                                                            ->options(function (Get $get, $set) {
+                                                                $marcaId = $get('../../marca_id'); // Use relative path to access parent repeater fields
+                                                                $sistemaId = $get('../../sistema_id');
 
-                                                ])->hiddenOn('create')->columns(4),
-                                                
-                                        ])->columns(3)->collapsible(),
+                                                                $terceros = Tercero::query()
+                                                                    ->whereHas('marcas', function ($query) use ($marcaId) {
+                                                                        $query->where('marca_id', $marcaId);
+                                                                    })
+                                                                    ->whereHas('sistemas', function ($query) use ($sistemaId) {
+                                                                        $query->where('sistema_id', $sistemaId);
+                                                                    })
+                                                                    ->pluck('nombre', 'id');
 
-                                ]
-                            ),
+                                                                return $terceros;
+                                                            })
+                                                            ->label('Proveedores'),
+                                                        TextInput::make('valor_unidad')
+                                                            ->label('Valor Unidad')
+                                                            ->prefix('$COP')
+                                                            ->numeric(),
+                                                        TextInput::make('utilidad')
+                                                            ->label('Utilidad')
+                                                            ->numeric(),
+                                                        TextInput::make('valor_total')
+                                                            ->label('Valor Total')
+                                                            ->numeric()
+                                                            ->inputMode('decimal'),
+                                                    ])
+                                                    ->extraAttributes(function (Get $get) {
+                                                        return [
+                                                            'marca_id' => $get('../../marca_id'), // Use relative path to access parent repeater fields
+                                                            'sistema_id' => $get('../../sistema_id'),
+                                                        ];
+                                                    })
+                                                    ->hiddenOn('create')
+                                                    ->columns(4),
+                                            ])
+                                    ])->columns(3)->collapsible(),
+                            ])
+
 
                     ]
                 )->skippable()->columnSpan('full'),
             ]);
     }
+
 
 
 

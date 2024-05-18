@@ -52,7 +52,7 @@ class Tercero extends Model
 
     public function maquinas()
     {
-        return $this->belongsToMany(Maquina::class, 'tercero_maquina', 'tercero_id', 'maquina_id'); 
+        return $this->belongsToMany(Maquina::class, 'tercero_maquina', 'tercero_id', 'maquina_id');
     }
 
     public function contactos()
@@ -69,16 +69,19 @@ class Tercero extends Model
     {
         return $this->belongsToMany(Sistema::class, 'tercero_sistemas', 'tercero_id', 'sistema_id');
     }
-    
+
 
     public function marcas(): BelongsToMany
     {
         return $this->belongsToMany(Marca::class, 'tercero_marcas', 'tercero_id', 'marca_id');
     }
-    // public function marcas()
-    // {
-    //     return $this->hasMany(Marca::class, 'tercero_marcas', 'tercero_id', 'marca_id');
-    // }
+
+    public function getProveedoresPorMarca($marcaId)
+    {
+        return $this->whereHasMany('marcas', function ($query) use ($marcaId) {
+                $query->where('marca_id', $marcaId);
+            })
+            ->select('nombre', 'id')
+            ->pluck('nombre', 'id');
+    }
 }
-
-

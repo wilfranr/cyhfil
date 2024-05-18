@@ -31,5 +31,7 @@ class PedidoReferencia extends Model
     public function referencia(): BelongsTo
     {
         return $this->belongsTo(Referencia::class);
-    }    
+    }
+    
+
 }

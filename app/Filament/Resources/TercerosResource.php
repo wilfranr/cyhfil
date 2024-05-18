@@ -71,8 +71,9 @@ class TercerosResource extends Resource
                                 ->required()
                                 ->live()
                                 ->options([
-                                    'cliente' => 'Cliente',
-                                    'proveedor' => 'Proveedor',
+                                    'Cliente' => 'Cliente',
+                                    'Proveedor' => 'Proveedor',
+                                    'Ambos' => 'Ambos',
                                 ]),
                             Select::make('tipo_documento')
                                 ->live()
@@ -157,7 +158,7 @@ class TercerosResource extends Resource
                                 ->multiple()
                                 ->preload()
                                 ->live()
-                                ->visible(fn (Get $get) => $get('tipo') === 'cliente')
+                                ->visible(fn (Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                 ->searchable(),
 
                             Section::make('Marcas y Ssistemas')
@@ -176,7 +177,7 @@ class TercerosResource extends Resource
                                         ->preload()
                                         ->live()
                                         ->searchable(),
-                                ])->columns(2)->visible(fn (Get $get) => $get('tipo') === 'proveedor'),
+                                ])->columns(2)->visible(fn (Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
 
 
 
@@ -263,8 +264,9 @@ class TercerosResource extends Resource
                     ->color(
                         fn (string $state): string => match ($state) {
 
-                            'cliente' => 'primary',
-                            'proveedor' => 'info',
+                            'Cliente' => 'primary',
+                            'Proveedor' => 'info',
+                            'Ambos' => 'success',
                         }
                     ),
                 Tables\Columns\TextColumn::make('nombre')
@@ -315,12 +317,6 @@ class TercerosResource extends Resource
 
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('tipo')
-                    ->options([
-                        'cliente' => 'Cliente',
-                        'proveedor' => 'Proveedor',
-                    ])
-                    ->label('Tipo'),
                 Tables\Filters\SelectFilter::make('tipo_documento')
                     ->options([
                         'cc' => 'Cédula de Ciudadanía',
