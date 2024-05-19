@@ -4,9 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReferenciaResource\Pages;
 use App\Filament\Resources\ReferenciaResource\RelationManagers;
+use App\Models\Articulo;
+use App\Models\Lista;
 use App\Models\Referencia;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action as ActionsAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,6 +29,8 @@ class ReferenciaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'referencia';
 
+    protected static ?int $navigationSort = 2;
+
     
    
 
@@ -32,13 +39,93 @@ class ReferenciaResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('referencia')
+                    ->label('Referencia')
+                    ->unique('referencias', 'referencia', ignoreRecord:true)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('articulo_id')
                     ->label('Articulo')
                     ->options(
                         \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                    ),
+                    )
+                    ->createOptionForm(function () {
+                        return [
+                            Select::make('definicion')
+                                    ->label('Definición')
+                                    ->options(
+                                        Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')
+                                    )
+                                    ->createOptionForm(function () {
+                                        return [
+                                            TextInput::make('definicion')
+                                                ->default('Definición de artículo')
+                                                ->readonly()
+                                                ->required(),
+                                            TextInput::make('nombre')
+                                                ->label('Nombre')
+                                                ->placeholder('Nombre de la definición'),
+                                            TextInput::make('definicion')
+                                                ->label('Definición')
+                                                ->placeholder('Definición del artículo'),
+                                            FileUpload::make('foto')
+                                                ->label('Foto')
+                                                ->image()
+                                                ->imageEditor(),
+
+                                        ];
+                                    })
+                                    ->createOptionUsing(function ($data) {
+                                            // Define la lógica para crear una nueva opción
+                                            // Aquí, creamos un nuevo registro en la tabla 'lista'
+                                            $lista = Lista::create([
+                                                'tipo' => 'Definición de artículo',
+                                                'nombre' => ucwords($data['nombre']),
+                                                'definicion' => $data['definicion'] ?? null,
+                                                'foto' => $data['foto'] ?? null,
+                                            ]);
+                    
+                                            // Devuelve el ID de la nueva opción creada
+                                            return $lista->id;
+                                        })
+                                    
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->required(),
+                                TextInput::make('descripcionEspecifica')
+                                    ->label('Decripción específica')
+                                    ->placeholder('Descripción específica del artículo'),
+                                TextInput::make('peso')
+                                    ->label('Peso')
+                                    ->placeholder('Peso del artículo'),
+                                TextInput::make('comentarios')
+                                    ->label('Comentarios')
+                                    ->placeholder('Comentarios del artículo'),
+                                FileUpload::make('fotoDescriptiva')
+                                    ->label('Foto descriptiva')
+                                    ->image()
+                                    ->imageEditor(),
+                                FileUpload::make('fotoMedidas')
+                                    ->label('Foto de Medidas')
+                                    ->image()
+                                    ->imageEditor(),
+                        ];
+                    }
+                        
+                    )
+                    ->createOptionUsing(function ($data) {
+                        $articulo = Articulo::create([
+                            'definicion' => ucwords($data['definicion']),
+                            'descripcionEspecifica' => $data['descripcionEspecifica'] ?? null,
+                            'peso' => $data['peso'] ?? null,
+                            'comentarios' => $data['comentarios'] ?? null,
+                            'fotoDescriptiva' => $data['fotoDescriptiva'] ?? null,
+                            'fotoMedidas' => $data['fotoMedidas'] ?? null,
+                        ]);
+
+                        return $articulo->id;
+                    })
+                    ,
                     
                 Forms\Components\Select::make('marca_id')
                     ->label('Marca')

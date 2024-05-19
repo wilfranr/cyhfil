@@ -64,6 +64,9 @@ class PedidosResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
+    protected static ?int $navigationSort = 0;
+    
+
 
     public static function form(Form $form): Form
     {
@@ -379,12 +382,19 @@ class PedidosResource extends Resource
                                                     ->label('Articulo')
                                                     ->options(
                                                         \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                                                    ),
+                                                    )
+                                                    ->preload()
+                                                    ->live()
+                                                    ->searchable(),
                                                 Select::make('marca_id')
                                                     ->label('Marca')
                                                     ->options(
                                                         \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
-                                                    ),
+                                                    )
+                                                    ->live()
+                                                    ->searchable()
+                                                    ->preload(),
+
                                             ])
                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                 $referencia = Referencia::find($get('referencia_id'));

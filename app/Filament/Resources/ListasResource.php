@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ListasResource\Pages;
 use App\Filament\Resources\ListasResource\RelationManagers;
 use App\Models\Lista;
+use App\Models\Marca;
 use Faker\Core\File;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -28,6 +29,8 @@ class ListasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 5;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -45,14 +48,20 @@ class ListasResource extends Resource
                 TextInput::make('nombre')
                     ->label('Nombre')
                     ->required()
+                    //poner en mayúsculas
+                    ->dehydrateStateUsing(fn (string $state): string => ucwords($state))
+                    ->unique('listas', 'nombre', ignoreRecord:true)
                     ->placeholder('Nombre de la lista'),
                 MarkdownEditor::make('definicion')
                     ->label('Definición')
                     ->placeholder('Definición de la lista'),
                 FileUpload::make('foto')
                     ->label('Foto')
-                    ->image()
-            ]);
+                    ->image(),
+                
+                
+                    ]);
+           
     }
 
     public static function table(Table $table): Table

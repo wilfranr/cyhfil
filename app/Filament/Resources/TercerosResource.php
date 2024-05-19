@@ -41,8 +41,8 @@ class TercerosResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?string $recordTitleAttribute = 'nombre';
-
+    protected static ?int $navigationSort = 6;
+    
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
@@ -63,7 +63,7 @@ class TercerosResource extends Resource
                     Wizard\Step::make('Información general')->icon('heroicon-o-information-circle')
                         ->schema([
                             TextInput::make('nombre')
-                                ->required()
+                                ->required()->dehydrateStateUsing(fn (string $state): string => strtoupper($state))
                                 ->label('Nombre'),
 
                             Select::make('tipo')

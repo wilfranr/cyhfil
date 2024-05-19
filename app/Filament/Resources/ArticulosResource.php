@@ -37,7 +37,7 @@ class ArticulosResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-cube-transparent';
 
-    protected static ?string $recordTitleAttribute = 'definicion';
+    protected static ?int $navigationSort = 1;
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
@@ -122,7 +122,7 @@ class ArticulosResource extends Resource
                             ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
-                                
+
                                 Repeater::make('articuloJuegos')
                                     ->relationship()
                                     ->schema([
