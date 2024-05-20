@@ -17,7 +17,6 @@ class Articulo extends Model
         'descripcionEspecifica',
         'peso',
         'fotoDescriptiva',
-        'fotoMedida',
     ];
 
     public function referencias()

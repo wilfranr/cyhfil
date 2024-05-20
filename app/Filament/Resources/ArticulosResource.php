@@ -24,12 +24,17 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Widgets\StatsOverviewWidget;
 use App\Models\Referencia;
 use Faker\Provider\ar_EG\Text;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Components\Wizard;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ArticulosResource extends Resource
 {
@@ -38,6 +43,8 @@ class ArticulosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-cube-transparent';
 
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'definicion';
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
@@ -79,10 +86,25 @@ class ArticulosResource extends Resource
 
                                         ];
                                     })
+                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                        $lista = Lista::find($get('definicion'));
+                                        // dd($lista);
+                                        // dd($lista->fotoMedida);
+                                        $set('fotoMedida', $lista->fotoMedida);
+
+                                    })
+                                    // ->afterStateHydrated(function (Set $set, Get $get) {
+                                    //     //obtener el id de eta lista
+                                    //     $idLista = Lista::find($get('definicion'));
+                                    //     dd($idLista);
+                                    // })
                                     ->searchable()
                                     ->preload()
                                     ->live()
                                     ->required(),
+                                FileUpload::make('fotoMedida')
+                                    ->label('Foto de la medida'),
+                                
                                 TextInput::make('descripcionEspecifica')
                                     ->label('Decripción específica')
                                     ->placeholder('Descripción específica del artículo'),
@@ -95,11 +117,8 @@ class ArticulosResource extends Resource
                                 FileUpload::make('fotoDescriptiva')
                                     ->label('Foto descriptiva')
                                     ->image()
-                                    ->imageEditor(),
-                                FileUpload::make('fotoMedidas')
-                                    ->label('Foto de Medidas')
-                                    ->image()
-                                    ->imageEditor(),
+                                    ->imageEditor()
+                                    ->openable(),
                             ])->columns(2),
 
 
@@ -107,18 +126,15 @@ class ArticulosResource extends Resource
                             ->schema([
                                 Repeater::make('referencias')
                                     ->relationship('referencias')
-                                    ->schema([
+                                    
+                                        ->simple(
                                         Select::make('referencia')
-                                            ->label('Referencia')
-                                            ->options(
-                                                Referencia::query()->pluck('referencia', 'id')
-                                            ),
-                                        Select::make('marca_id')
-                                            ->label('Marca')
-                                            ->options(
-                                                \App\Models\Marca::pluck('nombre', 'id')
-                                            )
-                                    ])->grid(3),
+                                        ->label('Referencia')
+                                        ->options(
+                                            Referencia::query()->pluck('referencia', 'id')
+                                        )
+                                        ->searchable(),
+                                        )->grid(3)->itemLabel(fn (array $state): ?string => $state['referencia'] ?? null),
                             ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
@@ -191,38 +207,7 @@ class ArticulosResource extends Resource
                 ]),
             ]);
     }
-    public static function infolists(): array
-    {
-        return [
-            'default' => function ($infolist) {
-                // Configuración de la infolist
-                $infolist->title('Artículos');
-                $infolist->model(Articulo::class);
-                $infolist->search(['definicion', 'descripcionEspecifica', 'peso', 'comentarios', 'cruces', 'juegos']);
-                $infolist->filters([
-                    'definicion' => 'Definición',
-                    'descripcionEspecifica' => 'Descripción específica',
-                    'peso' => 'Peso',
-                    'comentarios' => 'Comentarios',
-                    'cruces' => 'Cruces',
-                    'juegos' => 'Juegos',
-                ]);
-                $infolist->columns([
-                    'definicion' => 'Definición',
-                    'descripcionEspecifica' => 'Descripción específica',
-                    'peso' => 'Peso',
-                    'comentarios' => 'Comentarios',
-                    'cruces' => 'Cruces',
-                    'juegos' => 'Juegos',
-                ]);
-                $infolist->recordActions([
-                    'edit' => 'Edit',
-                    'delete' => 'Delete',
-                ]);
-                $infolist->createAction('Create');
-            },
-        ];
-    }
+   
 
     protected function getHeaderWidgets(): array
     {

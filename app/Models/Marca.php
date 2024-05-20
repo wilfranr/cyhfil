@@ -12,15 +12,14 @@ class Marca extends Model
 
     protected $fillable = [
 
-        'nombre'
+        'nombre',
+        'logo'
+
     ];
 
-    // public function maquinas(): HasMany
-    // {
-    //     return $this->hasMany(Maquina::class);
-    // }
 
-    public function referencias()
+
+    public function referencias() : HasMany
     {
         return $this->hasMany(Referencia::class, 'marca_id');
     }

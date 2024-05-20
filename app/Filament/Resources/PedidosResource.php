@@ -65,6 +65,11 @@ class PedidosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?int $navigationSort = 0;
+
+    public static  function getNavigationBadge(): ?string
+    {
+        return Pedido::query()->where('estado', 'Nuevo')->count();
+    }
     
 
 

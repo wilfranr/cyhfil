@@ -23,7 +23,13 @@ class MarcaResource extends Resource
 {
     protected static ?string $model = Marca::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
+
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $recordTitleAttribute = 'nombre';
+
+
 
     public static function form(Form $form): Form
     {
@@ -73,7 +79,11 @@ class MarcaResource extends Resource
                     // ->searchable()
                     // ->preload()
                     
-                    ->required()
+                    ->required(),
+                FileUpload::make('logo')
+                    ->label('Logo')
+                    ->image()
+                    ->imageEditor(),
 
             ]);
     }
@@ -82,8 +92,16 @@ class MarcaResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('nombre')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\ImageColumn::make('logo')
+                    ->searchable()
+                    ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -98,10 +116,12 @@ class MarcaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    
                 ]),
             ]);
     }

@@ -16,7 +16,7 @@ class EditArticulos extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Actions\CreateAction::make(),
+            // Actions\CreateAction::make(),
             
         ];
     }

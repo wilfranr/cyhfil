@@ -23,7 +23,9 @@ class SistemasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-c-wrench';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
+
+    protected static ?string $recordTitleAttribute = 'nombre';
 
     public static function form(Form $form): Form
     {

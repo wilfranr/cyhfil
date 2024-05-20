@@ -6,6 +6,7 @@ use App\Filament\Resources\ReferenciaResource\Pages;
 use App\Filament\Resources\ReferenciaResource\RelationManagers;
 use App\Models\Articulo;
 use App\Models\Lista;
+use App\Models\Marca;
 use App\Models\Referencia;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action as ActionsAction;
@@ -27,9 +28,18 @@ class ReferenciaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-clipboard-document-list';
 
+    protected static ?int $navigationSort = 2;
+    
     protected static ?string $recordTitleAttribute = 'referencia';
 
-    protected static ?int $navigationSort = 2;
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+           
+            'Artículo' =>  $articulo = Articulo::query()->where('id', $record->articulo_id)->pluck('definicion')->first(),
+            'Marca' => $marca = Marca::query()->where('id', $record->marca_id)->pluck('nombre')->first(),
+        ];
+    }
 
     
    
@@ -125,13 +135,33 @@ class ReferenciaResource extends Resource
 
                         return $articulo->id;
                     })
-                    ,
+                    ->searchable(),
                     
                 Forms\Components\Select::make('marca_id')
                     ->label('Marca')
                     ->options(
                         \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
-                    ),
+                    )
+                    ->createOptionForm(function () {
+                        return [
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->placeholder('Nombre de la marca'),
+                            FileUpload::make('logo')
+                                ->label('Logo')
+                                ->image()
+                                ->imageEditor(),
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $marca = Marca::create([
+                            'nombre' => ucwords($data['nombre']),
+                            'logo' => $data['logo'] ?? null,
+                        ]);
+
+                        return $marca->id;
+                    })
+                    ->searchable()
             ]);
             //modal
             

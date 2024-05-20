@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -29,7 +30,7 @@ class ListasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6   ;
 
     public static function form(Form $form): Form
     {
@@ -37,6 +38,7 @@ class ListasResource extends Resource
             ->schema([
                 Select::make('tipo')
                     ->label('Tipo')
+                    ->live()
                     ->options([
                         'Fabricante' => 'Fabricante',
                         'Tipo de Máquina' => 'Tipo de máquina',
@@ -57,7 +59,13 @@ class ListasResource extends Resource
                     ->placeholder('Definición de la lista'),
                 FileUpload::make('foto')
                     ->label('Foto')
-                    ->image(),
+                    ->image()
+                    ->imageEditor(),
+                FileUpload::make('fotoMedida')
+                    ->label('Foto de la medida')
+                    ->image()
+                    ->imageEditor()
+                    ->visible(fn (Get $get) => $get('tipo') === 'Definición de artículo'),
                 
                 
                     ]);

@@ -27,6 +27,7 @@ class EditPedidos extends EditRecord
     {
         return [
             ...parent::getFormActions(),
+            
             Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
         ];
     }
@@ -35,6 +36,7 @@ class EditPedidos extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Action::make('Guardar Cambios')->action('save')->color('primary'),
             
         ];
     }
@@ -46,6 +48,8 @@ class EditPedidos extends EditRecord
         $this->record->save();
         $this->redirect($this->getResource()::getUrl('index'));
     }
+
+
     // protected function getHeaderWidgets(): array
     // {
     //     return [

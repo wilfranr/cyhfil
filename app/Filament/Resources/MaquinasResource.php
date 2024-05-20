@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MaquinasResource\RelationManagers\MarcaRelationManager;
+use App\Models\Lista;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
@@ -29,10 +30,34 @@ class MaquinasResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $recordTitleAttribute = 'modelo';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'modelo',
+            'serie',
+            'arreglo',
+            'marcas.nombre',
+        ];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Tipo' => $tipo = Lista::query()->where('id', $record->tipo)->pluck('nombre')->first(),
+            'Marca' => $record->marcas->nombre,
+            'Modelo' => $record->modelo,
+            'Serie' => $record->serie,
+            'Arreglo' => $record->arreglo,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                
                 Select::make('tipo')
                     ->relationship('Listas', 'nombre')
                     ->createOptionForm(function () {
@@ -65,7 +90,18 @@ class MaquinasResource extends Resource
                     ->label('Marca')
                     ->preload()
                     ->live()
-                    ->searchable(),
+                    ->searchable()
+                    ->createOptionForm(function () {
+                        return [
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Nombre de la marca'),
+                            FileUpload::make('foto')
+                                ->label('Foto')
+                                ->image()
+                        ];
+                    }),
 
                 Forms\Components\TextInput::make('modelo')
                     ->label('Modelo')
