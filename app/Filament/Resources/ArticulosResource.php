@@ -65,11 +65,15 @@ class ArticulosResource extends Resource
                                 Select::make('definicion')
                                     ->label('Definición')
                                     ->options(
-                                        Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')
+                                        Lista::query()
+                                            ->where('tipo', 'Definición de artículo')
+                                            ->get()
+                                            ->mapWithKeys(fn ($definicion) => [$definicion->nombre => $definicion->nombre])
+                                            ->toArray()
                                     )
                                     ->createOptionForm(function () {
                                         return [
-                                            TextInput::make('definicion')
+                                            TextInput::make('tipo')
                                                 ->default('Definición de artículo')
                                                 ->readonly()
                                                 ->required(),
@@ -83,16 +87,48 @@ class ArticulosResource extends Resource
                                                 ->label('Foto')
                                                 ->image()
                                                 ->imageEditor(),
-
                                         ];
                                     })
-                                    ->afterStateUpdated(function (Set $set, Get $get) {
-                                        $lista = Lista::find($get('definicion'));
-                                        // dd($lista);
-                                        // dd($lista->fotoMedida);
-                                        $set('fotoMedida', $lista->fotoMedida);
+                                    ->createOptionUsing(function ($data) {
+                                        $definicion = Lista::create([
+                                            'tipo' => 'Definición de artículo',
+                                            'nombre' => $data['nombre'],
+                                            'definicion' => $data['definicion'],
+                                        ]);
 
+                                        return $definicion->nombre;
                                     })
+                                    // ->relationship('listas')
+                                    // ->createOptionForm(function () {
+                                    //     return [
+                                    //         TextInput::make('tipo')
+                                    //             ->default('Definición de artículo')
+                                    //             ->readonly()
+                                    //             ->required(),
+                                    //         TextInput::make('definicion')
+                                    //             ->default('Definición de artículo')
+                                    //             ->readonly()
+                                    //             ->required(),
+                                    //         TextInput::make('nombre')
+                                    //             ->label('Nombre')
+                                    //             ->placeholder('Nombre de la definición'),
+                                    //         TextInput::make('definicion')
+                                    //             ->label('Definición')
+                                    //             ->placeholder('Definición del artículo'),
+                                    //         FileUpload::make('foto')
+                                    //             ->label('Foto')
+                                    //             ->image()
+                                    //             ->imageEditor(),
+
+                                    //     ];
+                                    // })
+                                    // ->afterStateUpdated(function (Set $set, Get $get) {
+                                    //     $lista = Lista::find($get('definicion'));
+                                    //     // dd($lista);
+                                    //     // dd($lista->fotoMedida);
+                                    //     $set('fotoMedida', $lista->fotoMedida);
+
+                                    // })
                                     // ->afterStateHydrated(function (Set $set, Get $get) {
                                     //     //obtener el id de eta lista
                                     //     $idLista = Lista::find($get('definicion'));
@@ -133,8 +169,29 @@ class ArticulosResource extends Resource
                                         ->options(
                                             Referencia::query()->pluck('referencia', 'id')
                                         )
+                                        ->createOptionForm(function () {
+                                            return [
+                                                TextInput::make('referencia')
+                                                    ->label('Referencia')
+                                                    ->placeholder('Referencia del artículo'),
+                                                Select::make('marca_id')
+                                                    ->options(
+                                                        \App\Models\Marca::pluck('nombre', 'id')
+                                                    )
+                                                    ->searchable()
+                                                    ->label('Marca'),
+                                            ];
+                                        })
+                                        ->createOptionUsing(function ($data) {
+                                            $referencia = Referencia::create([
+                                                'referencia' => $data['referencia'],
+                                                'marca_id' => $data['marca_id'],
+                                            ]);
+
+                                            return $referencia->id;
+                                        })
                                         ->searchable(),
-                                        )->grid(3)->itemLabel(fn (array $state): ?string => $state['referencia'] ?? null),
+                                        )->grid(3),
                             ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
@@ -142,10 +199,34 @@ class ArticulosResource extends Resource
                                 Repeater::make('articuloJuegos')
                                     ->relationship()
                                     ->schema([
-                                        Select::make('juego_id')
+                                        Select::make('referencia_id')
                                             ->options(
-                                                \App\Models\Juego::pluck('nombre', 'id')
-                                            ),
+                                                Referencia::query()->pluck('referencia', 'id')
+                                            )
+                                            ->createOptionForm(function () {
+                                                return [
+                                                    TextInput::make('referencia')
+                                                        ->label('Referencia')
+                                                        ->placeholder('Referencia del artículo'),
+                                                    Select::make('marca_id')
+                                                        ->options(
+                                                            \App\Models\Marca::pluck('nombre', 'id')
+                                                        )
+                                                        ->searchable()
+                                                        ->label('Marca'),
+                                                ];
+                                            })
+                                            ->createOptionUsing(function ($data) {
+                                                $referencia = Referencia::create([
+                                                    'referencia' => $data['referencia'],
+                                                    'marca_id' => $data['marca_id'],
+                                                ]);
+
+                                                return $referencia->id;
+                                            })
+                                            
+                                            ->label('Referencia')
+                                            ->searchable(),
                                         TextInput::make('cantidad')
                                             ->label('Cantidad'),
                                         TextInput::make('comentario')
@@ -166,8 +247,10 @@ class ArticulosResource extends Resource
                     ->label('Id')
                     ->searchable()
                     ->sortable(),
+
                 ImageColumn::make('fotoDescriptiva')
                     ->label('Foto'),
+
                 TextColumn::make('definicion')
                     ->label('Definición')
                     ->searchable()

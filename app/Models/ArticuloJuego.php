@@ -12,7 +12,6 @@ class ArticuloJuego extends Model
     protected $fillable = [
         'articulo_id',
         'referencia_id',
-        'juego_id',
         'cantidad',
         'comentario',
     ];

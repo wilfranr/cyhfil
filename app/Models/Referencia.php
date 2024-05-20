@@ -30,4 +30,9 @@ class Referencia extends Model
         return $this->belongsToMany(Pedido::class, 'pedido_referencia', 'referencia_id', 'pedido_id')
             ->withPivot('cantidad');
     }
+
+    public function articuloJuegos()
+    {
+        return $this->hasMany(ArticuloJuego::class);
+    }
 }

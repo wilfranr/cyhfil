@@ -56,7 +56,7 @@ class ReferenciaResource extends Resource
                 Forms\Components\Select::make('articulo_id')
                     ->label('Articulo')
                     ->options(
-                        \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
+                        \App\Models\Articulo::all()->pluck('descripcionEspecifica', 'id')->toArray()
                     )
                     ->createOptionForm(function () {
                         return [
@@ -173,7 +173,7 @@ class ReferenciaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('referencia')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('articulo.definicion')
+                Tables\Columns\TextColumn::make('articulo.descripcionEspecifica')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('marca.nombre')
