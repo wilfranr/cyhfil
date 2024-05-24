@@ -195,7 +195,6 @@ class ArticulosResource extends Resource
                             ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
-
                                 Repeater::make('articuloJuegos')
                                     ->relationship()
                                     ->schema([

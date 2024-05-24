@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsersResource\Pages;
+
 use App\Filament\Resources\UsersResource\RelationManagers;
 use App\Models\User;
 use Faker\Provider\ar_EG\Text;
@@ -93,6 +94,8 @@ class UsersResource extends Resource
                 //
             ])
             ->actions([
+
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

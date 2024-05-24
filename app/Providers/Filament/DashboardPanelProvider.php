@@ -2,11 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\TrmSettings;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Pages;
+
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -19,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use OpenSpout\Writer\XLSX\Options\PageSetup;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
 class DashboardPanelProvider extends PanelProvider
@@ -45,17 +48,27 @@ class DashboardPanelProvider extends PanelProvider
                 MenuItem::make('Settings')
                     ->icon('heroicon-s-cog')
                     ->label('Configuración')
-                    ->url('')
-                    ->visible(fn () => auth()->user()->role === 'Admin'),
+                    ->url(''),
+                MenuItem::make('TRM')
+                    ->icon('heroicon-s-currency-dollar')
+                    ->label('TRM del Día')
+                    ->url('\dashboard\trm-settings'),
+
+
+
+
             ])
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                // TrmSettings::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
+                // \App\Filament\Widgets\TrmInputWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -2,60 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PedidosResource\Pages;
-use App\Filament\Resources\PedidosResource\RelationManagers;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Models\Pedido;
-use App\Models\Tercero;
-use App\Models\User;
+use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema};
+use App\Filament\Resources\PedidosResource\Pages;
+use Filament\Forms\{Form, Get, Set};
+use Filament\Tables;
+use Filament\Tables\{Table, Grouping\Group, Filters\Filter};
 use Filament\Forms\Components;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Collection;
-use Filament\Forms\Set;
-use Filament\Forms\Get;
-use Filament\Forms\Components\Columns;
-use App\Actions\Star;
-use App\Actions\ResetStars;
-use App\Models\Articulo;
-use App\Models\Lista;
-use App\Models\Maquina;
-use App\Models\Marca;
-use App\Models\TereceroMarca;
-use App\Models\PedidoReferencia;
-use App\Models\Referencia;
-use App\Models\Sistema;
-use App\Models\TerceroMarca;
-use Closure;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Button;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\ViewField;
-use Filament\Forms\Components\Wizard;
-use Filament\Forms\Components\Wizard\Step;
-use Filament\Pages\Actions\ButtonAction;
-use Filament\Resources\CreateAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\View\TablesRenderHook;
-use Filament\Tables\Grouping\Group;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\HtmlString;
+use Filament\Resources\Resource;
+
+use Filament\Forms\Components\{Wizard, Wizard\Step, Textarea, ToggleButtons, ViewField, Select, Repeater, FileUpload, Hidden, Placeholder, DatePicker, Button, Actions\Action, Actions, Section, TextInput};
 
 
 class PedidosResource extends Resource
@@ -70,7 +26,7 @@ class PedidosResource extends Resource
     {
         return Pedido::query()->where('estado', 'Nuevo')->count();
     }
-    
+
 
 
     public static function form(Form $form): Form
@@ -258,6 +214,9 @@ class PedidosResource extends Resource
                                     ->relationship('maquina', 'serie')
                                     ->live()
                                     ->preload('tipo'),
+                                TextInput::make('trm')
+                                    ->label('TRM')
+                                    ->numeric(),
 
 
                             ])->hiddenOn('edit'),
@@ -486,10 +445,48 @@ class PedidosResource extends Resource
 
                                                                 return $terceros;
                                                             })
-                                                            ->label('Proveedores'),
-                                                        TextInput::make('valor_unidad')
-                                                            ->label('Valor Unidad')
-                                                            ->prefix('$COP')
+                                                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                                                $proveedor = Tercero::find($get('proveedores'));
+                                                                if (!$proveedor) {
+                                                                    $set('dias_entrega', null);
+                                                                    $set('costo_unidad', null);
+                                                                    $set('utilidad', null);
+                                                                    $set('valor_total', null);
+                                                                    return;
+                                                                }
+                                                                if ($proveedor->country_id == 48) {
+                                                                    $set('pais', 'Nacional');
+                                                                } else {
+                                                                    $set('pais', 'Internacional');
+                                                                }
+                                                                $set('dias_entrega', $proveedor->dias_entrega);
+                                                                $set('costo_unidad', $proveedor->costo_unidad);
+                                                                $set('utilidad', $proveedor->utilidad);
+                                                                $set('valor_total', $proveedor->valor_total);
+                                                            })
+                                                            ->live()
+                                                            ->label('Proveedores')
+                                                            ->searchable(),
+                                                        TextInput::make('pais')
+                                                            ->hidden(),
+                                                        Select::make('marca_id')
+                                                            ->options(
+                                                                Marca::query()->pluck('nombre', 'id')->toArray()
+                                                            )
+                                                            ->label('Marca')
+                                                            ->searchable(),
+
+                                                        TextInput::make('dias_entrega')
+                                                            ->label('Días de entrega')
+                                                            ->numeric(),
+                                                        TextInput::make('costo_unidad')
+                                                            ->label('Costo Unidad')
+                                                            ->prefix(function (Get $get) {
+                                                                if ($get('pais') == 'Nacional')
+                                                                    return 'COP $';
+                                                                else
+                                                                    return 'USD $';
+                                                            })
                                                             ->numeric(),
                                                         TextInput::make('utilidad')
                                                             ->label('Utilidad')
@@ -506,7 +503,7 @@ class PedidosResource extends Resource
                                                         ];
                                                     })
                                                     ->hiddenOn('create')
-                                                    ->columns(4),
+                                                    ->columns(3),
                                             ])
                                     ])->columns(3)->collapsible(),
                             ])

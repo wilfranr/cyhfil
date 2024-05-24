@@ -15,8 +15,8 @@ class StatsOverview extends BaseWidget
             ->description('Pendientes por procesar')
             ->chart([1, 3, 5, 10, 20, 40])
             ->color('success'),
-            Stat::make('Pedidos Enviados', Pedido::where('estado', 'enviado')->count())
-                ->icon('heroicon-o-truck'),
+            Stat::make('Pedidos Cotizados', Pedido::where('estado', 'cotizado')->count())
+                ->icon('heroicon-o-currency-dollar'),
             Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
                 ->icon('heroicon-o-check-circle'),
             Stat::make('Pedidos Cancelados', Pedido::where('estado', 'cancelado')->count())
