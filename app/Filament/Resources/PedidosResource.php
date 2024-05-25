@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema};
+use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema, TRM};
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
@@ -465,6 +465,7 @@ class PedidosResource extends Resource
                                                                 $set('valor_total', $proveedor->valor_total);
                                                             })
                                                             ->live()
+                                                            ->reactive()
                                                             ->label('Proveedores')
                                                             ->searchable(),
                                                         TextInput::make('pais')
@@ -490,12 +491,31 @@ class PedidosResource extends Resource
                                                             ->numeric(),
                                                         TextInput::make('utilidad')
                                                             ->label('Utilidad')
+                                                            ->reactive()
+                                                            ->live()
                                                             ->numeric(),
-                                                        TextInput::make('valor_total')
-                                                            ->label('Valor Total')
-                                                            ->numeric()
-                                                            ->inputMode('decimal'),
+                                                        Placeholder::make('valor_total')
+                                                            ->content(function (Get $get) {
+                                                                $costo_unidad = $get('costo_unidad');
+                                                                $cantidad = $get('../../cantidad');
+                                                                $peso = $get('../../peso');
+                                                                // $utilidad = $get('utilidad');
+                                                                $trm = TRM::query()->first()->trm;
+                                                                $valor_total = ($peso * 2.15 + $costo_unidad * $trm)*$cantidad;
+                                                                return $valor_total;
+                                                            })
+                                                            ->label('Valor Total'),
+                                                        // TextInput::make('valor_total')
+                                                        //     ->label('Valor Total')
+                                                        //     ->numeric()
+                                                        //     ->inputMode('decimal'),
+                                                        TextInput::make('trm')
+                                                            ->label('TRM')
+                                                            ->default(TRM::query()->first()->trm)
+                                                            ->hidden()
+                                                            ->numeric(),
                                                     ])
+
                                                     ->extraAttributes(function (Get $get) {
                                                         return [
                                                             'marca_id' => $get('../../marca_id'), // Use relative path to access parent repeater fields

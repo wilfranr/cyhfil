@@ -37,6 +37,7 @@ class EditPedidos extends EditRecord
         return [
             Actions\DeleteAction::make(),
             Action::make('Guardar Cambios')->action('save')->color('primary'),
+            Action::make('Enviar Cotización')->action('generarCotizacion')->color('success'),
             
         ];
     }
@@ -46,6 +47,20 @@ class EditPedidos extends EditRecord
     {
         $this->record->estado = 'En_Costeo';
         $this->record->save();
+        $this->redirect($this->getResource()::getUrl('index'));
+    }
+
+    public function generarCotizacion()
+    {
+        $this->record->estado = 'Cotizado';
+        $this->record->save();
+
+        $cotizacion = new \App\Models\Cotizacion();
+        $cotizacion->pedido_id = $this->record->id;
+        $cotizacion->tercero_id = $this->record->tercero_id;
+        $cotizacion->save();
+
+
         $this->redirect($this->getResource()::getUrl('index'));
     }
 
