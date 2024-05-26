@@ -476,6 +476,9 @@ class PedidosResource extends Resource
                                                             )
                                                             ->label('Marca')
                                                             ->searchable(),
+                                                        // TextInput::make('cantidad_proveedor')
+                                                        //         ->label('Cantidad')
+                                                        //         ->numeric(),
 
                                                         TextInput::make('dias_entrega')
                                                             ->label('Días de entrega')
@@ -483,10 +486,10 @@ class PedidosResource extends Resource
                                                         TextInput::make('costo_unidad')
                                                             ->label('Costo Unidad')
                                                             ->prefix(function (Get $get) {
-                                                                if ($get('pais') == 'Nacional')
-                                                                    return 'COP $';
-                                                                else
+                                                                if ($get('pais') == 'Internacional')
                                                                     return 'USD $';
+                                                                else
+                                                                    return 'COP $';
                                                             })
                                                             ->numeric(),
                                                         TextInput::make('utilidad')
@@ -501,7 +504,7 @@ class PedidosResource extends Resource
                                                                 $peso = $get('../../peso');
                                                                 // $utilidad = $get('utilidad');
                                                                 $trm = TRM::query()->first()->trm;
-                                                                $valor_total = ($peso * 2.15 + $costo_unidad * $trm)*$cantidad;
+                                                                $valor_total = ($peso * 2.15 + $costo_unidad * $trm) * $cantidad;
                                                                 return $valor_total;
                                                             })
                                                             ->label('Valor Total'),
@@ -523,9 +526,9 @@ class PedidosResource extends Resource
                                                         ];
                                                     })
                                                     ->hiddenOn('create')
-                                                    ->columns(3),
+                                                    ->columns(4),
                                             ])
-                                    ])->columns(3)->collapsible(),
+                                    ])->columns(4)->collapsible(),
                             ])
 
 
