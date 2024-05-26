@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema, TRM};
+use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
@@ -402,6 +402,7 @@ class PedidosResource extends Resource
                                                     $set('peso', $articulo->peso);
                                                     $set('marca_id', $marca->id);
                                                     $set('marca_seleccionada', $marca->id);
+                                                    // $set('referencia_seleccionada', $referencia->id);
                                                 }
                                             })
                                             ->required()
@@ -427,9 +428,14 @@ class PedidosResource extends Resource
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
                                         Section::make()
                                             ->schema([
-                                                Repeater::make('proveedores')
+                                                Repeater::make('referenciasProveedor')->label('Proveedores')
+                                                    ->relationship()
                                                     ->schema([
-                                                        Select::make('proveedores')
+                                                        TextInput::make('referencia_seleccionada')
+                                                            ->default(fn (Get $get) => Referencia::find($get('../../referencia_id'))->referencia)
+                                                            ->label('Referencia')
+                                                            ->hidden(),
+                                                        Select::make('proveedor_id')
                                                             ->options(function (Get $get, $set) {
                                                                 $marcaId = $get('../../marca_id'); // Use relative path to access parent repeater fields
                                                                 $sistemaId = $get('../../sistema_id');
@@ -446,7 +452,7 @@ class PedidosResource extends Resource
                                                                 return $terceros;
                                                             })
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
-                                                                $proveedor = Tercero::find($get('proveedores'));
+                                                                $proveedor = Tercero::find($get('proveedor_id'));
                                                                 if (!$proveedor) {
                                                                     $set('dias_entrega', null);
                                                                     $set('costo_unidad', null);
@@ -455,9 +461,10 @@ class PedidosResource extends Resource
                                                                     return;
                                                                 }
                                                                 if ($proveedor->country_id == 48) {
-                                                                    $set('pais', 'Nacional');
+                                                                    // dd($proveedor->country_id);
+                                                                    $set('ubicacion', 'Nacional');
                                                                 } else {
-                                                                    $set('pais', 'Internacional');
+                                                                    $set('ubicacion', 'Internacional');
                                                                 }
                                                                 $set('dias_entrega', $proveedor->dias_entrega);
                                                                 $set('costo_unidad', $proveedor->costo_unidad);
@@ -468,8 +475,9 @@ class PedidosResource extends Resource
                                                             ->reactive()
                                                             ->label('Proveedores')
                                                             ->searchable(),
-                                                        TextInput::make('pais')
-                                                            ->hidden(),
+                                                        TextInput::make('ubicacion')
+                                                            ->label('Ubicación'),
+
                                                         Select::make('marca_id')
                                                             ->options(
                                                                 Marca::query()->pluck('nombre', 'id')->toArray()
@@ -479,14 +487,21 @@ class PedidosResource extends Resource
                                                         // TextInput::make('cantidad_proveedor')
                                                         //         ->label('Cantidad')
                                                         //         ->numeric(),
-
+                                                        Select::make('Entrega')
+                                                            ->options([
+                                                                'Inmediata' => 'Inmediata',
+                                                                'Programada' => 'Programada',
+                                                            ])
+                                                            ->live(),
                                                         TextInput::make('dias_entrega')
                                                             ->label('Días de entrega')
-                                                            ->numeric(),
+                                                            ->default(0)
+                                                            ->numeric()
+                                                            ->visible(fn (Get $get) => $get('Entrega') === 'Programada'),
                                                         TextInput::make('costo_unidad')
                                                             ->label('Costo Unidad')
                                                             ->prefix(function (Get $get) {
-                                                                if ($get('pais') == 'Internacional')
+                                                                if ($get('ubicacion') == 'Internacional')
                                                                     return 'USD $';
                                                                 else
                                                                     return 'COP $';
@@ -496,27 +511,50 @@ class PedidosResource extends Resource
                                                             ->label('Utilidad')
                                                             ->reactive()
                                                             ->live()
-                                                            ->numeric(),
-                                                        Placeholder::make('valor_total')
-                                                            ->content(function (Get $get) {
+                                                            ->numeric()
+                                                            ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $costo_unidad = $get('costo_unidad');
+                                                                $utilidad = $get('utilidad');
                                                                 $cantidad = $get('../../cantidad');
-                                                                $peso = $get('../../peso');
-                                                                // $utilidad = $get('utilidad');
                                                                 $trm = TRM::query()->first()->trm;
-                                                                $valor_total = ($peso * 2.15 + $costo_unidad * $trm) * $cantidad;
-                                                                return $valor_total;
-                                                            })
+                                                                if ($get('ubicacion') == 'Internacional') {
+                                                                    $costo_total = $costo_unidad * $cantidad;
+                                                                    $costo_total = $costo_total * $trm;
+                                                                    $costo_total = $costo_total + (($utilidad * $costo_total) / 100);
+                                                                    $set('valor_total', $costo_total);
+                                                                    
+                                                                } else {
+                                                                    $costo_total = $costo_unidad + (($utilidad * $costo_unidad) / 100);
+                                                                    $costo_total = ($costo_unidad + (($utilidad * $costo_unidad) / 100))*$cantidad;
+                                                                    $set('valor_total', $costo_total);
+                                                                }
+
+                                                            }),
+                                                        TextInput::make('valor_total')
+                                                            // ->content(function (Set $set, Get $get) {
+                                                            //     $pais = $get('pais');
+                                                            //     $costo_unidad = $get('costo_unidad');
+                                                            //     $cantidad = $get('../../cantidad');
+                                                            //     $peso = $get('../../peso');
+                                                            //     $costo_total = $costo_unidad * $cantidad;
+                                                            //     $trm = TRM::query()->first()->trm;
+                                                            //     if ($pais == 'Internacional'){
+
+                                                            //         $costo_total = $costo_total*$trm;
+                                                            //         $utilidad = (($get('utilidad')*$costo_total)/100);
+                                                            //         $valor_total = ((($peso * 2.15 + $utilidad) + $costo_total));
+                                                            //     }
+                                                            //     else {
+                                                            //     $utilidad = (($get('utilidad')*$costo_total)/100);
+                                                            //     $valor_total = $costo_total+$utilidad;
+                                                            //     }
+
+                                                            //     return $valor_total;
+                                                            // })
+                                                            ->live()
+                                                            ->prefix('$')
+                                                            ->readOnly()
                                                             ->label('Valor Total'),
-                                                        // TextInput::make('valor_total')
-                                                        //     ->label('Valor Total')
-                                                        //     ->numeric()
-                                                        //     ->inputMode('decimal'),
-                                                        TextInput::make('trm')
-                                                            ->label('TRM')
-                                                            ->default(TRM::query()->first()->trm)
-                                                            ->hidden()
-                                                            ->numeric(),
                                                     ])
 
                                                     ->extraAttributes(function (Get $get) {
@@ -526,9 +564,9 @@ class PedidosResource extends Resource
                                                         ];
                                                     })
                                                     ->hiddenOn('create')
-                                                    ->columns(4),
+                                                    ->columns(3),
                                             ])
-                                    ])->columns(4)->collapsible(),
+                                    ])->columns(3)->collapsible(),
                             ])
 
 

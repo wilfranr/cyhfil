@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PedidoReferencia extends Model
 {
@@ -31,6 +32,11 @@ class PedidoReferencia extends Model
     public function referencia(): BelongsTo
     {
         return $this->belongsTo(Referencia::class);
+    }
+
+    public function referenciasProveedor(): HasMany
+    {
+        return $this->hasMany(PedidoReferenciaProveedor::class, 'pedido_id', 'id');
     }
     
 

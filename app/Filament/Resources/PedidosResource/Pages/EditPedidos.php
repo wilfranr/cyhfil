@@ -52,6 +52,8 @@ class EditPedidos extends EditRecord
 
     public function generarCotizacion()
     {
+
+        // dd($this->record);
         $this->record->estado = 'Cotizado';
         $this->record->save();
 
@@ -59,6 +61,17 @@ class EditPedidos extends EditRecord
         $cotizacion->pedido_id = $this->record->id;
         $cotizacion->tercero_id = $this->record->tercero_id;
         $cotizacion->save();
+
+        // $referencia_pedido_proveedor = new \App\Models\PedidoReferenciaProveedor();
+        // $referencia_pedido_proveedor->pedido_id = $this->record->id;
+        // $referencia_pedido_proveedor->referencia_id = $this->record->referencia_id;
+        // $referencia_pedido_proveedor->marca_id = $this->record->marca_id;
+        // $referencia_pedido_proveedor->tercero_id = $this->record->tercero_id;
+        // $referencia_pedido_proveedor->dias_entrega = $this->record->dias_entrega;
+        // $referencia_pedido_proveedor->costo_unidad = $this->record->costo_unidad;
+        // $referencia_pedido_proveedor->utilidad = $this->record->utilidad;
+        // $referencia_pedido_proveedor->valor_total = $this->record->valor_total;
+        // $referencia_pedido_proveedor->save();
 
 
         $this->redirect($this->getResource()::getUrl('index'));
