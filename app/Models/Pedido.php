@@ -54,7 +54,7 @@ class Pedido extends Model
 
     public function referenciasProveedor(): HasMany
     {
-        return $this->hasMany(PedidoReferenciaProveedor::class, 'pedido_id', 'id');
+        return $this->hasMany(PedidoReferenciaProveedor::class);
     }
 
 

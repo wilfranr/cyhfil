@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
-use App\Models\User;
+use App\Models\{User, PedidoReferenciaProveedor};
 use Filament\Actions;
 use Filament\Actions\Action;
 // use Filament\Actions\Modal\Actions\Action;
@@ -37,7 +37,7 @@ class EditPedidos extends EditRecord
         return [
             Actions\DeleteAction::make(),
             Action::make('Guardar Cambios')->action('save')->color('primary'),
-            Action::make('Enviar Cotización')->action('generarCotizacion')->color('success'),
+            Action::make('Generar Cotización')->action('generarCotizacion')->color('success'),
             
         ];
     }
@@ -53,14 +53,33 @@ class EditPedidos extends EditRecord
     public function generarCotizacion()
     {
 
-        // dd($this->record);
+        
         $this->record->estado = 'Cotizado';
         $this->record->save();
-
+        
+        // referencia_proveedor = 
+        
         $cotizacion = new \App\Models\Cotizacion();
         $cotizacion->pedido_id = $this->record->id;
         $cotizacion->tercero_id = $this->record->tercero_id;
+        
         $cotizacion->save();
+        
+        
+        //traer referencias asociadas al pedido
+        for ($i=0; $i < count($this->record->referencias); $i++) { 
+            $referencia_id = $this->record->referencias[$i]->id;
+            // dd($referencia_id);
+            $referencia_pedido_proveedor = \App\Models\PedidoReferenciaProveedor::where('pedido_id', $referencia_id)->first();
+            // dd($referencia_pedido_proveedor->id);
+            $cotizacion_referencia = new \App\Models\CotizacionReferenciaProveedor();
+            $cotizacion_referencia->cotizacion_id = $cotizacion->id;
+            $cotizacion_referencia->pedido_referencia_proveedor_id = $referencia_pedido_proveedor->id;
+
+            $cotizacion_referencia->save();
+            
+        }
+        
 
         // $referencia_pedido_proveedor = new \App\Models\PedidoReferenciaProveedor();
         // $referencia_pedido_proveedor->pedido_id = $this->record->id;
@@ -72,6 +91,8 @@ class EditPedidos extends EditRecord
         // $referencia_pedido_proveedor->utilidad = $this->record->utilidad;
         // $referencia_pedido_proveedor->valor_total = $this->record->valor_total;
         // $referencia_pedido_proveedor->save();
+
+        
 
 
         $this->redirect($this->getResource()::getUrl('index'));

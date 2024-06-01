@@ -476,7 +476,8 @@ class PedidosResource extends Resource
                                                             ->label('Proveedores')
                                                             ->searchable(),
                                                         TextInput::make('ubicacion')
-                                                            ->label('Ubicación'),
+                                                            ->label('Ubicación')
+                                                            ->readOnly(),
 
                                                         Select::make('marca_id')
                                                             ->options(
@@ -512,6 +513,7 @@ class PedidosResource extends Resource
                                                             ->reactive()
                                                             ->live()
                                                             ->numeric()
+                                                            ->prefix('%')
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $costo_unidad = $get('costo_unidad');
                                                                 $utilidad = $get('utilidad');

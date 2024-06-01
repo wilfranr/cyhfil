@@ -31,7 +31,7 @@ class DashboardPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->brandName('Venta de Repuestos')
-            // ->brandLogo(asset('images/logo.png'))
+            ->brandLogo(asset('images/logo.png'))
             ->id('dashboard')
             ->path('dashboard')
             ->login()
