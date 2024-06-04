@@ -214,9 +214,6 @@ class PedidosResource extends Resource
                                     ->relationship('maquina', 'serie')
                                     ->live()
                                     ->preload('tipo'),
-                                TextInput::make('trm')
-                                    ->label('TRM')
-                                    ->numeric(),
 
 
                             ])->hiddenOn('edit'),
@@ -384,6 +381,7 @@ class PedidosResource extends Resource
                                             })
                                             ->afterStateHydrated(function (Set $set, Get $get) {
                                                 $referencia = Referencia::find($get('referencia_id'));
+
                                                 if (!$referencia) {
                                                     $set('articulo_definicion', null);
                                                     $set('articulo_id', null);
@@ -402,7 +400,7 @@ class PedidosResource extends Resource
                                                     $set('peso', $articulo->peso);
                                                     $set('marca_id', $marca->id);
                                                     $set('marca_seleccionada', $marca->id);
-                                                    // $set('referencia_seleccionada', $referencia->id);
+                                                    $set('referencia_seleccionada', $referencia->id);
                                                 }
                                             })
                                             ->required()
@@ -431,10 +429,7 @@ class PedidosResource extends Resource
                                                 Repeater::make('referenciasProveedor')->label('Proveedores')
                                                     ->relationship()
                                                     ->schema([
-                                                        TextInput::make('referencia_seleccionada')
-                                                            ->default(fn (Get $get) => Referencia::find($get('../../referencia_id'))->referencia)
-                                                            ->label('Referencia')
-                                                            ->hidden(),
+                                                        
                                                         Select::make('proveedor_id')
                                                             ->options(function (Get $get, $set) {
                                                                 $marcaId = $get('../../marca_id'); // Use relative path to access parent repeater fields

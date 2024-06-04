@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
 use App\Models\{User, PedidoReferenciaProveedor};
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
 // use Filament\Actions\Modal\Actions\Action;
@@ -37,11 +38,14 @@ class EditPedidos extends EditRecord
         return [
             Actions\DeleteAction::make(),
             Action::make('Guardar Cambios')->action('save')->color('primary'),
-            Action::make('Generar Cotización')->action('generarCotizacion')->color('success'),
+            Action::make('GenerateCotización')
+            ->label('Generar Cotización')->color('success')
+            ->action('generarCotizacion'),
+            
+
             
         ];
     }
-
 
     public function changeStatus()
     {
@@ -64,6 +68,8 @@ class EditPedidos extends EditRecord
         $cotizacion->tercero_id = $this->record->tercero_id;
         
         $cotizacion->save();
+        $cotizacion_id = $cotizacion->id;
+        // dd($cotizacion_id);
         
         
         //traer referencias asociadas al pedido
@@ -94,8 +100,10 @@ class EditPedidos extends EditRecord
 
         
 
-
-        $this->redirect($this->getResource()::getUrl('index'));
+        // $this->redirect($this->getResource()::getUrl(fn (): string => route('pdf.cotizacion', ['id' => $this->record->id])));
+        //ir a route('pdf.cotizacion', ['id' => $this->record->id])
+        return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
+        
     }
 
 

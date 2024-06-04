@@ -4,10 +4,11 @@ namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Support\Facades\Auth;
 
 class ListPedidos extends ListRecords
 {
@@ -17,6 +18,7 @@ class ListPedidos extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            
         ];
     }
     protected function getHeaderWidgets(): array
