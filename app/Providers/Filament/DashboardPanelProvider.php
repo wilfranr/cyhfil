@@ -38,7 +38,7 @@ class DashboardPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->globalSearchKeyBindings(['s'])
+            ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
                 MenuItem::make('Profile')

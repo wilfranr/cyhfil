@@ -19,6 +19,7 @@ class Empresa extends Model
         'nit',
         'representante',
         'country_id',
+        'state_id',
         'city_id',
     ];
 
@@ -30,5 +31,10 @@ class Empresa extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function states()
+    {
+        return $this->belongsTo(State::class);
     }
 }

@@ -4,20 +4,28 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmpresaResource\Pages;
 use App\Filament\Resources\EmpresaResource\RelationManagers;
+use App\Models\City;
 use App\Models\Empresa;
+use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EmpresaResource extends Resource
 {
     protected static ?string $model = Empresa::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Sistema';
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
     public static function form(Form $form): Form
     {
@@ -25,6 +33,7 @@ class EmpresaResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nombre')
                     ->required()
+                    ->unique()
                     ->maxLength(300),
                 Forms\Components\TextInput::make('siglas')
                     ->maxLength(10)
@@ -41,23 +50,48 @@ class EmpresaResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
                     ->email()
+                    ->unique()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('logo')
-                    ->maxLength(255)
-                    ->default(null),
+                Forms\Components\FileUpload::make('logo')
+                    ->image()
+                    ->imageEditor(),
                 Forms\Components\TextInput::make('nit')
+                    ->unique()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('representante')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('country_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('city_id')
-                    ->required()
-                    ->numeric(),
+                    Forms\Components\Select::make('country_id')
+                    ->relationship(name: 'country', titleAttribute: 'name')
+                    ->label('País')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set) {
+                        // $set('state_id', null);
+                        $set('city_id', null);
+                    }),
+                // Forms\Components\Select::make('state_id')
+                //     ->options(fn (Get $get): Collection => State::query()
+                //         ->where('country_id', $get('country_id'))
+                //         ->pluck('name', 'id'))
+                //     ->label('Departamento')
+                //     ->searchable()
+                //     ->preload()
+                //     ->live()
+                //     ->afterStateUpdated(function (Set $set) {
+                //         $set('city_id', null);
+                //     }),
+                Forms\Components\Select::make('city_id')
+                    ->options(fn (Get $get): Collection => City::query()
+                        ->where('country_id', $get('country_id'))
+                        ->pluck('name', 'id'))
+                    ->label('Ciudad')
+                    ->searchable()
+                    ->live()
+                    ->preload(),
             ]);
     }
 

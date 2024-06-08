@@ -13,6 +13,7 @@ class Maquina extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tipo', // 'tipo' is a foreign key to the 'listas' table
         'modelo',
         'marca_id',
         'serie',
