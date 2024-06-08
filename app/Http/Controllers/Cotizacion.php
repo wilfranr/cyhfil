@@ -23,10 +23,10 @@ class Cotizacion extends Controller
         $pedido = Pedido::where('id', $pedido_id)->first();
         // dd($pedido);
         $pedidoReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->get();
-        dd($pedidoReferencia);
+        // dd($pedidoReferencia);
 
         $pedidoReferenciaProveedor = PedidoReferenciaProveedor::where('pedido_id', $pedido_id)->get();
-        dd($pedidoReferenciaProveedor);
+        // dd($pedidoReferenciaProveedor);
 
         $referencias = [];
         foreach ($pedidoReferencia as $value) {
