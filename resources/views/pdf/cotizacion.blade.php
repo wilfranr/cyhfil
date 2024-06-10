@@ -48,49 +48,63 @@
                             <th class="px-4 py-2">REFERENCIA</th>
                             <th class="px-4 py-2">DESCRIPCIÓN</th>
                             <th class="px-4 py-2">CANTIDAD</th>
-                            <th class="px-4 py-2">ENTREGA</th>
                             <th class="px-4 py-2">MARCA</th>
+                            <th class="px-4 py-2">ENTREGA</th>
                             <th class="px-4 py-2">VALOR UNI.</th>
                             <th class="px-4 py-2">SUBTOTAL</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $totalGeneral = 0; // Inicializa el total general a 0 antes de comenzar el bucle principal
+                        @endphp
+
                         @foreach ($pedidoReferencia as $pedidoReferencia)
                             @php
                                 $referencia = App\Models\Referencia::find($pedidoReferencia->referencia_id);
-                                $pedRefProveedor = App\Models\PedidoReferenciaProveedor::where(
-                                    'pedido_id',
-                                    $pedidoReferencia->id,
-                                )->get();
+                                $pedRefProveedor = App\Models\PedidoReferenciaProveedor::where('pedido_id', $pedidoReferencia->id)->get();
                                 $articulo = App\Models\Articulo::find($referencia->articulo_id);
-                                // dd($articulo->definicion);
                             @endphp
-                            @foreach ($pedRefProveedor as $pedRefProveedor)
+                            @foreach ($pedRefProveedor as $proveedor)
                                 <tr>
                                     <td class="border px-4 py-2">{{ $referencia->referencia }}</td>
                                     <td class="border px-4 py-2">{{ $articulo->definicion }}</td>
                                     <td class="border px-4 py-2">{{ $pedidoReferencia->cantidad }}</td>
-                                    @php $marca = App\Models\Marca::find($pedRefProveedor->marca_id); @endphp
+                                    @php $marca = App\Models\Marca::find($proveedor->marca_id); @endphp
                                     <td class="border px-4 py-2">{{ $marca->nombre }}</td>
-                                    @if ($pedRefProveedor->Entrega == 'Programada')
-                                        <td class="border px-4 py-2 bg-yellow-200">{{ $pedRefProveedor->dias_entrega }}
-                                            días</td>
+                                    @if ($proveedor->Entrega == 'Programada')
+                                        <td class="border px-4 py-2 bg-yellow-200">{{ $proveedor->dias_entrega }} días</td>
                                     @else
-                                        <td>{{ $pedRefProveedor->Entrega }}</td>
+                                        <td>{{ $proveedor->Entrega }}</td>
                                     @endif
                                     @php
-                                        $valorTotal = $pedRefProveedor->valor_total;
+                                        $valorTotal = $proveedor->valor_total;
                                         $valorUnitario = $valorTotal / $pedidoReferencia->cantidad;
-                                        
+                                        $totalGeneral += $valorTotal; // Suma el valorTotal al total general
                                     @endphp
                                     <td class="border px-4 py-2">{{ $valorUnitario }}</td>
                                     <td class="border px-4 py-2">{{ $valorTotal }}</td>
                                 </tr>
                             @endforeach
                         @endforeach
+
+                        <tr>
+                            <td colspan="6" class="border px-4 py-2 text-right">Subtotal:</td>
+                            <td class="border px-4 py-2">{{ $totalGeneral }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">Iva</td>
+                            <td>{{ $totalGeneral * 0.19 }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">Total</td>
+                            <td>{{ ($totalGeneral * 0.19)+ $totalGeneral}}</td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
 
+
+                
+
+            </div>
         </div>
-    </div>
