@@ -23,6 +23,8 @@ class Cotizacion extends Controller
     {
         $cotizacion = ModelsCotizacion::where('id', $id)->first();
         $pedido_id = ModelsCotizacion::where('id', $id)->pluck('pedido_id')->first();
+        $mostrarReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->pluck('mostrar_referencia')->first();
+        // dd($mostrarReferencia);
         $pedido = Pedido::where('id', $pedido_id)->first();
         
         $pedidoReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->get();
@@ -57,7 +59,8 @@ class Cotizacion extends Controller
             'pedidoReferenciaProveedor' => $pedidoReferenciaProveedor,
             'tipo_maquina' => $tipo_maquina->nombre,
             'maquina' => $maquina,
-            'pedidoReferencia' => $pedidoReferencia
+            'pedidoReferencia' => $pedidoReferencia,
+            'mostrarReferencia' => $mostrarReferencia,
         ]);
         
         return $pdf->download();

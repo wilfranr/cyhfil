@@ -67,7 +67,11 @@
                             @endphp
                             @foreach ($pedRefProveedor as $proveedor)
                                 <tr>
+                                    @if ($mostrarReferencia == 0)
+                                        <td class="border px-4 py-2">N/A</td>
+                                    @else
                                     <td class="border px-4 py-2">{{ $referencia->referencia }}</td>
+                                    @endif
                                     <td class="border px-4 py-2">{{ $articulo->definicion }}</td>
                                     <td class="border px-4 py-2">{{ $pedidoReferencia->cantidad }}</td>
                                     @php $marca = App\Models\Marca::find($proveedor->marca_id); @endphp
