@@ -44,6 +44,17 @@ class TercerosResource extends Resource
     protected static ?int $navigationSort = 7;
 
     protected static ?string $recordTitleAttribute = 'nombre';
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+        ];
+    }
     
     public static function getGlobalSearchResultDetails(Model $record): array
     {

@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Lista;
+use App\Models\Sistema;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ListaPolicy
+class SistemaPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class ListaPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_listas');
+        return $user->can('view_any_sistemas');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Lista $lista): bool
+    public function view(User $user, Sistema $sistema): bool
     {
-        return $user->can('view_listas');
+        return $user->can('view_sistemas');
     }
 
     /**
@@ -31,23 +31,23 @@ class ListaPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_listas');
+        return $user->can('create_sistemas');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Lista $lista): bool
+    public function update(User $user, Sistema $sistema): bool
     {
-        return $user->can('update_listas');
+        return $user->can('update_sistemas');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Lista $lista): bool
+    public function delete(User $user, Sistema $sistema): bool
     {
-        return $user->can('delete_listas');
+        return $user->can('delete_sistemas');
     }
 
     /**
@@ -55,15 +55,15 @@ class ListaPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_listas');
+        return $user->can('delete_any_sistemas');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Lista $lista): bool
+    public function forceDelete(User $user, Sistema $sistema): bool
     {
-        return $user->can('force_delete_listas');
+        return $user->can('force_delete_sistemas');
     }
 
     /**
@@ -71,15 +71,15 @@ class ListaPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_listas');
+        return $user->can('force_delete_any_sistemas');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Lista $lista): bool
+    public function restore(User $user, Sistema $sistema): bool
     {
-        return $user->can('restore_listas');
+        return $user->can('restore_sistemas');
     }
 
     /**
@@ -87,15 +87,15 @@ class ListaPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_listas');
+        return $user->can('restore_any_sistemas');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Lista $lista): bool
+    public function replicate(User $user, Sistema $sistema): bool
     {
-        return $user->can('replicate_listas');
+        return $user->can('replicate_sistemas');
     }
 
     /**
@@ -103,6 +103,6 @@ class ListaPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_listas');
+        return $user->can('reorder_sistemas');
     }
 }

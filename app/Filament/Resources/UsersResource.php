@@ -20,7 +20,7 @@ use App\Filament\Resources\UsersResource\Pages\ListUsers;
 use Illuminate\Support\Facades\Hash;
 use App\Filament\Resources\UsersResource\CreateUser; // Import the missing class
 use Filament\Resources\Pages\CreateRecord;
-Use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\Page;
 
 
 
@@ -32,6 +32,7 @@ class UsersResource extends Resource
     protected static ?int $navigationSort = 0;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    
 
     public static function form(Form $form): Form
     {
@@ -51,13 +52,13 @@ class UsersResource extends Resource
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->required(fn (Page $livewire) => ($livewire instanceof CreateRecord)),
-                Select::make('roles')
+                Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
-                    ->label('Rol')
-                    ->required()
-                    ->preload(),
-                    
-                    
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+
+
 
             ]);
     }

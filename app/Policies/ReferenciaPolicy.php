@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Lista;
+use App\Models\Referencia;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ListaPolicy
+class ReferenciaPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class ListaPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_listas');
+        return $user->can('view_any_referencia');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Lista $lista): bool
+    public function view(User $user, Referencia $referencia): bool
     {
-        return $user->can('view_listas');
+        return $user->can('view_referencia');
     }
 
     /**
@@ -31,23 +31,23 @@ class ListaPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_listas');
+        return $user->can('create_referencia');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Lista $lista): bool
+    public function update(User $user, Referencia $referencia): bool
     {
-        return $user->can('update_listas');
+        return $user->can('update_referencia');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Lista $lista): bool
+    public function delete(User $user, Referencia $referencia): bool
     {
-        return $user->can('delete_listas');
+        return $user->can('delete_referencia');
     }
 
     /**
@@ -55,15 +55,15 @@ class ListaPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_listas');
+        return $user->can('delete_any_referencia');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Lista $lista): bool
+    public function forceDelete(User $user, Referencia $referencia): bool
     {
-        return $user->can('force_delete_listas');
+        return $user->can('force_delete_referencia');
     }
 
     /**
@@ -71,15 +71,15 @@ class ListaPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_listas');
+        return $user->can('force_delete_any_referencia');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Lista $lista): bool
+    public function restore(User $user, Referencia $referencia): bool
     {
-        return $user->can('restore_listas');
+        return $user->can('restore_referencia');
     }
 
     /**
@@ -87,15 +87,15 @@ class ListaPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_listas');
+        return $user->can('restore_any_referencia');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Lista $lista): bool
+    public function replicate(User $user, Referencia $referencia): bool
     {
-        return $user->can('replicate_listas');
+        return $user->can('replicate_referencia');
     }
 
     /**
@@ -103,6 +103,6 @@ class ListaPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_listas');
+        return $user->can('reorder_referencia');
     }
 }

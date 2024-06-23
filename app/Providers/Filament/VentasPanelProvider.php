@@ -18,8 +18,10 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Resources\TercerosResource\RelationManagers;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Navigation\MenuItem;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Shanerbaner82\PanelRoles\PanelRoles;
 
 class VentasPanelProvider extends PanelProvider
 {
@@ -31,6 +33,7 @@ class VentasPanelProvider extends PanelProvider
             ->id('ventas')
             ->path('ventas')
             ->login()
+            // ->default()
             ->colors([
                 'primary' => Color::Slate,
             ])
@@ -55,8 +58,10 @@ class VentasPanelProvider extends PanelProvider
 
             ])
 
-            ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
-            ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
+            // ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            // ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
@@ -78,6 +83,10 @@ class VentasPanelProvider extends PanelProvider
             ])
             ->plugins([
                 SpotlightPlugin::make(),
+                FilamentShieldPlugin::make(),
+                PanelRoles::make()
+                    ->roleToAssign('developer')
+                    ->restrictedRoles(['super_admin', 'Vendedor']),
             ])
             ->authMiddleware([
                 Authenticate::class,
