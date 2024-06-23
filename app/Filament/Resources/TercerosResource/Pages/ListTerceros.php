@@ -33,5 +33,5 @@ class ListTerceros extends ListRecords
                 $query->where('tipo', 'Ambos');
             }),
         ];
-    }
+    } 
 }

@@ -2,18 +2,14 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\TrmSettings;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Pages;
-
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Filament\Widgets\StatsOverviewWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -21,22 +17,22 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use OpenSpout\Writer\XLSX\Options\PageSetup;
+use App\Filament\Resources\TercerosResource\RelationManagers;
+use Filament\Navigation\MenuItem;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
-class DashboardPanelProvider extends PanelProvider
+class VentasPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->brandName('Venta de Repuestos')
             ->brandLogo(asset('images/logo.png'))
-            ->id('admin')
-            ->path('admin')
+            ->id('ventas')
+            ->path('ventas')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Slate,
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
@@ -52,23 +48,22 @@ class DashboardPanelProvider extends PanelProvider
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
-                    ->url('\dashboard\trm-settings'),
+                    ->url('\ventas\trm-settings'),
 
 
 
 
             ])
 
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
+            ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                // TrmSettings::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Ventas/Widgets'), for: 'App\\Filament\\Ventas\\Widgets')
             ->widgets([
-                \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
-                // \App\Filament\Widgets\TrmInputWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -81,11 +76,11 @@ class DashboardPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
             ->plugins([
                 SpotlightPlugin::make(),
+            ])
+            ->authMiddleware([
+                Authenticate::class,
             ]);
     }
 }

@@ -13,23 +13,23 @@ class ListaPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('Admin', 'Analista'); 
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
-
+    
     /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Lista $lista): bool
     {
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
-
+    
     /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
     
     /**
@@ -37,8 +37,7 @@ class ListaPolicy
      */
     public function update(User $user, Lista $lista): bool
     {
-        //
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
     
     /**
@@ -46,8 +45,7 @@ class ListaPolicy
      */
     public function delete(User $user, Lista $lista): bool
     {
-        //
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
     
     /**
@@ -55,8 +53,7 @@ class ListaPolicy
      */
     public function restore(User $user, Lista $lista): bool
     {
-        //
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
     
     /**
@@ -64,7 +61,6 @@ class ListaPolicy
      */
     public function forceDelete(User $user, Lista $lista): bool
     {
-        //
-        return $user->hasRole('Admin', 'Analista');
+        return $user->hasRole('Admin') || $user->hasRole('Analista');
     }
 }

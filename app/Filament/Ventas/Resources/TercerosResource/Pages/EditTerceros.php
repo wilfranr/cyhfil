@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Filament\Ventas\Resources\TercerosResource\Pages;
+
+use App\Filament\Ventas\Resources\TercerosResource;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
+
+class EditTerceros extends EditRecord
+{
+    protected static string $resource = TercerosResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make(),
+
+            
+        ];
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
+    
+}
