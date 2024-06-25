@@ -169,6 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\DashboardPanelProvider::class,
         App\Providers\Filament\VentasPanelProvider::class,
+        App\Providers\Filament\HomePanelProvider::class,
+        App\Providers\Filament\PartesPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         // Barryvdh\DomPDF\ServiceProvider::class,
     ])->toArray(),

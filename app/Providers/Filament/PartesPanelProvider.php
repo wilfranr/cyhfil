@@ -17,54 +17,33 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Resources\TercerosResource\RelationManagers;
-use Filament\Navigation\MenuItem;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use Shanerbaner82\PanelRoles\PanelRoles;
 
-class VentasPanelProvider extends PanelProvider
+class PartesPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->brandName('Venta de Repuestos')
-            ->brandLogo(asset('images/logo.png'))
-            ->id('ventas')
-            ->path('ventas')
+            ->id('partes')
+            ->path('partes')
             ->login()
-            // ->default()
             ->colors([
-                'primary' => Color::Slate,
+                'primary' => Color::Lime,
             ])
-            ->globalSearchKeyBindings(['ctrl+b'])
-            ->sidebarCollapsibleOnDesktop()
-            ->userMenuItems([
-                MenuItem::make('Profile')
-                    ->icon('heroicon-s-user')
-                    ->label('Perfil')
-                    ->url(''),
-                MenuItem::make('Settings')
-                    ->icon('heroicon-s-cog')
-                    ->label('Configuración')
-                    ->url(''),
-                MenuItem::make('TRM')
-                    ->icon('heroicon-s-currency-dollar')
-                    ->label('TRM del Día')
-                    ->url('\ventas\trm-settings'),
-            ])
-
-            ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
-            // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
-            // ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            // ->discoverResources(in: app_path('Filament/Partes/Resources'), for: 'App\\Filament\\Partes\\Resources')
+            // ->discoverPages(in: app_path('Filament/Partes/Pages'), for: 'App\\Filament\\Partes\\Pages')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Ventas/Widgets'), for: 'App\\Filament\\Ventas\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Partes/Widgets'), for: 'App\\Filament\\Partes\\Widgets')
             ->widgets([
-                // Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class,
+                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -82,7 +61,7 @@ class VentasPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 PanelRoles::make()
                     ->roleToAssign('developer')
-                    ->restrictedRoles(['super_admin', 'Vendedor']),
+                    ->restrictedRoles(['super_admin', 'Analista']),
             ])
             ->authMiddleware([
                 Authenticate::class,

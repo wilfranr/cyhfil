@@ -31,12 +31,13 @@ class DashboardPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
+            // ->default()
             ->brandName('Venta de Repuestos')
             ->brandLogo(asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
             ->login()
+            // ->domain('admin')
             ->colors([
                 'primary' => Color::Amber,
             ])
