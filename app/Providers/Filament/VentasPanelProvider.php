@@ -33,7 +33,7 @@ class VentasPanelProvider extends PanelProvider
             ->id('ventas')
             ->path('ventas')
             ->login()
-            // ->default()
+            ->default()
             ->colors([
                 'primary' => Color::Slate,
             ])
@@ -54,10 +54,10 @@ class VentasPanelProvider extends PanelProvider
                     ->url('\ventas\trm-settings'),
             ])
 
-            ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
-            // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
-            // ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            // ->discoverResources(in: app_path('Filament/Ventas/Resources'), for: 'App\\Filament\\Ventas\\Resources')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            // ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
@@ -65,6 +65,8 @@ class VentasPanelProvider extends PanelProvider
             ->widgets([
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
+                \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
+
             ])
             ->middleware([
                 EncryptCookies::class,

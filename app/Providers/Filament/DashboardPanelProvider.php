@@ -31,16 +31,15 @@ class DashboardPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            // ->default()
             ->brandName('Venta de Repuestos')
             ->brandLogo(asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
             ->login()
-            // ->domain('admin')
-            ->colors([
-                'primary' => Color::Amber,
-            ])
+            ->colors(
+                [
+                    'primary' => Color::Amber,
+                ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
@@ -88,8 +87,8 @@ class DashboardPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,
-                        'sm' => 2,
-                        'lg' => 3
+                        'sm' => 1,
+                        'lg' => 1
                     ])
                     ->sectionColumnSpan(1)
                     ->checkboxListColumns([

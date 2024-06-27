@@ -42,8 +42,10 @@ class PartesPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Partes/Widgets'), for: 'App\\Filament\\Partes\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
+                \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
+
             ])
             ->middleware([
                 EncryptCookies::class,

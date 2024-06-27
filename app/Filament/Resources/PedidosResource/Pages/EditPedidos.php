@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 class EditPedidos extends EditRecord
 {
     protected static string $resource = PedidosResource::class;
-    
+
 
     protected function beforeSave()
     {
@@ -28,20 +28,30 @@ class EditPedidos extends EditRecord
     {
         return [
             ...parent::getFormActions(),
-            
+
             Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
         ];
     }
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make(),
-            Action::make('Guardar Cambios')->action('save')->color('primary'),
-            Action::make('GenerateCotización')
-            ->label('Generar Cotización')->color('success')
-            ->action('generarCotizacion'),
-        ];
+        $rol = Auth::user()->roles->first()->name;
+        if ($rol == 'Analista') {
+            return [
+                Action::make('Guardar Cambios')->action('save')->color('primary'),
+                Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
+                
+            ];
+        } else {
+            return [
+                
+                Actions\DeleteAction::make(),
+                Action::make('Guardar Cambios')->action('save')->color('primary'),
+                Action::make('GenerateCotización')
+                    ->label('Generar Cotización')->color('success')
+                    ->action('generarCotizacion'),
+            ];
+        }
     }
 
     public function changeStatus()
@@ -56,19 +66,19 @@ class EditPedidos extends EditRecord
 
         $this->record->estado = 'Cotizado';
         $this->record->save();
-        
 
-        
+
+
         $cotizacion = new \App\Models\Cotizacion();
         $cotizacion->pedido_id = $this->record->id;
         $cotizacion->tercero_id = $this->record->tercero_id;
-        
+
         $cotizacion->save();
-        
+
         $cotizacion_id = $cotizacion->id;
         // dd($cotizacion_id);
-        
-        
+
+
         //traer referencias asociadas al pedido
         // for ($i=0; $i < count($this->record->referencias); $i++) { 
         //     $referencia_id = $this->record->referencias[$i]->id;
@@ -80,24 +90,23 @@ class EditPedidos extends EditRecord
         //     $cotizacion_referencia->pedido_referencia_proveedor_id = $referencia_pedido_proveedor->id;
 
         //     $cotizacion_referencia->save();
-            
+
         // }
 
 
 
         return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
-        
     }
 
 
     // protected function getHeaderWidgets(): array
     // {
     //     return [
-            
+
     //     ];
     // }
 
-    
+
 
 
 

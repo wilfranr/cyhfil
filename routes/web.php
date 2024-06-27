@@ -16,7 +16,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/home');
+    $user = auth()->user();
+    $rol = $user->roles->first()->name;
+    if ($rol == 'Vendedor') {
+        return redirect('/ventas');
+    } if ($rol == 'Administrador') {
+        return redirect('/admin');
+    } if ($rol == 'Analista') {
+        return redirect('/partes');
+    }
+    // return redirect('/home');
 });
 
 //ruta dashboard
