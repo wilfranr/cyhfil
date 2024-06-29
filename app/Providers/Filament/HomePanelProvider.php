@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Shanerbaner82\PanelRoles\PanelRoles;
 
 class HomePanelProvider extends PanelProvider
 {
@@ -50,6 +51,11 @@ class HomePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                // PanelRoles::make()
+                //     ->roleToAssign('super_admin')
+                //     ->restrictedRoles(['super_admin', 'Administrador']),
             ])
             ->authMiddleware([
                 Authenticate::class,

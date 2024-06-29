@@ -171,6 +171,7 @@ return [
         App\Providers\Filament\VentasPanelProvider::class,
         App\Providers\Filament\HomePanelProvider::class,
         App\Providers\Filament\PartesPanelProvider::class,
+        App\Providers\Filament\LogisticaPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         // Barryvdh\DomPDF\ServiceProvider::class,
     ])->toArray(),

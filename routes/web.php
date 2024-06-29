@@ -20,11 +20,16 @@ Route::get('/', function () {
     $rol = $user->roles->first()->name;
     if ($rol == 'Vendedor') {
         return redirect('/ventas');
-    } if ($rol == 'Administrador') {
+    } elseif ($rol == 'Administrador') {
         return redirect('/admin');
-    } if ($rol == 'Analista') {
+    } elseif ($rol == 'Analista') {
         return redirect('/partes');
+    } elseif ($rol == 'logistica') {
+        return redirect('/logistica');
+    } else {
+        return redirect('/home');
     }
+
     // return redirect('/home');
 });
 

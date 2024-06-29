@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Illuminate\Support\Facades\Auth;
 use App\Filament\Pages\TrmSettings;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -9,7 +10,6 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Pages;
-
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -25,21 +25,24 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use OpenSpout\Writer\XLSX\Options\PageSetup;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use Shanerbaner82\PanelRoles\PanelRoles;
+use Filament\Facades\Filament;
+
 
 class DashboardPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
         return $panel
             ->brandName('Venta de Repuestos')
             ->brandLogo(asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
             ->login()
-            ->colors(
-                [
-                    'primary' => Color::Amber,
-                ])
+            ->colors([
+                'primary' => Color::Amber,
+            ])
+            ->default()
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
@@ -55,10 +58,6 @@ class DashboardPanelProvider extends PanelProvider
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
                     ->url('\dashboard\trm-settings'),
-
-
-
-
             ])
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -100,12 +99,14 @@ class DashboardPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
-                PanelRoles::make()
-                    ->roleToAssign('super_admin')
-                    ->restrictedRoles(['super_admin', 'Administrador']),
+                // PanelRoles::make()
+                //     ->roleToAssign('super_admin')
+                //     ->restrictedRoles(['super_admin', 'Administrador'])
             ])
             ->authMiddleware([
                 Authenticate::class,
+                
             ]);
+            
     }
 }

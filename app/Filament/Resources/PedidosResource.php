@@ -347,7 +347,11 @@ class PedidosResource extends Resource
                                                 $user = Auth::user();
                                                 if ($user != null) {
                                                     $rol = $user->roles->first()->name;
-                                                    return $rol == 'Analista';
+                                                    if ($rol == 'Analista') {
+                                                        return $rol == 'Analista';
+                                                    } elseif ($rol == 'logistica') {
+                                                        return $rol == 'logistica';
+                                                    }
                                                 }
                                             }),
                                         Section::make()
@@ -490,7 +494,11 @@ class PedidosResource extends Resource
                                                 $user = Auth::user();
                                                 if ($user != null) {
                                                     $rol = $user->roles->first()->name;
-                                                    return $rol == 'Analista';
+                                                    if ($rol == 'Analista') {
+                                                        return $rol == 'Analista';
+                                                    } elseif ($rol == 'logistica') {
+                                                        return $rol == 'logistica';
+                                                    }
                                                 }
                                             }),
                                     ])->columns(3)->collapsible(),
