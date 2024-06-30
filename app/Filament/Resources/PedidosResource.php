@@ -521,6 +521,7 @@ class PedidosResource extends Resource
                                         'Nuevo' => 'Nuevo',
                                         'En_Costeo' => 'En Costeo',
                                         'Cotizado' => 'Cotizado',
+                                        'Aprobado' => 'Aprobado',
                                         'Enviado' => 'Enviado',
                                         'Entregado' => 'Entregado',
                                         'Cancelado' => 'Cancelado',
@@ -529,6 +530,16 @@ class PedidosResource extends Resource
                                 }
                             }
                         })
+                        ->icons([
+                            'Nuevo' => 'heroicon-o-star',
+                            'En_Costeo' => 'heroicon-c-list-bullet',
+                            'Cotizado' => 'heroicon-o-currency-dollar',
+                            'Aprobado' => 'ri-checkbox-line',
+                            'Enviado' => 'heroicon-o-truck',
+                            'Entregado' => 'heroicon-o-check-circle',
+                            'Cancelado' => 'heroicon-o-x-circle',
+                            'Rechazado' => 'heroicon-o-x-circle',
+                        ])
                         ->required()
                         ->inline(),
                 ])->columnSpan('full'),
@@ -560,7 +571,7 @@ class PedidosResource extends Resource
                         'Nuevo' => 'primary',
                         'En_Costeo' => 'gray',
                         'Cotizado' => 'info',
-                        'En proceso' => 'warning',
+                        'Aprobado' => 'warning',
                         'Enviado' => 'success',
                         'Entregado' => 'success',
                         'Cancelado' => 'danger',
@@ -569,7 +580,7 @@ class PedidosResource extends Resource
                         'Nuevo' => 'heroicon-o-star',
                         'En_Costeo' => 'heroicon-c-list-bullet',
                         'Cotizado' => 'heroicon-o-currency-dollar',
-                        'En proceso' => 'heroicon-o-clock',
+                        'Aprobado' => 'ri-checkbox-line',
                         'Enviado' => 'heroicon-o-check-circle',
                         'Entregado' => 'heroicon-o-check-circle',
                         'Cancelado' => 'heroicon-o-x-circle',

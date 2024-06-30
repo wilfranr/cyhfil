@@ -34,7 +34,8 @@ class VentasPanelProvider extends PanelProvider
             ->path('ventas')
             ->login()
             ->colors([
-                'primary' => Color::Slate,
+                'primary' => Color::Violet,
+                'secondary' => Color::Pink,
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()

@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.1",
         "altwaireb/laravel-countries-states-cities": "^1.0",
+        "andreiio/blade-remix-icon": "^3.3",
         "barryvdh/laravel-dompdf": "^2.2",
         "bezhansalleh/filament-shield": "^3.2",
         "filament/filament": "^3.2",

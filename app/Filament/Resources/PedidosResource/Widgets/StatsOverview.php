@@ -13,15 +13,32 @@ class StatsOverview extends BaseWidget
     {
         return [
             Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
-                ->icon('heroicon-o-document-text')
+                ->icon('heroicon-o-star')
                 ->description('Pendientes por procesar')
                 ->chart($this->getChartData('nuevo'))
                 ->color('primary'),
+
+            Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
+                ->icon('heroicon-c-list-bullet')
+                ->description('Pendientes por enviar cotización')
+                ->chart($this->getChartData('En_Costeo'))
+                ->color('secondary'),
 
             Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
                 ->icon('heroicon-o-currency-dollar')
                 ->description('Pendientes por aprobación')
                 ->chart($this->getChartData('Cotizado'))
+                ->color('info'),
+                
+                Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
+                ->chart($this->getChartData('Aprobado'))
+                ->description('Pendientes por enviar al cliente')
+                ->color('warning')
+                ->icon('ri-checkbox-line'),
+            Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
+                ->icon('ri-truck-line')
+                ->description('Pendientes por entrega al cliente')
+                ->chart($this->getChartData('Enviado'))
                 ->color('info'),
 
             Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
@@ -29,18 +46,14 @@ class StatsOverview extends BaseWidget
                 ->chart($this->getChartData('entregado'))
                 ->color('success'),
 
-            Stat::make('Pedidos Cancelados', Pedido::where('estado', 'cancelado')->count())
-                ->chart($this->getChartData('cancelado'))
-                ->color('danger')
-                ->icon('heroicon-o-x-circle'),
         ];
     }
 
     protected function getChartData(string $estado): array
     {
-        $orders = Pedido::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+        $orders = Pedido::select(DB::raw('DATE(updated_at) as date'), DB::raw('count(*) as count'))
             ->where('estado', $estado)
-            ->where('created_at', '>=', now()->subDays(7))
+            ->where('updated_at', '>=', now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')
             ->get()

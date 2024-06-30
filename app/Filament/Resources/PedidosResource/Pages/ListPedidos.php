@@ -36,12 +36,15 @@ class ListPedidos extends ListRecords
             'Nuevos' => Tab::make()->query(function (Builder $query) {
                 $query->where('estado', 'Nuevo');
             })->icon('heroicon-o-star'),
-            'Cotizados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Cotizado');
-            })->icon('heroicon-o-currency-dollar'),
             'En Costeo' => Tab::make()->query(function (Builder $query) {
                 $query->where('estado', 'En_Costeo');
             })->icon('heroicon-c-list-bullet'),
+            'Cotizados' => Tab::make()->query(function (Builder $query) {
+                $query->where('estado', 'Cotizado');
+            })->icon('heroicon-o-currency-dollar'),
+            'Aprobados' => Tab::make()->query(function (Builder $query) {
+                $query->where('estado', 'Aprobado');
+            })->icon('ri-checkbox-line'),
             'Enviados' => Tab::make()->query(function (Builder $query) {
                 $query->where('estado', 'Enviado');
             })->icon('heroicon-o-truck'),
