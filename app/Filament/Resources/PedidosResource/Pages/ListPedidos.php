@@ -7,6 +7,7 @@ use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class ListPedidos extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
-            
+
         ];
     }
     protected function getHeaderWidgets(): array
@@ -52,6 +53,5 @@ class ListPedidos extends ListRecords
             })->icon('heroicon-o-x-circle'),
         ];
     }
-    
-    
+
 }

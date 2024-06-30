@@ -11,10 +11,7 @@ use Filament\Tables\{Table, Grouping\Group, Filters\Filter};
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
-
-
 use Filament\Forms\Components\{Wizard, Wizard\Step, Textarea, ToggleButtons, ViewField, Select, Repeater, FileUpload, Hidden, Placeholder, DatePicker, Button, Actions\Action, Actions, Section, TextInput, Toggle};
-
 
 class PedidosResource extends Resource
 {
@@ -29,6 +26,19 @@ class PedidosResource extends Resource
         return Pedido::query()->where('estado', 'Nuevo')->count();
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Analista') {
+            return parent::getEloquentQuery()->where('estado', 'Nuevo');
+        } else {
+            return parent::getEloquentQuery();
+        }
+    }
+
 
 
     public static function form(Form $form): Form
@@ -40,7 +50,8 @@ class PedidosResource extends Resource
             ->schema([
                 //guardar id de usuario logueado
                 Components\Hidden::make('user_id')->default($user),
-                //función para que se muestre solo si estoy editando
+                
+                
                 Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
@@ -84,22 +95,7 @@ class PedidosResource extends Resource
                         Select::make('maquina_id')
                             ->label('Máquina')
                             ->options(Maquina::all()->pluck('serie', 'id')),
-                        Select::make('estado')
-                            ->label('Estado')
-                            ->live()
-                            ->options([
-                                'Nuevo' => 'Nuevo',
-                                'En_Costeo' => 'En Costeo',
-                                'Cotizado' => 'Cotizado',
-                                'Enviado' => 'Enviado',
-                                'Entregado' => 'Entregado',
-                                'Cancelado' => 'Cancelado',
-                                'Rechazado' => 'Rechazado',
-                            ])
-                            ->required(),
-
-
-                    ])->hidden(function (){
+                    ])->hidden(function () {
                         $user = Auth::user();
                         if ($user != null) {
                             $rol = $user->roles->first()->name;
@@ -343,7 +339,7 @@ class PedidosResource extends Resource
                                         Toggle::make('mostrar_referencia')
                                             ->label('Mostrar referencia en cotización')
                                             ->default(true)
-                                            ->hidden(function (){
+                                            ->hidden(function () {
                                                 $user = Auth::user();
                                                 if ($user != null) {
                                                     $rol = $user->roles->first()->name;
@@ -490,7 +486,7 @@ class PedidosResource extends Resource
                                                     })
                                                     ->hiddenOn('create')
                                                     ->columns(3),
-                                            ])->hidden(function (){
+                                            ])->hidden(function () {
                                                 $user = Auth::user();
                                                 if ($user != null) {
                                                     $rol = $user->roles->first()->name;
@@ -507,6 +503,35 @@ class PedidosResource extends Resource
 
                     ]
                 )->skippable()->columnSpan('full'),
+                Section::make('Estado de pedido')
+                ->columns(1)
+                ->schema([
+                    ToggleButtons::make('estado')
+                        ->options(function () {
+                            $user = Auth::user();
+                            if ($user != null) {
+                                $rol = $user->roles->first()->name;
+                                if ($rol == 'Analista') {
+                                    return [
+                                        'Nuevo' => 'Nuevo',
+                                        'En_Costeo' => 'En Costeo',
+                                    ];
+                                } else {
+                                    return [
+                                        'Nuevo' => 'Nuevo',
+                                        'En_Costeo' => 'En Costeo',
+                                        'Cotizado' => 'Cotizado',
+                                        'Enviado' => 'Enviado',
+                                        'Entregado' => 'Entregado',
+                                        'Cancelado' => 'Cancelado',
+                                        'Rechazado' => 'Rechazado',
+                                    ];
+                                }
+                            }
+                        })
+                        ->required()
+                        ->inline(),
+                ])->columnSpan('full'),
             ]);
     }
 
@@ -516,17 +541,17 @@ class PedidosResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        
-            ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tercero.nombre')
-                    ->label('Cliente')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('estado')
+
+        ->columns([
+            Tables\Columns\TextColumn::make('id')
+            ->label('ID')
+            ->searchable()
+            ->sortable(),
+            Tables\Columns\TextColumn::make('tercero.nombre')
+            ->label('Cliente')
+            ->searchable()
+            ->sortable(),
+            Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->searchable()
                     ->sortable()
@@ -575,6 +600,7 @@ class PedidosResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+                
 
             ])
             ->actions([

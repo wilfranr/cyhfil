@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -28,8 +29,26 @@ class HomePanelProvider extends PanelProvider
             ->id('home')
             ->path('home')
             ->login()
+            ->brandName('Venta de Repuestos')
+            ->brandLogo(asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->globalSearchKeyBindings(['ctrl+b'])
+            ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                MenuItem::make('Profile')
+                    ->icon('heroicon-s-user')
+                    ->label('Perfil')
+                    ->url(''),
+                MenuItem::make('Settings')
+                    ->icon('heroicon-s-cog')
+                    ->label('Configuración')
+                    ->url(''),
+                MenuItem::make('TRM')
+                    ->icon('heroicon-s-currency-dollar')
+                    ->label('TRM del Día')
+                    ->url('\dashboard\trm-settings'),
             ])
             // ->discoverResources(in: app_path('Filament/Home/Resources'), for: 'App\\Filament\\Home\\Resources')
             // ->discoverPages(in: app_path('Filament/Home/Pages'), for: 'App\\Filament\\Home\\Pages')

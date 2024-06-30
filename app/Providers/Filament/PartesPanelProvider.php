@@ -18,6 +18,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Navigation\MenuItem;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use Shanerbaner82\PanelRoles\PanelRoles;
 
@@ -28,9 +29,27 @@ class PartesPanelProvider extends PanelProvider
         return $panel
             ->id('partes')
             ->path('partes')
+            ->brandName('Venta de Repuestos')
+            ->brandLogo(asset('images/logo.png'))
             ->login()
             ->colors([
                 'primary' => Color::Lime,
+            ])
+            ->globalSearchKeyBindings(['ctrl+b'])
+            ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                MenuItem::make('Profile')
+                    ->icon('heroicon-s-user')
+                    ->label('Perfil')
+                    ->url(''),
+                MenuItem::make('Settings')
+                    ->icon('heroicon-s-cog')
+                    ->label('Configuración')
+                    ->url(''),
+                MenuItem::make('TRM')
+                    ->icon('heroicon-s-currency-dollar')
+                    ->label('TRM del Día')
+                    ->url('\dashboard\trm-settings'),
             ])
             // ->discoverResources(in: app_path('Filament/Partes/Resources'), for: 'App\\Filament\\Partes\\Resources')
             // ->discoverPages(in: app_path('Filament/Partes/Pages'), for: 'App\\Filament\\Partes\\Pages')

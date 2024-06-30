@@ -57,6 +57,7 @@ class EditPedidos extends EditRecord
     public function changeStatus()
     {
         $this->record->estado = 'En_Costeo';
+        //guardar todos los cambios realizados
         $this->record->save();
         $this->redirect($this->getResource()::getUrl('index'));
     }
