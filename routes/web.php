@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $user = auth()->user();
+    if ($user == null) {
+        return redirect('/home');
+    }
     $rol = $user->roles->first()->name;
     if ($rol == 'Vendedor') {
         return redirect('/ventas');

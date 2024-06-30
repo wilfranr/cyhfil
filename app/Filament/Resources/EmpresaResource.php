@@ -23,7 +23,7 @@ class EmpresaResource extends Resource
     protected static ?string $model = Empresa::class;
 
     protected static ?string $navigationGroup = 'Sistema';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 

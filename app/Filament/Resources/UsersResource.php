@@ -30,8 +30,11 @@ class UsersResource extends Resource
     protected static ?string $label = 'Usuarios';
     protected static ?string $navigationGroup = 'Sistema';
     protected static ?int $navigationSort = 0;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    public static  function getNavigationBadge(): ?string
+    {
+        return user::query()->count();
+    }
     
 
     public static function form(Form $form): Form
