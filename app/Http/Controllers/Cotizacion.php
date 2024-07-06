@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Cotizacion as ModelsCotizacion;
 use App\Models\Empresa;
 use App\Models\Lista;
@@ -47,6 +48,7 @@ class Cotizacion extends Controller
         $cliente = Tercero::where('id', $tercero_id)->first();
         $vendedor_id = $pedido->user_id;
         $vendedor = User::where('id', $vendedor_id)->first();
+        $ciudad_cliente = City::where('id', $cliente->city_id)->first();
         
         // Pasa $totalGeneral a la vista junto con los otros datos
         $pdf = PDF::loadView('pdf.cotizacion', [
@@ -61,6 +63,7 @@ class Cotizacion extends Controller
             'maquina' => $maquina,
             'pedidoReferencia' => $pedidoReferencia,
             'mostrarReferencia' => $mostrarReferencia,
+            'ciudad_cliente' => $ciudad_cliente->name,
         ]);
         
         return $pdf->download();

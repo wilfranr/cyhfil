@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Cotizacion;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,36 +16,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
-    $user = auth()->user();
+    return redirect('/home');
+
+    $user = Auth::user();
+    $rol = $user->roles->first()->name;
     if ($user == null) {
         return redirect('/home');
     }
-    $rol = $user->roles->first()->name;
-    if ($rol == 'Vendedor') {
+    elseif ($rol == 'Vendedor') {
         return redirect('/ventas');
     } elseif ($rol == 'Administrador') {
         return redirect('/admin');
     } elseif ($rol == 'Analista') {
         return redirect('/partes');
-    } elseif ($rol == 'logistica') {
+    } elseif ($rol == 'Logistica') {
         return redirect('/logistica');
-    } else {
-        return redirect('/home');
+    } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
+        return redirect('/admin');
     }
 
-    // return redirect('/home');
 });
-
-//ruta dashboard
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth'])->name('dashboard');
-
-//panel ventas
-// Route::get('/ventas', function () {
-//     return view('panel.ventas');
-// })->middleware(['auth'])->name('panel.ventas');
 
 
 Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cotizacion');

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
@@ -23,7 +23,15 @@ class PedidosResource extends Resource
 
     public static  function getNavigationBadge(): ?string
     {
-        return Pedido::query()->where('estado', 'Nuevo')->count();
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Logistica') {
+            return Pedido::query()->where('estado', 'Aprobado')->count();
+        }else {
+            return Pedido::query()->where('estado', 'Nuevo')->count();
+        }
     }
 
     public static function getEloquentQuery(): Builder
@@ -34,7 +42,9 @@ class PedidosResource extends Resource
         // dd($rol);
         if ($rol == 'Analista') {
             return parent::getEloquentQuery()->where('estado', 'Nuevo');
-        } else {
+        }elseif ($rol == 'Logistica') {
+            return parent::getEloquentQuery()->where('estado', 'Aprobado');
+        }else {
             return parent::getEloquentQuery();
         }
     }
@@ -68,10 +78,6 @@ class PedidosResource extends Resource
                             ->content(fn (Pedido $record): string => $record->updated_at->toFormattedDateString())
                             ->hiddenOn('create')
                             ->label('Fecha de actualización'),
-                        Placeholder::make('estado')
-                            ->content(fn (Pedido $record): string => $record->estado)
-                            ->hiddenOn('create')
-                            ->label('Estado'),
                         Placeholder::make('Vendedor')
                             ->content(fn (Pedido $record): string => $record->user->name)
                             ->hiddenOn('create')
@@ -94,7 +100,12 @@ class PedidosResource extends Resource
                             ->label('Email'),
                         Select::make('maquina_id')
                             ->label('Máquina')
-                            ->options(Maquina::all()->pluck('serie', 'id')),
+                            ->options(Maquina::all()->mapWithKeys(function ($maquina) {
+                                return [$maquina->id => "{$maquina->tipo}, {$maquina->modelo}, {$maquina->serie}"];
+                            }))
+                            ->searchable()
+                            ->live()
+                            ->preload('tipo'),
                     ])->hidden(function () {
                         $user = Auth::user();
                         if ($user != null) {
@@ -212,12 +223,35 @@ class PedidosResource extends Resource
                                 TextInput::make('email')
                                     ->label('Email')
                                     ->disabled(),
+                                Select::make('tercero_id')
+                                    ->label('Tercero')
+                                    ->options(Tercero::all()->pluck('nombre', 'id'))
+                                    ->reactive()
+                                    ->searchable()
+                                    ->searchPrompt('Buscar terceros por nombre')
+                                    ->required(),
 
-                                Select::make('maquina_id')
-                                    ->label('Máquina')
-                                    ->relationship('maquina', 'serie')
+                                Select::make('contacto_id')
+                                    ->label('Contacto')
+                                    ->options(function (callable $get) {
+                                        $terceroId = $get('tercero_id');
+                                        if (!is_null($terceroId)) {
+                                            return Contacto::where('tercero_id', $terceroId)->pluck('nombre', 'id');
+                                        }
+                                        return [];
+                                    })
+                                    // ->dependsOn(['tercero_id'])
+                                    ->searchable()
+                                    ->searchPrompt('Buscar contactos por nombre')
+                                    ->preload()
                                     ->live()
-                                    ->preload('tipo'),
+                                    ->required(),
+
+                                // Select::make('maquina_id')
+                                //     ->label('Máquina')
+                                //     ->relationship('maquina', 'serie')
+                                //     ->live()
+                                //     ->preload('tipo'),
 
 
                             ])->hiddenOn('edit'),
@@ -516,6 +550,11 @@ class PedidosResource extends Resource
                                         'Nuevo' => 'Nuevo',
                                         'En_Costeo' => 'En Costeo',
                                     ];
+                                }elseif ($rol == 'Logistica'){
+                                    return [
+                                        'Aprobado' => 'Aprobado',
+                                        'Enviado' => 'Enviado',
+                                    ];
                                 } else {
                                     return [
                                         'Nuevo' => 'Nuevo',
@@ -530,6 +569,7 @@ class PedidosResource extends Resource
                                 }
                             }
                         })
+                        ->default('Nuevo')
                         ->icons([
                             'Nuevo' => 'heroicon-o-star',
                             'En_Costeo' => 'heroicon-c-list-bullet',

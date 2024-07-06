@@ -31,30 +31,50 @@ class ListPedidos extends ListRecords
 
     public function getTabs(): array
     {
-        return [
-            'Todos' => Tab::make(),
-            'Nuevos' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Nuevo');
-            })->icon('heroicon-o-star'),
-            'En Costeo' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'En_Costeo');
-            })->icon('heroicon-c-list-bullet'),
-            'Cotizados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Cotizado');
-            })->icon('heroicon-o-currency-dollar'),
-            'Aprobados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Aprobado');
-            })->icon('ri-checkbox-line'),
-            'Enviados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Enviado');
-            })->icon('heroicon-o-truck'),
-            'Entregados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Entregado');
-            })->icon('heroicon-o-check-circle'),
-            'Cancelados' => Tab::make()->query(function (Builder $query) {
-                $query->where('estado', 'Cancelado');
-            })->icon('heroicon-o-x-circle'),
-        ];
-    }
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Analista') {
+            return [
 
+                'Nuevos' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Nuevo');
+                })->icon('heroicon-o-star'),
+            ];
+        } elseif ($rol == 'Logistica') {
+            return[
+
+                'Aprobados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Aprobado');
+                })->icon('ri-checkbox-line'),
+            ];
+        } else {
+            
+            return [
+                'Todos' => Tab::make(),
+                'Nuevos' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Nuevo');
+                })->icon('heroicon-o-star'),
+                'En Costeo' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'En_Costeo');
+                })->icon('heroicon-c-list-bullet'),
+                'Cotizados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Cotizado');
+                })->icon('heroicon-o-currency-dollar'),
+                'Aprobados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Aprobado');
+                })->icon('ri-checkbox-line'),
+                'Enviados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Enviado');
+                })->icon('heroicon-o-truck'),
+                'Entregados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Entregado');
+                })->icon('heroicon-o-check-circle'),
+                'Cancelados' => Tab::make()->query(function (Builder $query) {
+                    $query->where('estado', 'Cancelado');
+                })->icon('heroicon-o-x-circle'),
+            ];
+        }
+    }
 }

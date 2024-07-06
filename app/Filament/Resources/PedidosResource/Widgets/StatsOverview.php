@@ -5,48 +5,108 @@ namespace App\Filament\Resources\PedidosResource\Widgets;
 use App\Models\Pedido;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        return [
-            Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
-                ->icon('heroicon-o-star')
-                ->description('Pendientes por procesar')
-                ->chart($this->getChartData('nuevo'))
-                ->color('primary'),
-
-            Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
-                ->icon('heroicon-c-list-bullet')
-                ->description('Pendientes por enviar cotización')
-                ->chart($this->getChartData('En_Costeo'))
-                ->color('secondary'),
-
-            Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
-                ->icon('heroicon-o-currency-dollar')
-                ->description('Pendientes por aprobación')
-                ->chart($this->getChartData('Cotizado'))
-                ->color('info'),
-                
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Analista') {
+            return [
+                Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
+                    ->icon('heroicon-o-star')
+                    ->description('Pendientes por procesar')
+                    ->chart($this->getChartData('nuevo'))
+                    ->color('primary'),
+            ];
+        } elseif ($rol == 'Logistica') {
+            return [
                 Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
-                ->chart($this->getChartData('Aprobado'))
-                ->description('Pendientes por enviar al cliente')
-                ->color('warning')
-                ->icon('ri-checkbox-line'),
-            Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
-                ->icon('ri-truck-line')
-                ->description('Pendientes por entrega al cliente')
-                ->chart($this->getChartData('Enviado'))
-                ->color('info'),
+                    ->chart($this->getChartData('Aprobado'))
+                    ->description('Pendientes por enviar al cliente')
+                    ->color('warning')
+                    ->icon('ri-checkbox-line'),
+            ];
+        } else {
+            return [
+                Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
+                    ->icon('heroicon-o-star')
+                    ->description('Pendientes por procesar')
+                    ->chart($this->getChartData('nuevo'))
+                    ->color('primary'),
 
-            Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
-                ->icon('heroicon-o-check-circle')
-                ->chart($this->getChartData('entregado'))
-                ->color('success'),
+                Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
+                    ->icon('heroicon-c-list-bullet')
+                    ->description('Pendientes por enviar cotización')
+                    ->chart($this->getChartData('En_Costeo'))
+                    ->color('secondary'),
 
-        ];
+                Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
+                    ->icon('heroicon-o-currency-dollar')
+                    ->description('Pendientes por aprobación')
+                    ->chart($this->getChartData('Cotizado'))
+                    ->color('info'),
+
+                Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
+                    ->chart($this->getChartData('Aprobado'))
+                    ->description('Pendientes por enviar al cliente')
+                    ->color('warning')
+                    ->icon('ri-checkbox-line'),
+
+                Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
+                    ->icon('ri-truck-line')
+                    ->description('Pendientes por entrega al cliente')
+                    ->chart($this->getChartData('Enviado'))
+                    ->color('info'),
+
+                Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
+                    ->icon('heroicon-o-check-circle')
+                    ->chart($this->getChartData('entregado'))
+                    ->color('success'),
+            ];
+        }
+
+        // return [
+        //     Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
+        //         ->icon('heroicon-o-star')
+        //         ->description('Pendientes por procesar')
+        //         ->chart($this->getChartData('nuevo'))
+        //         ->color('primary'),
+
+        //     Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
+        //         ->icon('heroicon-c-list-bullet')
+        //         ->description('Pendientes por enviar cotización')
+        //         ->chart($this->getChartData('En_Costeo'))
+        //         ->color('secondary'),
+
+        //     Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
+        //         ->icon('heroicon-o-currency-dollar')
+        //         ->description('Pendientes por aprobación')
+        //         ->chart($this->getChartData('Cotizado'))
+        //         ->color('info'),
+                
+        //         Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
+        //         ->chart($this->getChartData('Aprobado'))
+        //         ->description('Pendientes por enviar al cliente')
+        //         ->color('warning')
+        //         ->icon('ri-checkbox-line'),
+        //     Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
+        //         ->icon('ri-truck-line')
+        //         ->description('Pendientes por entrega al cliente')
+        //         ->chart($this->getChartData('Enviado'))
+        //         ->color('info'),
+
+        //     Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
+        //         ->icon('heroicon-o-check-circle')
+        //         ->chart($this->getChartData('entregado'))
+        //         ->color('success'),
+
+        // ];
     }
 
     protected function getChartData(string $estado): array

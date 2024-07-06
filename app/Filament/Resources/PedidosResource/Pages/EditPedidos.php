@@ -59,7 +59,6 @@ class EditPedidos extends EditRecord
         $this->record->estado = 'En_Costeo';
         //guardar todos los cambios realizados
         $this->record->save();
-        $this->redirect($this->getResource()::getUrl('index'));
     }
 
     public function generarCotizacion()
@@ -99,22 +98,4 @@ class EditPedidos extends EditRecord
         return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
     }
 
-
-    // protected function getHeaderWidgets(): array
-    // {
-    //     return [
-
-    //     ];
-    // }
-
-
-
-
-
-
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
-    }
 }

@@ -60,7 +60,7 @@ class LogisticaPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 PanelRoles::make()
                     ->roleToAssign('developer')
-                    ->restrictedRoles(['super_admin', 'logistica']),
+                    ->restrictedRoles(['super_admin', 'Logistica']),
             ])
             ->authMiddleware([
                 Authenticate::class,
