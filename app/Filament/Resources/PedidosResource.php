@@ -98,6 +98,13 @@ class PedidosResource extends Resource
                             ->content(fn (Pedido $record): string => $record->tercero->email)
                             ->hiddenOn('create')
                             ->label('Email'),
+                        Placeholder::make('contacto')
+                            ->content(function (Pedido $record) {
+                                $contacto = Contacto::find($record->contacto_id);
+                                return $contacto->nombre;
+                            })
+                            ->hiddenOn('create')
+                            ->label('Contacto'),
                         Select::make('maquina_id')
                             ->label('Máquina')
                             ->options(Maquina::all()->mapWithKeys(function ($maquina) {
@@ -223,14 +230,6 @@ class PedidosResource extends Resource
                                 TextInput::make('email')
                                     ->label('Email')
                                     ->disabled(),
-                                Select::make('tercero_id')
-                                    ->label('Tercero')
-                                    ->options(Tercero::all()->pluck('nombre', 'id'))
-                                    ->reactive()
-                                    ->searchable()
-                                    ->searchPrompt('Buscar terceros por nombre')
-                                    ->required(),
-
                                 Select::make('contacto_id')
                                     ->label('Contacto')
                                     ->options(function (callable $get) {
@@ -240,12 +239,12 @@ class PedidosResource extends Resource
                                         }
                                         return [];
                                     })
-                                    // ->dependsOn(['tercero_id'])
                                     ->searchable()
                                     ->searchPrompt('Buscar contactos por nombre')
                                     ->preload()
                                     ->live()
                                     ->required(),
+                                
 
                                 // Select::make('maquina_id')
                                 //     ->label('Máquina')
@@ -379,8 +378,8 @@ class PedidosResource extends Resource
                                                     $rol = $user->roles->first()->name;
                                                     if ($rol == 'Analista') {
                                                         return $rol == 'Analista';
-                                                    } elseif ($rol == 'logistica') {
-                                                        return $rol == 'logistica';
+                                                    } elseif ($rol == 'Logistica') {
+                                                        return $rol == 'Logistica';
                                                     }
                                                 }
                                             }),

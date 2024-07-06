@@ -57,7 +57,7 @@ class Tercero extends Model
 
     public function contactos()
     {
-        return $this->hasMany(Contacto::class);
+        return $this->hasMany(Contacto::class, 'tercero_id');
     }
 
     public function pedidos()
