@@ -29,7 +29,7 @@ class EditPedidos extends EditRecord
         return [
             ...parent::getFormActions(),
 
-            Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
+            // Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
         ];
     }
 
@@ -39,27 +39,33 @@ class EditPedidos extends EditRecord
         if ($rol == 'Analista') {
             return [
                 Action::make('Guardar Cambios')->action('save')->color('primary'),
-                Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
+                // Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
                 
             ];
-        } else {
+        } elseif ($rol == 'Logistica') {
             return [
                 
                 Actions\DeleteAction::make(),
                 Action::make('Guardar Cambios')->action('save')->color('primary'),
-                Action::make('GenerateCotización')
+            ];
+        } else {
+            if ($this->record->estado == 'En_Costeo') {
+                return [
+                    Action::make('Guardar Cambios')->action('save')->color('primary'),
+                    Action::make('GenerateCotización')
                     ->label('Generar Cotización')->color('success')
                     ->action('generarCotizacion'),
-            ];
+                ];
+            }else{
+
+                return [
+                    Action::make('Guardar Cambios')->action('save')->color('primary'),
+                ];
+            }
         }
     }
 
-    public function changeStatus()
-    {
-        $this->record->estado = 'En_Costeo';
-        //guardar todos los cambios realizados
-        $this->record->save();
-    }
+
 
     public function generarCotizacion()
     {

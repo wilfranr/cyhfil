@@ -18,25 +18,22 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return redirect('/home');
-
-    $user = Auth::user();
-    $rol = $user->roles->first()->name;
-    if ($user == null) {
+    if (Auth::user() == null) {
         return redirect('/home');
+    } else {
+        $rol = Auth::user()->roles->first()->name;
+        if ($rol == 'Vendedor') {
+                return redirect('/ventas');
+            } elseif ($rol == 'Administrador') {
+                return redirect('/admin');
+            } elseif ($rol == 'Analista') {
+                return redirect('/partes');
+            } elseif ($rol == 'Logistica') {
+                return redirect('/logistica');
+            } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
+                return redirect('/admin');           
+            }
     }
-    elseif ($rol == 'Vendedor') {
-        return redirect('/ventas');
-    } elseif ($rol == 'Administrador') {
-        return redirect('/admin');
-    } elseif ($rol == 'Analista') {
-        return redirect('/partes');
-    } elseif ($rol == 'Logistica') {
-        return redirect('/logistica');
-    } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
-        return redirect('/admin');
-    }
-
 });
 
 

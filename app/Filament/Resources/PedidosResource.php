@@ -101,7 +101,9 @@ class PedidosResource extends Resource
                         Placeholder::make('contacto')
                             ->content(function (Pedido $record) {
                                 $contacto = Contacto::find($record->contacto_id);
-                                return $contacto->nombre;
+                                if ($contacto != null) {
+                                    return $contacto->nombre;
+                                }
                             })
                             ->hiddenOn('create')
                             ->label('Contacto'),
