@@ -29,10 +29,11 @@ class Cotizacion extends Controller
         $pedido = Pedido::where('id', $pedido_id)->first();
         
         $pedidoReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->get();
+        // dd($pedidoReferencia);
         
         $totalGeneral = 0; // Inicializa el total general a 0
         $pedidoReferenciaProveedor = collect(); // Inicializa una colección vacía para almacenar todos los proveedores
-
+        
         foreach ($pedidoReferencia as $value) {
             $proveedores = PedidoReferenciaProveedor::where('pedido_id', $value->id)->get();
             foreach ($proveedores as $proveedor) {
@@ -40,7 +41,7 @@ class Cotizacion extends Controller
                 $pedidoReferenciaProveedor->push($proveedor); // Agrega este proveedor a la colección
             }
         }
-
+        
         $maquina = Maquina::where('id', $pedido->maquina_id)->first();
         $tipo_maquina = Lista::where('id', $maquina->tipo)->first();
         $empresas = Empresa::all();
@@ -65,6 +66,9 @@ class Cotizacion extends Controller
             'mostrarReferencia' => $mostrarReferencia,
             'ciudad_cliente' => $ciudad_cliente->name,
         ]);
+        
+        // $proveedores = PedidoReferenciaProveedor::where('pedido_id', $pedido_id)->get();
+        // dd($proveedores);
         
         return $pdf->download();
     }

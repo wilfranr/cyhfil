@@ -158,6 +158,7 @@
                         $articulo = App\Models\Articulo::find($referencia->articulo_id);
                     @endphp
                     @foreach ($pedRefProveedor as $proveedor)
+                    @if ($proveedor->estado == 1) 
                         <tr>
                             @if ($mostrarReferencia == 0)
                                 <td>N/A</td>
@@ -181,6 +182,7 @@
                             <td>${{ $valorUnitario }}</td>
                             <td>${{ $valorTotal }}</td>
                         </tr>
+                    @endif
                     @endforeach
                 @endforeach
 

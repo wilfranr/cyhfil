@@ -11,7 +11,7 @@ class PedidoReferenciaProveedor extends Model
 
     protected $table = 'pedido_referencia_proveedor';
 
-    protected $fillable = ['pedido_id', 'referencia_id', 'proveedor_id', 'marca_id', 'Entrega', 'dias_entrega', 'costo_unidad', 'utilidad', 'valor_total', 'ubicacion'];
+    protected $fillable = ['pedido_id', 'referencia_id', 'proveedor_id', 'marca_id', 'Entrega', 'dias_entrega', 'costo_unidad', 'utilidad', 'valor_total', 'ubicacion', 'estado'];
 
     public function pedido()
     {

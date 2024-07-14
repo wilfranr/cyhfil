@@ -244,8 +244,7 @@ class PedidosResource extends Resource
                                     ->searchable()
                                     ->searchPrompt('Buscar contactos por nombre')
                                     ->preload()
-                                    ->live()
-                                    ->required(),
+                                    ->live(),
                                 
 
                                 // Select::make('maquina_id')
@@ -511,6 +510,9 @@ class PedidosResource extends Resource
                                                             ->prefix('$')
                                                             ->readOnly()
                                                             ->label('Valor Total'),
+                                                        Toggle::make('estado')
+                                                            ->label('Seleccionar')
+                                                            ->default(true),
                                                     ])
 
                                                     ->extraAttributes(function (Get $get) {
