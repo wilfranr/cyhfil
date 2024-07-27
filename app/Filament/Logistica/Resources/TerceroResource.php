@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Logistica\Resources;
 
-use App\Filament\Resources\TercerosResource\{Pages, RelationManagers, RelationManagers\ContactosRelationManager};
+use App\Filament\Logistica\Resources\TerceroResource\Pages;
+use App\Filament\Resources\TercerosResource\RelationManagers;
 
 use App\Models\{Tercero, City, Country, State, Maquina, Contacto};
 use Filament\Forms;
@@ -15,7 +16,7 @@ use Illuminate\Support\Collection;
 use Filament\Forms\{Get, Set};
 use Illuminate\Database\Eloquent\Model;
 
-class TercerosResource extends Resource
+class TerceroResource extends Resource
 {
     protected static ?string $model = Tercero::class;
 
@@ -349,8 +350,8 @@ class TercerosResource extends Resource
     {
         return [
             'index' => Pages\ListTerceros::route('/'),
-            'create' => Pages\CreateTerceros::route('/create'),
-            'edit' => Pages\EditTerceros::route('/{record}/edit'),
+            'create' => Pages\CreateTercero::route('/create'),
+            'edit' => Pages\EditTercero::route('/{record}/edit'),
         ];
     }
 }

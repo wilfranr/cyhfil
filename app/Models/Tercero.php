@@ -60,6 +60,11 @@ class Tercero extends Model
         return $this->hasMany(Contacto::class, 'tercero_id');
     }
 
+    public function direcciones()
+    {
+        return $this->hasMany(Direccion::class, 'tercero_id');
+    }
+
     public function pedidos()
     {
         return $this->hasMany(Pedido::class);

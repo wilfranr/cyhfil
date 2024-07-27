@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\PedidosResource\Pages;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
-use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
 use Filament\Tables\{Table, Grouping\Group, Filters\Filter};
 use Filament\Forms\Components;
-use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\{Wizard, Wizard\Step, Textarea, ToggleButtons, ViewField, Select, Repeater, FileUpload, Hidden, Placeholder, DatePicker, Button, Actions\Action, Actions, Section, TextInput, Toggle};
 
