@@ -79,7 +79,10 @@ class PartesPanelProvider extends PanelProvider
             ])
             ->plugins([
                 SpotlightPlugin::make(),
-                FilamentShieldPlugin::make()
+                FilamentShieldPlugin::make(),
+                PanelRoles::make()
+                ->restrictedRoles(['super_admin', 'Administrador', 'Analista'])
+
             ])
             ->authMiddleware([
                 Authenticate::class,

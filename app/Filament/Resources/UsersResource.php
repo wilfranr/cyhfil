@@ -52,9 +52,9 @@ class UsersResource extends Resource
                 TextInput::make('password')
                     ->label('Contraseña')
                     ->placeholder('Ingrese la contraseña del usuario')
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->required(fn (Page $livewire) => ($livewire instanceof CreateRecord)),
+                    ->dehydrated(fn ($state) => !empty($state) ? bcrypt($state) : null)
+                    ->password(),
+                    
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()
@@ -124,5 +124,14 @@ class UsersResource extends Resource
             'create' => Pages\CreateUsers::route('/create'),
             'edit' => Pages\EditUsers::route('/{record}/edit'),
         ];
+    }
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Si el campo de contraseña está vacío, elimínalo del array de datos
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        return $data;
     }
 }

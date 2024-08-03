@@ -83,8 +83,7 @@ class VentasPanelProvider extends PanelProvider
                 SpotlightPlugin::make(),
                 FilamentShieldPlugin::make(),
                 PanelRoles::make()
-                    ->roleToAssign('developer')
-                    ->restrictedRoles(['super_admin', 'Vendedor']),
+                    ->restrictedRoles(['super_admin', 'Administrador', 'Vendedor']),
             ])
             ->authMiddleware([
                 Authenticate::class,

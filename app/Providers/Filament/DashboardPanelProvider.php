@@ -99,9 +99,8 @@ class DashboardPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
-                // PanelRoles::make()
-                //     ->roleToAssign('super_admin')
-                //     ->restrictedRoles(['super_admin', 'Administrador'])
+                PanelRoles::make()
+                    ->restrictedRoles(['super_admin', 'Administrador'])
             ])
             ->authMiddleware([
                 Authenticate::class,
