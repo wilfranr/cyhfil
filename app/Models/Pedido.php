@@ -21,6 +21,7 @@ class Pedido extends Model
         'contacto_id',
         'maquina_id',
         'estado',
+        'motivo_rechazo',
     ];
 
     // Relación con el modelo User

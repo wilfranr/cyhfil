@@ -7,8 +7,11 @@ use App\Models\{User, PedidoReferenciaProveedor};
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 // use Filament\Actions\Modal\Actions\Action;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Widgets\StatsOverviewWidget;
@@ -43,34 +46,34 @@ class EditPedidos extends EditRecord
                 Action::make('Guardar Cambios')->action('save')->color('primary'),
                 // Action::make('Enviar a costeo')->action('changeStatus')->color('info'),
                 Action::make('Enviar a Costeo')
-                        ->action(function (array $data) {
-                            // Obtener el registro actual
-                            $record = $this->getRecord();
+                    ->action(function (array $data) {
+                        // Obtener el registro actual
+                        $record = $this->getRecord();
 
-                            // Actualizar el registro con los datos del formulario
-                            $this->form->getState();
-                            $record->fill($data);
+                        // Actualizar el registro con los datos del formulario
+                        $this->form->getState();
+                        $record->fill($data);
 
-                            // Cambiar el estado del pedido
-                            $record->estado = 'En_Costeo';
+                        // Cambiar el estado del pedido
+                        $record->estado = 'En_Costeo';
 
-                            // Guardar el pedido con todos los cambios
-                            $record->save();
+                        // Guardar el pedido con todos los cambios
+                        $record->save();
 
-                            // Notificar al usuario
-                            Notification::make()
-                                ->title('Éxito')
-                                ->body('El estado del pedido se ha cambiado a En Costeo y todos los cambios han sido guardados.')
-                                ->success()
-                                ->send();
+                        // Notificar al usuario
+                        Notification::make()
+                            ->title('Éxito')
+                            ->body('El estado del pedido se ha cambiado a En Costeo y todos los cambios han sido guardados.')
+                            ->success()
+                            ->send();
 
-                            // Refrescar la página para mostrar los cambios
-                            $this->redirect($this->getResource()::getUrl('index'));
-                        })
-                        ->color('info')
-                        ->requiresConfirmation()
-                        ->modalHeading('¿Enviar a Costeo?')
-                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
+                        // Refrescar la página para mostrar los cambios
+                        $this->redirect($this->getResource()::getUrl('index'));
+                    })
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Enviar a Costeo?')
+                    ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
 
             ];
         } elseif ($rol == 'Logistica') {
@@ -122,7 +125,7 @@ class EditPedidos extends EditRecord
                             return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
                         })
                 ];
-            } elseif($this->record->estado == 'Cotizado'){
+            } elseif ($this->record->estado == 'Cotizado') {
                 return [
                     Action::make('Guardar Cambios')->action('save')->color('primary'),
                     Action::make('GenerateNewCotización')
@@ -190,35 +193,79 @@ class EditPedidos extends EditRecord
                             // Redirigir a la página de pedidos
                             $this->redirect($this->getResource()::getUrl('index'));
                         }),
+                    Action::make('Rechazar')
+                        ->label('Rechazar Cotización')
+                        ->color('danger')
+                        ->form([
+                            Select::make('motivo_rechazo')
+                                ->label('Motivo de Rechazo')
+                                ->options([
+                                    'precio' => 'Precio',
+                                    'tiempo_entrega' => 'Tiempo de Entrega',
+                                    'condiciones_pago' => 'Condiciones de Pago',
+                                    'otros' => 'Otros',
+                                ])
+                                ->required()
+                                ->placeholder('Seleccione un motivo'),
+                            Textarea::make('comentarios_rechazo')
+                                ->label('Comentarios')
+                                ->placeholder('Ingrese comentarios adicionales (opcional)'),
+                        ])
+                        ->action(function (array $data) {
+                            // Obtener el registro actual
+                            $record = $this->getRecord();
+
+                            // Actualizar el registro con los datos del formulario
+                            $this->form->getState();
+                            $record->fill($data);
+
+                            // Cambiar el estado del pedido a 'Rechazado'
+                            $record->estado = 'Rechazado';
+                            $record->motivo_rechazo = $data['motivo_rechazo'];
+                            $record->comentarios_rechazo = $data['comentarios_rechazo'] ?? '';
+
+                            // Guardar el pedido con todos los cambios
+                            $record->save();
+
+                            // Notificar al usuario
+                            Notification::make()
+                                ->title('Éxito')
+                                ->body('La cotización ha sido rechazada y todos los cambios han sido guardados.')
+                                ->success()
+                                ->send();
+
+                            // Redirigir a la página de pedidos
+                            $this->redirect($this->getResource()::getUrl('index'));
+                        }),
                     Action::make('Regresar a Costeo')
-                    ->action(function (array $data) {
-                        // Obtener el registro actual
-                        $record = $this->getRecord();
+                        ->action(function (array $data) {
+                            // Obtener el registro actual
+                            $record = $this->getRecord();
 
-                        // Actualizar el registro con los datos del formulario
-                        $this->form->getState();
-                        $record->fill($data);
+                            // Actualizar el registro con los datos del formulario
+                            $this->form->getState();
+                            $record->fill($data);
 
-                        // Cambiar el estado del pedido
-                        $record->estado = 'En_Costeo';
+                            // Cambiar el estado del pedido
+                            $record->estado = 'En_Costeo';
 
-                        // Guardar el pedido con todos los cambios
-                        $record->save();
+                            // Guardar el pedido con todos los cambios
+                            $record->save();
 
-                        // Notificar al usuario
-                        Notification::make()
-                            ->title('Éxito')
-                            ->body('El estado del pedido se ha cambiado a En Costeo y todos los cambios han sido guardados.')
-                            ->success()
-                            ->send();
+                            // Notificar al usuario
+                            Notification::make()
+                                ->title('Éxito')
+                                ->body('El estado del pedido se ha cambiado a En Costeo y todos los cambios han sido guardados.')
+                                ->success()
+                                ->send();
 
-                        // Refrescar la página para mostrar los cambios
-                        $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
-                    })
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalHeading('¿Enviar a Costeo?')
-                    ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
+                            // Refrescar la página para mostrar los cambios
+                            $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
+                        })
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Enviar a Costeo?')
+                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
                 ];
             } else {
 

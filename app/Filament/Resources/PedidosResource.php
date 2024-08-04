@@ -29,7 +29,7 @@ class PedidosResource extends Resource
         // dd($rol);
         if ($rol == 'Logistica') {
             return Pedido::query()->where('estado', 'Aprobado')->count();
-        }else {
+        } else {
             return Pedido::query()->where('estado', 'Nuevo')->count();
         }
     }
@@ -42,9 +42,9 @@ class PedidosResource extends Resource
         // dd($rol);
         if ($rol == 'Analista') {
             return parent::getEloquentQuery()->where('estado', 'Nuevo');
-        }elseif ($rol == 'Logistica') {
+        } elseif ($rol == 'Logistica') {
             return parent::getEloquentQuery()->where('estado', 'Aprobado');
-        }else {
+        } else {
             return parent::getEloquentQuery();
         }
     }
@@ -60,8 +60,8 @@ class PedidosResource extends Resource
             ->schema([
                 //guardar id de usuario logueado
                 Components\Hidden::make('user_id')->default($user),
-                
-                
+
+
                 Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
@@ -115,6 +115,16 @@ class PedidosResource extends Resource
                             ->searchable()
                             ->live()
                             ->preload('tipo'),
+                        Placeholder::make('motivo_rechazo')
+                            ->content(fn (Pedido $record): string => $record->motivo_rechazo)
+                            ->hiddenOn('create')
+                            ->label('Motivo de rechazo')
+                            ->visible(fn (Get $get) => $get('estado') === 'Rechazado'),
+                        Placeholder::make('comentarios_rechazo')
+                            ->content(fn (Pedido $record): string => $record->comentarios_rechazo)
+                            ->hiddenOn('create')
+                            ->label('Comentario de rechazo')
+                            ->visible(fn (Get $get) => $get('estado') === 'Rechazado'),
                     ])->hidden(function () {
                         $user = Auth::user();
                         if ($user != null) {
@@ -245,7 +255,7 @@ class PedidosResource extends Resource
                                     ->searchPrompt('Buscar contactos por nombre')
                                     ->preload()
                                     ->live(),
-                                
+
 
                                 // Select::make('maquina_id')
                                 //     ->label('Máquina')
@@ -541,51 +551,51 @@ class PedidosResource extends Resource
                     ]
                 )->skippable()->columnSpan('full'),
                 Section::make('Estado de pedido')
-                ->columns(1)
-                ->schema([
-                    ToggleButtons::make('estado')
-                        ->options(function () {
-                            $user = Auth::user();
-                            if ($user != null) {
-                                $rol = $user->roles->first()->name;
-                                if ($rol == 'Analista') {
-                                    return [
-                                        'Nuevo' => 'Nuevo',
-                                        'En_Costeo' => 'En Costeo',
-                                    ];
-                                }elseif ($rol == 'Logistica'){
-                                    return [
-                                        'Aprobado' => 'Aprobado',
-                                        'Enviado' => 'Enviado',
-                                    ];
-                                } else {
-                                    return [
-                                        'Nuevo' => 'Nuevo',
-                                        'En_Costeo' => 'En Costeo',
-                                        'Cotizado' => 'Cotizado',
-                                        'Aprobado' => 'Aprobado',
-                                        'Enviado' => 'Enviado',
-                                        'Entregado' => 'Entregado',
-                                        'Cancelado' => 'Cancelado',
-                                        'Rechazado' => 'Rechazado',
-                                    ];
+                    ->columns(1)
+                    ->schema([
+                        ToggleButtons::make('estado')
+                            ->options(function () {
+                                $user = Auth::user();
+                                if ($user != null) {
+                                    $rol = $user->roles->first()->name;
+                                    if ($rol == 'Analista') {
+                                        return [
+                                            'Nuevo' => 'Nuevo',
+                                            'En_Costeo' => 'En Costeo',
+                                        ];
+                                    } elseif ($rol == 'Logistica') {
+                                        return [
+                                            'Aprobado' => 'Aprobado',
+                                            'Enviado' => 'Enviado',
+                                        ];
+                                    } else {
+                                        return [
+                                            'Nuevo' => 'Nuevo',
+                                            'En_Costeo' => 'En Costeo',
+                                            'Cotizado' => 'Cotizado',
+                                            'Aprobado' => 'Aprobado',
+                                            'Enviado' => 'Enviado',
+                                            'Entregado' => 'Entregado',
+                                            'Cancelado' => 'Cancelado',
+                                            'Rechazado' => 'Rechazado',
+                                        ];
+                                    }
                                 }
-                            }
-                        })
-                        ->default('Nuevo')
-                        ->icons([
-                            'Nuevo' => 'heroicon-o-star',
-                            'En_Costeo' => 'heroicon-c-list-bullet',
-                            'Cotizado' => 'heroicon-o-currency-dollar',
-                            'Aprobado' => 'ri-checkbox-line',
-                            'Enviado' => 'heroicon-o-truck',
-                            'Entregado' => 'heroicon-o-check-circle',
-                            'Cancelado' => 'heroicon-o-x-circle',
-                            'Rechazado' => 'heroicon-o-x-circle',
-                        ])
-                        ->required()
-                        ->inline(),
-                ])->columnSpan('full'),
+                            })
+                            ->default('Nuevo')
+                            ->icons([
+                                'Nuevo' => 'heroicon-o-star',
+                                'En_Costeo' => 'heroicon-c-list-bullet',
+                                'Cotizado' => 'heroicon-o-currency-dollar',
+                                'Aprobado' => 'ri-checkbox-line',
+                                'Enviado' => 'heroicon-o-truck',
+                                'Entregado' => 'heroicon-o-check-circle',
+                                'Cancelado' => 'heroicon-o-x-circle',
+                                'Rechazado' => 'heroicon-o-x-circle',
+                            ])
+                            ->required()
+                            ->inline(),
+                    ])->columnSpan('full'),
             ]);
     }
 
@@ -596,16 +606,16 @@ class PedidosResource extends Resource
     {
         return $table
 
-        ->columns([
-            Tables\Columns\TextColumn::make('id')
-            ->label('ID')
-            ->searchable()
-            ->sortable(),
-            Tables\Columns\TextColumn::make('tercero.nombre')
-            ->label('Cliente')
-            ->searchable()
-            ->sortable(),
-            Tables\Columns\TextColumn::make('estado')
+            ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tercero.nombre')
+                    ->label('Cliente')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->searchable()
                     ->sortable()
@@ -618,6 +628,7 @@ class PedidosResource extends Resource
                         'Enviado' => 'success',
                         'Entregado' => 'success',
                         'Cancelado' => 'danger',
+                        'Rechazado' => 'danger',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Nuevo' => 'heroicon-o-star',
@@ -627,6 +638,7 @@ class PedidosResource extends Resource
                         'Enviado' => 'heroicon-o-check-circle',
                         'Entregado' => 'heroicon-o-check-circle',
                         'Cancelado' => 'heroicon-o-x-circle',
+                        'Rechazado' => 'heroicon-o-x-circle',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha de creación')
@@ -654,7 +666,7 @@ class PedidosResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-                
+
 
             ])
             ->actions([
