@@ -72,6 +72,7 @@ class PedidoResource extends Resource
                         'Enviado' => 'success',
                         'Entregado' => 'success',
                         'Cancelado' => 'danger',
+                        'Rechazado' => 'danger',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Nuevo' => 'heroicon-o-star',
@@ -81,6 +82,7 @@ class PedidoResource extends Resource
                         'Enviado' => 'heroicon-o-check-circle',
                         'Entregado' => 'heroicon-o-check-circle',
                         'Cancelado' => 'heroicon-o-x-circle',
+                        'Rechazado' => 'heroicon-o-x-circle',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha de creación')
