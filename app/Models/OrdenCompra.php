@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrdenTrabajo extends Model
+class OrdenCompra extends Model
 {
     use HasFactory;
 
@@ -14,21 +14,20 @@ class OrdenTrabajo extends Model
         'pedido_id',
         'cotizacion_id',
         'estado',
-        'fecha_ingreso',
-        'fecha_entrega',//fecha_despacho
-        'descripcion',//quitar
+        'referencia_id',
+        'pedido_referencia_id',
+        'fecha_expedicion',
+        'fecha_entrega',
         'observaciones',
-        'direccion',//traer desde la dirección seleccionada en el pedido
-        'telefono',//traer desde la dirección seleccionada en el pedido
-        'celular',//Quitar
-        'email',//quitar
-        'contacto_id',//quitar
+        'cantidad',
+        'direccion',
+        'telefono',
+        'valor_unitario',
+        'valor_total',
+        'valor_iva',
+        'valor_descuento',
         'guia',
-        'transportadora_id',
-        'archivo',
-        //referencias aprobadas
-        //cantidad
-        //
+        'color',
     ];
 
     public function tercero()
@@ -46,9 +45,15 @@ class OrdenTrabajo extends Model
         return $this->belongsTo(Cotizacion::class);
     }
 
-    public function transportadora()
+    public function referencia()
     {
-        return $this->belongsTo(Transportadora::class);
+        return $this->belongsTo(Referencia::class);
     }
+
+    public function pedidoReferencia()
+    {
+        return $this->belongsTo(PedidoReferencia::class);
+    }
+
 
 }

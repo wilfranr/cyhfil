@@ -11,11 +11,16 @@ class Direccion extends Model
 
     protected $fillable = [
         'tercero_id',
-        'direccion',
+        'direccion',//placeholder reclama oficina
         'city_id',
         'state_id',
         'country_id',
-        'principal',
+        'principal',//boton para reclamo oficina, desactivar dirección - default: false
+        //transportadora? Foreign key
+        //Forma de pago: Al cobro Check
+        //Destinatario: Nombre
+        //Teléfono: 1234567
+        //Documento: 1234567
     ];
     
     public function tercero()

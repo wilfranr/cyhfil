@@ -153,15 +153,7 @@ class EditPedidos extends EditRecord
 
                             $cotizacion_id = $cotizacion->id;
 
-                            // Aquí puedes agregar el código para procesar las referencias si lo necesitas
-                            // ...
-
-                            // Notificar al usuario
-                            // Notification::make()
-                            //     ->title('Éxito')
-                            //     ->body('La cotización ha sido generada y todos los cambios han sido guardados.')
-                            //     ->success()
-                            //     ->send();
+                            
 
                             // Redirigir a la página de la cotización en PDF
                             return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
@@ -180,6 +172,10 @@ class EditPedidos extends EditRecord
                             // Cambiar el estado del pedido a 'Aprobado'
                             $record->estado = 'Aprobado';
 
+                            // cambiar el estado de la cotización a 'Aprobado'
+                            $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
+                            $cotizacion->estado = 'Aprobada';
+
                             // Guardar el pedido con todos los cambios
                             $record->save();
 
@@ -190,8 +186,20 @@ class EditPedidos extends EditRecord
                                 ->success()
                                 ->send();
 
+                            //crear orden de compra
+                            $ordenCompra = new \App\Models\OrdenCompra();
+                            $ordenCompra->pedido_id = $record->id;
+                            $ordenCompra->tercero_id = $record->tercero_id;
+                            $ordenCompra->referencia_id = $record->referencia_id;
+                            $ordenCompra->save();
+
+                            $ordenCompra_id = $ordenCompra->id;
+
+                            // Redirigir a la página de la orden de compra en PDF
+                            return redirect()->route('pdf.ordenCompra', ['id' => $ordenCompra_id]);
+
                             // Redirigir a la página de pedidos
-                            $this->redirect($this->getResource()::getUrl('index'));
+                            // $this->redirect($this->getResource()::getUrl('index'));
                         }),
                     Action::make('Rechazar')
                         ->label('Rechazar Cotización')
@@ -226,6 +234,10 @@ class EditPedidos extends EditRecord
 
                             // Guardar el pedido con todos los cambios
                             $record->save();
+
+                            // Cambiar el estado de la cotización a 'Rechazada'
+                            $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
+                            $cotizacion->estado = 'Rechazada';
 
                             // Notificar al usuario
                             Notification::make()
@@ -302,6 +314,10 @@ class EditPedidos extends EditRecord
                     //     ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
                 ];
             }
+        } else {
+            return [
+                Action::make('Guardar Cambios')->action('save')->color('primary'),
+            ];
         }
     }
 

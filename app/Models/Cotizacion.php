@@ -11,7 +11,7 @@ class Cotizacion extends Model
 
     protected $table = 'cotizaciones';
 
-    protected $fillable = ['tercero_id', 'pedido_id'];
+    protected $fillable = ['tercero_id', 'pedido_id', 'estado'];
 
     public function tercero()
     {

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Logistica\Resources\PedidoResource\Pages;
+namespace App\Filament\Resources\CotizacionResource\Pages;
 
-use App\Filament\Logistica\Resources\PedidoResource;
+use App\Filament\Resources\CotizacionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditPedido extends EditRecord
+class EditCotizacion extends EditRecord
 {
-    protected static string $resource = PedidoResource::class;
+    protected static string $resource = CotizacionResource::class;
 
     // protected function getHeaderActions(): array
     // {
