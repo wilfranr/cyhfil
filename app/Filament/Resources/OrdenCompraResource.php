@@ -70,9 +70,8 @@ class OrdenCompraResource extends Resource
                 Forms\Components\TextInput::make('guia')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('color')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\ColorPicker::make('color')
+                    ->required(),
             ]);
     }
 
@@ -80,49 +79,50 @@ class OrdenCompraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tercero_id')
-                    ->numeric()
+                Tables\Columns\ColorColumn::make('color')
+                ->label(''),
+                Tables\Columns\TextColumn::make('tercero.nombre')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('pedido_id')
+                ->label('Pedido')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cotizaciones_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('referencia_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('estado')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('cotizaciones_id')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('referencia_id')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('estado')
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('fecha_expedicion')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fecha_entrega')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cantidad')
-                    ->numeric()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('cantidad')
+                //     ->numeric()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('direccion')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('telefono')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('valor_unitario')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('valor_total')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('valor_iva')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('valor_descuento')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('guia')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('color')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('telefono')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('valor_unitario')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('valor_total')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('valor_iva')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('valor_descuento')
+                //     ->numeric()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('guia')
+                //     ->searchable(),
+                
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -54,9 +54,7 @@ class CotizacionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('download')
-                    ->label('Descargar')
-                    ->icon('heroicon-o-arrow-down-tray'),
+
                 Tables\Actions\Action::make('ver')
                     ->label('Ver')
                     ->icon('heroicon-o-eye')

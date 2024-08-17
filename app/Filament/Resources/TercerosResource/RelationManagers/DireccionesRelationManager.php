@@ -26,7 +26,8 @@ class DireccionesRelationManager extends RelationManager
             ->schema([
                 TextInput::make('direccion')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('En caso de no tener dirección, Escriba Reclama oficina'),
                 Select::make('country_id')
                     ->relationship(name: 'country', titleAttribute: 'name')
                     ->label('País')

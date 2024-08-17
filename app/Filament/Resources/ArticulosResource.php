@@ -225,12 +225,21 @@ class ArticulosResource extends Resource
                                             })
                                             
                                             ->label('Referencia')
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->live(onBlur: true),
                                         TextInput::make('cantidad')
                                             ->label('Cantidad'),
                                         TextInput::make('comentario')
                                             ->label('Comentario'),
-                                    ])->grid(3),
+                                    ])
+                                    ->columns(3)
+                                    ->grid(1)
+                                    ->reorderable()
+                                    ->collapsed()
+                                    ->itemLabel(function (array $state): ?string {
+                                        $referencia = Referencia::find($state['referencia_id']);
+                                        return $referencia ? $referencia->referencia : null;
+                                    }),
                             ]),
                     ])->columnSpan('full')
 

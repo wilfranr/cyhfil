@@ -40,14 +40,17 @@ class OrdenCompraController extends Controller
         $ciudad_cliente = City::where('id', $cliente->city_id)->first();
         
         // Pasa $totalGeneral a la vista junto con los otros datos
-        $pdf = PDF::loadView('pdf.ordenCompra', [
-            'id' => $id,
-            'pedido' => $pedido,
-            'cliente' => $cliente,
-            'vendedor' => $vendedor,
-        ]);
+        // $pdf = PDF::loadView('pdf.ordenCompra', [
+        //     'id' => $id,
+        //     'pedido' => $pedido,
+        //     'cliente' => $cliente,
+        //     'vendedor' => $vendedor,
+        // ]);
 
-        return $pdf->stream('ordenCompra.pdf');
+        // return $pdf->stream('ordenCompra.pdf');
+    
+        
+        
     }
 
 
