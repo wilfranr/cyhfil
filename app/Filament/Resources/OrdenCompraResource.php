@@ -5,7 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrdenCompraResource\Pages;
 use App\Filament\Resources\OrdenCompraResource\RelationManagers;
 use App\Models\OrdenCompra;
+use App\Models\Pedido;
+use App\Models\Tercero;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -17,18 +20,24 @@ class OrdenCompraResource extends Resource
 {
     protected static ?string $model = OrdenCompra::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('tercero_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('pedido_id')
-                    ->required()
-                    ->numeric(),
+                Placeholder::make('pedido_id')
+                    ->label('Pedido')
+                    ->content(fn(OrdenCompra $record): string => $record->pedido->id),
+                Placeholder::make('proveedor')
+                    ->label('Proveedor')
+                    ->content(
+                        fn(OrdenCompra $record): string =>
+                        Tercero::find($record->proveedor_id)?->nombre ?? 'Proveedor no encontrado'
+                    ),
+                Placeholder::make('cliente')
+                    ->content(fn(OrdenCompra $record): string => $record->tercero->nombre)
+                    ->label('Cliente'),
                 Forms\Components\TextInput::make('cotizaciones_id')
                     ->required()
                     ->numeric(),
@@ -80,11 +89,11 @@ class OrdenCompraResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ColorColumn::make('color')
-                ->label(''),
+                    ->label(''),
                 Tables\Columns\TextColumn::make('tercero.nombre')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('pedido_id')
-                ->label('Pedido')
+                    ->label('Pedido')
                     ->numeric()
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('cotizaciones_id')
@@ -122,7 +131,7 @@ class OrdenCompraResource extends Resource
                 //     ->sortable(),
                 // Tables\Columns\TextColumn::make('guia')
                 //     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

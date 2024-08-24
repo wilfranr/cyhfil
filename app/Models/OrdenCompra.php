@@ -13,6 +13,7 @@ class OrdenCompra extends Model
         'tercero_id',
         'pedido_id',
         'cotizacion_id',
+        'proveedor_id',
         'estado',
         'referencia_id',
         'pedido_referencia_id',

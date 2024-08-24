@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
-use App\Models\{Direccion, User, PedidoReferenciaProveedor};
+use App\Models\{Direccion, PedidoReferencia, User, PedidoReferenciaProveedor};
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -212,15 +212,22 @@ class EditPedidos extends EditRecord
                             ->send();
 
                         //crear orden de compra
+                        $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->first();
+                        // dd($pedido_referencia);
+                        $proveedor = PedidoReferenciaProveedor::where('pedido_id', $pedido_referencia->id)->first();
+                        // dd($proveedor);
+
                         $ordenCompra = new \App\Models\OrdenCompra();
                         $ordenCompra->pedido_id = $record->id;
                         $ordenCompra->tercero_id = $record->tercero_id;
+                        $ordenCompra->proveedor_id = $record->proveedor_id;
                         $ordenCompra->referencia_id = $record->referencia_id;
                         $ordenCompra->fecha_expedicion = now();
                         $ordenCompra->fecha_entrega = now()->addDays(30);
                         $ordenCompra->observaciones = $record->observaciones;
                         $ordenCompra->direccion = $data['direccion'];
                         $ordenCompra->telefono = $record->tercero->telefono;
+                        $ordenCompra->proveedor_id = $proveedor->proveedor_id;
 
                         $ordenCompra->save();
 

@@ -28,7 +28,7 @@ class ListasResource extends Resource
 {
     protected static ?string $model = Lista::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'ri-list-check';
 
     protected static ?int $navigationSort = 6   ;
 

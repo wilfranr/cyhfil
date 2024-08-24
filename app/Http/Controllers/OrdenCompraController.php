@@ -10,7 +10,10 @@ class OrdenCompraController extends Controller
 {
     public function generate($id)
     {
+        
         $ordenCompra = OrdenCompra::where('id', $id)->first();
+        dd($ordenCompra);
+
         $pedido_id = OrdenCompra::where('id', $id)->pluck('pedido_id')->first();
         $mostrarReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->pluck('mostrar_referencia')->first();
         // dd($mostrarReferencia);

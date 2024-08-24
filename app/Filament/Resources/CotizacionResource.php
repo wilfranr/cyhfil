@@ -20,7 +20,7 @@ class CotizacionResource extends Resource
     protected static ?string $model = Cotizacion::class;
 
     protected static ?string $label = 'Cotizaciones';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'ri-currency-fill';
 
 
 
