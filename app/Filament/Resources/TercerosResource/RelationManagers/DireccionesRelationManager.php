@@ -66,6 +66,7 @@ class DireccionesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('direccion')
             ->columns([
+                Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('direccion'),
                 Tables\Columns\TextColumn::make('country.name')->label('País'),
                 Tables\Columns\TextColumn::make('state.name')->label('Departamento'),

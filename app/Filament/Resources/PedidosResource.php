@@ -458,7 +458,8 @@ class PedidosResource extends Resource
                                                                 'Inmediata' => 'Inmediata',
                                                                 'Programada' => 'Programada',
                                                             ])
-                                                            ->live(),
+                                                            ->live()
+                                                            ->required(),
                                                         TextInput::make('dias_entrega')
                                                             ->label('Días de entrega')
                                                             ->default(0)

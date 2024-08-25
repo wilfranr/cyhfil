@@ -4,11 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdenCompraResource\Pages;
 use App\Filament\Resources\OrdenCompraResource\RelationManagers;
+use App\Models\Direccion;
 use App\Models\OrdenCompra;
 use App\Models\Pedido;
+use App\Models\Referencia;
 use App\Models\Tercero;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -35,52 +38,63 @@ class OrdenCompraResource extends Resource
                         fn(OrdenCompra $record): string =>
                         Tercero::find($record->proveedor_id)?->nombre ?? 'Proveedor no encontrado'
                     ),
-                Placeholder::make('cliente')
-                    ->content(fn(OrdenCompra $record): string => $record->tercero->nombre)
-                    ->label('Cliente'),
-                Forms\Components\TextInput::make('cotizaciones_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('referencia_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('estado')
-                    ->required()
-                    ->maxLength(255),
+                // Placeholder::make('cliente')
+                //     ->content(fn(OrdenCompra $record): string => $record->tercero->nombre)
+                //     ->label('Cliente'),
+                Placeholder::make('referencia')
+                    ->label('Referencia')
+                    ->content(
+                        fn(OrdenCompra $record): string => Referencia::find($record->referencia_id)?->referencia ?? 'Referecnia no encontrada'
+                    ),
+                Placeholder::make('direccion')
+                ->label('Dirección')
+                ->content(fn (OrdenCompra $record): string => Direccion::find($record->direccion)?->direccion ?? 'No registra dirección' ),
+                // Forms\Components\TextInput::make('cotizaciones_id')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('estado')
+                //     ->required()
+                //     ->maxLength(255),
                 Forms\Components\DatePicker::make('fecha_expedicion')
                     ->required(),
                 Forms\Components\DatePicker::make('fecha_entrega')
                     ->required(),
                 Forms\Components\Textarea::make('observaciones')
-                    ->required()
+                    ->label('Observaciones')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('cantidad')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('direccion')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('telefono')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('valor_unitario')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('valor_total')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('valor_iva')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('valor_descuento')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('guia')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\ColorPicker::make('color')
-                    ->required(),
+                // Forms\Components\TextInput::make('cantidad')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('direccion')
+                //     ->required()
+                //     ->maxLength(255),
+                // Forms\Components\TextInput::make('telefono')
+                //     ->tel()
+                //     ->required()
+                //     ->maxLength(255),
+                // Forms\Components\TextInput::make('valor_unitario')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('valor_total')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('valor_iva')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('valor_descuento')
+                //     ->required()
+                //     ->numeric(),
+                // Forms\Components\TextInput::make('guia')
+                //     ->required()
+                //     ->maxLength(255),
+                // Forms\Components\ColorPicker::make('color')
+                //     ->required(),
+                Select::make('color')
+                ->options([
+                    '#FFFF00' => 'Amarillo',
+                    '#00ff00' => 'Verde',
+                    '#ff0000' => 'Rojo',
+                ])
             ]);
     }
 
@@ -88,6 +102,7 @@ class OrdenCompraResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\ColorColumn::make('color')
                     ->label(''),
                 Tables\Columns\TextColumn::make('tercero.nombre')
