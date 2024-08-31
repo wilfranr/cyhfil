@@ -272,6 +272,7 @@ class PedidosResource extends Resource
                                 Repeater::make('referencias')
                                     ->relationship()
                                     ->schema([
+                                        // Textinput::make('referencia'),
                                         Select::make('referencia_id')
                                             ->relationship(name: 'referencia', titleAttribute: 'referencia')
                                             ->label('Referencia')
@@ -545,7 +546,7 @@ class PedidosResource extends Resource
                                                     }
                                                 }
                                             }),
-                                    ])->columns(3)->collapsible(),
+                                    ])->columns(3)->itemLabel(fn (array $state): ?string => $state['referencia_id'] ?? null)->collapsed(),
                             ])
 
 

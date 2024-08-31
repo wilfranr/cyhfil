@@ -62,9 +62,9 @@ class OrdenCompraResource extends Resource
                 Forms\Components\Textarea::make('observaciones')
                     ->label('Observaciones')
                     ->columnSpanFull(),
-                // Forms\Components\TextInput::make('cantidad')
-                //     ->required()
-                //     ->numeric(),
+                Forms\Components\TextInput::make('cantidad')
+                    ->required()
+                    ->numeric(),
                 // Forms\Components\TextInput::make('direccion')
                 //     ->required()
                 //     ->maxLength(255),
@@ -72,9 +72,9 @@ class OrdenCompraResource extends Resource
                 //     ->tel()
                 //     ->required()
                 //     ->maxLength(255),
-                // Forms\Components\TextInput::make('valor_unitario')
-                //     ->required()
-                //     ->numeric(),
+                Forms\Components\TextInput::make('valor_unitario')
+                    ->required()
+                    ->numeric(),
                 // Forms\Components\TextInput::make('valor_total')
                 //     ->required()
                 //     ->numeric(),
@@ -90,10 +90,11 @@ class OrdenCompraResource extends Resource
                 // Forms\Components\ColorPicker::make('color')
                 //     ->required(),
                 Select::make('color')
+                ->label('Estado')
                 ->options([
-                    '#FFFF00' => 'Amarillo',
-                    '#00ff00' => 'Verde',
-                    '#ff0000' => 'Rojo',
+                    '#FFFF00' => 'En proceso',
+                    '#00ff00' => 'Entregado',
+                    '#ff0000' => 'Cancelado',
                 ])
             ]);
     }

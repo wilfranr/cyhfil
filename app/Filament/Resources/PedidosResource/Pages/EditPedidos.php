@@ -217,13 +217,16 @@ class EditPedidos extends EditRecord
                         foreach ($pedido_referencia as $referencia) {
                             $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
                             // dd($proveedor);
+                            $cantidad = Pedidoreferencia::where('pedido_id', $record->id)->first()->cantidad;
+                            // dd($cantidad);
                             $referencia_nombre = Referencia::where('id', $referencia->referencia_id);
+                            
                             
                             //crear orden de compra
                             $ordenCompra = new \App\Models\OrdenCompra();
                             $ordenCompra->pedido_id = $record->id;
                             $ordenCompra->tercero_id = $record->tercero_id;
-                            $ordenCompra->proveedor_id = $record->proveedor_id;
+                            // $ordenCompra->proveedor_id = $record->proveedor_id;
                             $ordenCompra->referencia_id = $referencia->referencia_id;
                             $ordenCompra->fecha_expedicion = now();
                             $ordenCompra->fecha_entrega = now()->addDays(30);
@@ -231,6 +234,10 @@ class EditPedidos extends EditRecord
                             $ordenCompra->direccion = $data['direccion'];
                             $ordenCompra->telefono = $record->tercero->telefono;
                             $ordenCompra->proveedor_id = $proveedor->proveedor_id;
+                            $ordenCompra->cantidad = $cantidad;
+                            $ordenCompra->valor_unitario = $proveedor->costo_unidad;
+                            
+                            $ordenCompra->valor_total = $proveedor->valor_total;
     
                             $ordenCompra->save();
                         }
@@ -243,7 +250,7 @@ class EditPedidos extends EditRecord
                         // dd($proveedor);
                             
 
-                        $ordenCompra_id = $ordenCompra->id;
+                        // $ordenCompra_id = $ordenCompra->id;
 
                         // Redirigir a la página de la orden de compra en PDF
                         // return redirect()->route('pdf.ordenCompra', ['id' => $ordenCompra_id]);

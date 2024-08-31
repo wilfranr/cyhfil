@@ -70,6 +70,6 @@ class Cotizacion extends Controller
         // $proveedores = PedidoReferenciaProveedor::where('pedido_id', $pedido_id)->get();
         // dd($proveedores);
         
-        return $pdf->download();
+        return $pdf->stream('cotizacion.pdf', ['Attachment' => false]);
     }
 }
