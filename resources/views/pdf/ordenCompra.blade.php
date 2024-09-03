@@ -159,7 +159,7 @@
     </div>
 </div>
 
-<div class="footer">
+{{-- <div class="footer">
     <p>
         <strong>
             CONSIGNAR A NOMBRE DE IMPORTACIONES E INVERSIONES CYH S.A.S.
@@ -186,5 +186,5 @@
         </small>
     </p>
     {{-- insertar imgaen --}}
-    <img src="{{ public_path('images/proveedores.png') }}" width="100%">
-</div>
+    {{-- <img src="{{ public_path('images/proveedores.png') }}" width="100%">
+</div>  --}}

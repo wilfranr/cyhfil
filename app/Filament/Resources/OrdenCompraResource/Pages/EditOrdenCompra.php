@@ -15,6 +15,7 @@ class EditOrdenCompra extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+
             Actions\DeleteAction::make(),   
             Action::make('print')
                 ->label('Imprimir')
@@ -30,5 +31,10 @@ class EditOrdenCompra extends EditRecord
 
                 })
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

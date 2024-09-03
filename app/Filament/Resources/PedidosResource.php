@@ -67,35 +67,35 @@ class PedidosResource extends Resource
                     ->schema([
                         Components\Hidden::make('user_id')->default(auth()->user()->id),
                         Placeholder::make('numero_pedido')
-                            ->content(fn (Pedido $record): string => $record->id)
+                            ->content(fn(Pedido $record): string => $record->id)
                             ->hiddenOn('create')
                             ->label('Número de pedido'),
                         Placeholder::make('created')
-                            ->content(fn (Pedido $record): string => $record->created_at->toFormattedDateString())
+                            ->content(fn(Pedido $record): string => $record->created_at->toFormattedDateString())
                             ->hiddenOn('create')
                             ->label('Fecha de creación'),
                         Placeholder::make('updated')
-                            ->content(fn (Pedido $record): string => $record->updated_at->toFormattedDateString())
+                            ->content(fn(Pedido $record): string => $record->updated_at->toFormattedDateString())
                             ->hiddenOn('create')
                             ->label('Fecha de actualización'),
                         Placeholder::make('Vendedor')
-                            ->content(fn (Pedido $record): string => $record->user->name)
+                            ->content(fn(Pedido $record): string => $record->user->name)
                             ->hiddenOn('create')
                             ->label('Vendedor'),
                         Placeholder::make('cliente')
-                            ->content(fn (Pedido $record): string => $record->tercero->nombre)
+                            ->content(fn(Pedido $record): string => $record->tercero->nombre)
                             ->hiddenOn('create')
                             ->label('Cliente'),
                         Placeholder::make('direccion')
-                            ->content(fn (Pedido $record): string => $record->tercero->direccion)
+                            ->content(fn(Pedido $record): string => $record->tercero->direccion)
                             ->hiddenOn('create')
                             ->label('Dirección'),
                         Placeholder::make('telefono')
-                            ->content(fn (Pedido $record): string => $record->tercero->telefono)
+                            ->content(fn(Pedido $record): string => $record->tercero->telefono)
                             ->hiddenOn('create')
                             ->label('Telefono'),
                         Placeholder::make('email')
-                            ->content(fn (Pedido $record): string => $record->tercero->email)
+                            ->content(fn(Pedido $record): string => $record->tercero->email)
                             ->hiddenOn('create')
                             ->label('Email'),
                         Placeholder::make('contacto')
@@ -116,15 +116,15 @@ class PedidosResource extends Resource
                             ->live()
                             ->preload('tipo'),
                         Placeholder::make('motivo_rechazo')
-                            ->content(fn (Pedido $record): string => $record->motivo_rechazo)
+                            ->content(fn(Pedido $record): string => $record->motivo_rechazo)
                             ->hiddenOn('create')
                             ->label('Motivo de rechazo')
-                            ->visible(fn (Get $get) => $get('estado') === 'Rechazado'),
+                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                         Placeholder::make('comentarios_rechazo')
-                            ->content(fn (Pedido $record): string => $record->comentarios_rechazo)
+                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo)
                             ->hiddenOn('create')
                             ->label('Comentario de rechazo')
-                            ->visible(fn (Get $get) => $get('estado') === 'Rechazado'),
+                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                     ])->hidden(function () {
                         $user = Auth::user();
                         if ($user != null) {
@@ -405,6 +405,7 @@ class PedidosResource extends Resource
                                                             ->options(function (Get $get, $set) {
                                                                 $marcaId = $get('../../marca_id'); // Use relative path to access parent repeater fields
                                                                 $sistemaId = $get('../../sistema_id');
+                                                                $cantidad = $get('../../cantidad');
 
                                                                 $terceros = Tercero::query()
                                                                     ->whereHas('marcas', function ($query) use ($marcaId) {
@@ -420,6 +421,7 @@ class PedidosResource extends Resource
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $proveedor = Tercero::find($get('proveedor_id'));
                                                                 if (!$proveedor) {
+                                                                    // $set('cantidad', null);
                                                                     $set('dias_entrega', null);
                                                                     $set('costo_unidad', null);
                                                                     $set('utilidad', null);
@@ -436,11 +438,16 @@ class PedidosResource extends Resource
                                                                 $set('costo_unidad', $proveedor->costo_unidad);
                                                                 $set('utilidad', $proveedor->utilidad);
                                                                 $set('valor_total', $proveedor->valor_total);
+                                                                $set('cantidad', $get('../../cantidad'));
                                                             })
                                                             ->live()
                                                             ->reactive()
                                                             ->label('Proveedores')
                                                             ->searchable(),
+                                                        TextInput::make('cantidad')
+                                                            ->label('Cantidad')
+                                                            ->numeric()
+                                                            ->required(),
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),
@@ -465,7 +472,7 @@ class PedidosResource extends Resource
                                                             ->label('Días de entrega')
                                                             ->default(0)
                                                             ->numeric()
-                                                            ->visible(fn (Get $get) => $get('Entrega') === 'Programada'),
+                                                            ->visible(fn(Get $get) => $get('Entrega') === 'Programada'),
                                                         TextInput::make('costo_unidad')
                                                             ->label('Costo Unidad')
                                                             ->prefix(function (Get $get) {
@@ -546,7 +553,14 @@ class PedidosResource extends Resource
                                                     }
                                                 }
                                             }),
-                                    ])->columns(3)->itemLabel(fn (array $state): ?string => $state['referencia_id'] ?? null)->collapsed(),
+                                    ])->columns(3)->itemLabel(static function (array $state): ?string {
+                                        static $index = 1; // Variable estática para llevar el índice
+
+                                        $label = "Artículo $index";
+                                        $index++; // Incrementamos el índice para la próxima llamada
+
+                                        return $label;
+                                    })->collapsed(),
                             ])
 
 
@@ -622,7 +636,7 @@ class PedidosResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Nuevo' => 'primary',
                         'En_Costeo' => 'gray',
                         'Cotizado' => 'info',
@@ -632,7 +646,7 @@ class PedidosResource extends Resource
                         'Cancelado' => 'danger',
                         'Rechazado' => 'danger',
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'Nuevo' => 'heroicon-o-star',
                         'En_Costeo' => 'heroicon-c-list-bullet',
                         'Cotizado' => 'heroicon-o-currency-dollar',
@@ -661,11 +675,11 @@ class PedidosResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
 

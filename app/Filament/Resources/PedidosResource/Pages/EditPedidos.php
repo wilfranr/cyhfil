@@ -217,8 +217,6 @@ class EditPedidos extends EditRecord
                         foreach ($pedido_referencia as $referencia) {
                             $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
                             // dd($proveedor);
-                            $cantidad = Pedidoreferencia::where('pedido_id', $record->id)->first()->cantidad;
-                            // dd($cantidad);
                             $referencia_nombre = Referencia::where('id', $referencia->referencia_id);
                             
                             
@@ -234,7 +232,7 @@ class EditPedidos extends EditRecord
                             $ordenCompra->direccion = $data['direccion'];
                             $ordenCompra->telefono = $record->tercero->telefono;
                             $ordenCompra->proveedor_id = $proveedor->proveedor_id;
-                            $ordenCompra->cantidad = $cantidad;
+                            $ordenCompra->cantidad = $proveedor->cantidad;
                             $ordenCompra->valor_unitario = $proveedor->costo_unidad;
                             
                             $ordenCompra->valor_total = $proveedor->valor_total;
