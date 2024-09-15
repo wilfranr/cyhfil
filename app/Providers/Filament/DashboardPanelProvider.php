@@ -2,30 +2,20 @@
 
 namespace App\Providers\Filament;
 
-use Illuminate\Support\Facades\Auth;
-use App\Filament\Pages\TrmSettings;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Http\Middleware\{Authenticate, DispatchServingFilamentEvent, DisableBladeIconComponents};
 use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Filament\Widgets\StatsOverviewWidget;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Cookie\Middleware\{AddQueuedCookiesToResponse, EncryptCookies};
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use OpenSpout\Writer\XLSX\Options\PageSetup;
-use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use Shanerbaner82\PanelRoles\PanelRoles;
-use Filament\Facades\Filament;
 
 
 class DashboardPanelProvider extends PanelProvider
@@ -57,7 +47,7 @@ class DashboardPanelProvider extends PanelProvider
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
-                    ->url('\dashboard\trm-settings'),
+                    ->url('\ventas\trm-settings'),
             ])
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

@@ -360,10 +360,10 @@ class PedidosResource extends Resource
                                                     $set('referencia_seleccionada', $referencia->id);
                                                 }
                                             })
-                                            ->required()
                                             ->live()
                                             ->searchable()
-                                            ->preload('referencia'),
+                                            ->preload('referencia')
+                                            ->placeholder('Ninguno'),
                                         Hidden::make('articulo_id')->disabled(),
                                         TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
                                         TextInput::make('peso')->label('Peso')->disabled(),
@@ -371,7 +371,8 @@ class PedidosResource extends Resource
                                             ->label('Sistema')
                                             ->options(
                                                 Sistema::query()->pluck('nombre', 'id')
-                                            ),
+                                            )
+                                            ->placeholder('Ninguno'),
                                         Select::make('marca_id')
                                             ->label('Marca')
                                             ->options(
@@ -395,6 +396,23 @@ class PedidosResource extends Resource
                                                     }
                                                 }
                                             }),
+                                        ToggleButtons::make('estado')
+                                            ->label('Estado de referencia')
+                                            ->options([
+                                                1 => 'Activo',
+                                                0 => 'Inactivo',
+                                            ])
+                                            ->colors([
+                                                1 => 'success',
+                                                0 => 'danger',
+                                            ])
+                                            ->icons([
+                                                1 => 'heroicon-o-check-circle',
+                                                0 => 'heroicon-o-x-circle',
+                                            ])
+                                            ->default(1)
+                                            ->inline(),
+                                        //Referencias de proveedores
                                         Section::make()
                                             ->schema([
                                                 Repeater::make('referenciasProveedor')->label('Proveedores')
@@ -451,16 +469,12 @@ class PedidosResource extends Resource
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),
-
                                                         Select::make('marca_id')
                                                             ->options(
                                                                 Marca::query()->pluck('nombre', 'id')->toArray()
                                                             )
                                                             ->label('Marca')
                                                             ->searchable(),
-                                                        // TextInput::make('cantidad_proveedor')
-                                                        //         ->label('Cantidad')
-                                                        //         ->numeric(),
                                                         Select::make('Entrega')
                                                             ->options([
                                                                 'Inmediata' => 'Inmediata',
@@ -541,7 +555,10 @@ class PedidosResource extends Resource
                                                         ];
                                                     })
                                                     ->hiddenOn('create')
-                                                    ->columns(3),
+                                                    ->columns(3)->itemLabel(function (array $state): ?string {
+                                                        $proveedor = Tercero::find($state['proveedor_id']);
+                                                        return $proveedor ? $proveedor->nombre : null;
+                                                    }),
                                             ])->hidden(function () {
                                                 $user = Auth::user();
                                                 if ($user != null) {
@@ -553,14 +570,40 @@ class PedidosResource extends Resource
                                                     }
                                                 }
                                             }),
-                                    ])->columns(3)->itemLabel(static function (array $state): ?string {
-                                        static $index = 1; // Variable estática para llevar el índice
-
-                                        $label = "Artículo $index";
-                                        $index++; // Incrementamos el índice para la próxima llamada
-
-                                        return $label;
-                                    })->collapsed(),
+                                    ])->columns(3)->itemLabel(function (array $state): ?string {
+                                        $referencia = Referencia::find($state['referencia_id']);
+                                        return $referencia ? $referencia->referencia : null;
+                                    })->collapsed()
+                                    ->extraItemActions([
+                                        Action::make('openreference')
+                                            ->tooltip('Abrir referencia')
+                                            ->icon('heroicon-m-arrow-top-right-on-square')
+                                            ->url(function (array $arguments, Repeater $component): ?string {
+                                                // Usamos $component->getRawItemState() para obtener el estado crudo del ítem
+                                                $itemData = $component->getRawItemState($arguments['item']);
+                                    
+                                                // Obtenemos el referencia_id del estado
+                                                $referenciaId = $itemData['referencia_id'] ?? null;
+                                    
+                                                // Verificamos si referencia_id existe
+                                                if (! $referenciaId) {
+                                                    return null;
+                                                }
+                                    
+                                                // Buscamos la referencia en la base de datos
+                                                $referencia = Referencia::find($referenciaId);
+                                    
+                                                // Verificamos si la referencia fue encontrada
+                                                if (! $referencia) {
+                                                    return null;
+                                                }
+                                    
+                                                // Retornamos la ruta para editar la referencia
+                                                return ReferenciaResource::getUrl('edit', ['record' => $referencia->id]);
+                                            }, shouldOpenInNewTab: true)
+                                            ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
+                                    ])
+                                    ,
                             ])
 
 

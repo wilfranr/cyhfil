@@ -52,7 +52,7 @@ class TrmSettings extends Page implements Forms\Contracts\HasForms
 
     protected function getTrm()
     {
-        return DB::table('t_r_m_s')->where('date', now()->toDateString())->value('trm') ?? 0;
+        return DB::table('t_r_m_s')->value('trm') ?? 0;
     }
 }
 
