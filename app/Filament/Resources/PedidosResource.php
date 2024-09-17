@@ -266,7 +266,8 @@ class PedidosResource extends Resource
 
                             ])->hiddenOn('edit'),
 
-                        Step::make('Referencias')
+                        // Referencias
+                            Step::make('Referencias')
                             ->icon('heroicon-s-clipboard-document-list')
                             ->schema([
                                 Repeater::make('referencias')
@@ -383,7 +384,7 @@ class PedidosResource extends Resource
                                         TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
                                         Toggle::make('mostrar_referencia')
-                                            ->label('Mostrar referencia en cotización')
+                                            ->label('Mostrar nombre de referencia en cotización')
                                             ->default(true)
                                             ->hidden(function () {
                                                 $user = Auth::user();
