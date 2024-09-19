@@ -100,6 +100,11 @@
         </div>
     </div>
 </div>
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
 <h1 class="cotizacion">Cotización <span class="cot_id text-red">COT000{{ $id }}</span></h1>
 <table>
@@ -148,43 +153,52 @@
                     $totalGeneral = 0; // Inicializa el total general a 0 antes de comenzar el bucle principal
                 @endphp
 
-                @foreach ($pedidoReferencia as $pedidoReferencia)
-                    @php
-                        $referencia = App\Models\Referencia::find($pedidoReferencia->referencia_id);
-                        $pedRefProveedor = App\Models\PedidoReferenciaProveedor::where(
-                            'pedido_id',
-                            $pedidoReferencia->id,
-                        )->get();
-                        $articulo = App\Models\Articulo::find($referencia->articulo_id);
-                    @endphp
-                    @foreach ($pedRefProveedor as $proveedor)
-                    @if ($proveedor->estado == 1) 
-                        <tr>
-                            @if ($mostrarReferencia == 0)
-                                <td>N/A</td>
-                            @else
-                                <td>{{ $referencia->referencia }}</td>
+                @foreach ($pedidoReferencia as $ref)
+                    @if ($ref->estado == 1)
+                        <!-- Verificamos si el estado del pedidoReferencia es 1 -->
+                        @php
+                            $referencia = App\Models\Referencia::find($ref->referencia_id);
+                            $pedRefProveedor = App\Models\PedidoReferenciaProveedor::where(
+                                'pedido_id',
+                                $ref->id,
+                            )->get();
+                            $articulo = App\Models\Articulo::find($referencia->articulo_id);
+                        @endphp
+
+                        @foreach ($pedRefProveedor as $proveedor)
+                            @if ($proveedor->estado == 1)
+                                <tr>
+                                    @if ($ref->mostrar_referencia == 0)
+                                        <td>N/A</td>
+                                    @else
+                                        <td>{{ $referencia->referencia }}</td>
+                                    @endif
+                                    <td>{{ $articulo->definicion }}</td>
+                                    <td>{{ $ref->cantidad }}</td>
+                                    @php $marca = App\Models\Marca::find($proveedor->marca_id); @endphp
+                                    <td>{{ $marca->nombre }}</td>
+
+                                    @if ($proveedor->Entrega == 'Programada')
+                                        <td class="bg-yellow">{{ $proveedor->dias_entrega }} días</td>
+                                    @else
+                                        <td>{{ $proveedor->Entrega }}</td>
+                                    @endif
+
+                                    @php
+                                        $valorTotal = $proveedor->valor_total;
+                                        $valorUnitario = $valorTotal / $ref->cantidad;
+                                        $totalGeneral += $valorTotal; // Suma el valorTotal al total general
+                                    @endphp
+
+                                    <td>${{ $valorUnitario }}</td>
+                                    <td>${{ $valorTotal }}</td>
+                                </tr>
                             @endif
-                            <td>{{ $articulo->definicion }}</td>
-                            <td>{{ $pedidoReferencia->cantidad }}</td>
-                            @php $marca = App\Models\Marca::find($proveedor->marca_id); @endphp
-                            <td>{{ $marca->nombre }}</td>
-                            @if ($proveedor->Entrega == 'Programada')
-                                <td class="bg-yellow">{{ $proveedor->dias_entrega }} días</td>
-                            @else
-                                <td>{{ $proveedor->Entrega }}</td>
-                            @endif
-                            @php
-                                $valorTotal = $proveedor->valor_total;
-                                $valorUnitario = $valorTotal / $pedidoReferencia->cantidad;
-                                $totalGeneral += $valorTotal; // Suma el valorTotal al total general
-                            @endphp
-                            <td>${{ $valorUnitario }}</td>
-                            <td>${{ $valorTotal }}</td>
-                        </tr>
+                        @endforeach
                     @endif
-                    @endforeach
                 @endforeach
+
+
 
                 <tr>
                     <td colspan="6" class="text-right">Subtotal:</td>
