@@ -106,7 +106,7 @@
     </div>
 @endif
 
-<h1 class="cotizacion">Cotización <span class="cot_id text-red">COT000{{ $id }}</span></h1>
+<h1 class="cotizacion">Cotización <span class="cot_id text-red">COT{{ $id }}</span></h1>
 <table>
     <tr>
         <td colspan="8"><strong>Elaborada por: </strong>{{ $pedido->user->name }} </td>

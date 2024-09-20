@@ -434,7 +434,20 @@ class EditPedidos extends EditRecord
 
                             // Guardar el pedido con todos los cambios
                             $record->save();
+                            // Verificar si hay al menos una referencia activa
+                            $referenciasActivas = \App\Models\PedidoReferencia::where('pedido_id', $record->id)
+                                ->where('estado', 1)
+                                ->exists();
+                            if (!$referenciasActivas) {
+                                // Si no hay referencias activas, mostrar una notificación de alerta
+                                Notification::make()
+                                    ->title('Error')
+                                    ->body('Debe seleccionar al menos una referencia activa para generar la cotización.')
+                                    ->danger() // Establece el color de la notificación como rojo (de error)
+                                    ->send();
 
+                                return;
+                            }
                             // Crear la cotización
                             $cotizacion = new \App\Models\Cotizacion();
                             $cotizacion->pedido_id = $record->id;
@@ -443,18 +456,16 @@ class EditPedidos extends EditRecord
 
                             $cotizacion_id = $cotizacion->id;
 
-                            // Aquí puedes agregar el código para procesar las referencias si lo necesitas
-                            // ...
+                            
 
-                            // Notificar al usuario
-                            Notification::make()
-                                ->title('Éxito')
-                                ->body('La cotización ha sido generada y todos los cambios han sido guardados.')
+                            $url = route('pdf.cotizacion', ['id' => $cotizacion_id]);
+
+                            // Usar una notificación para mostrar el link con la opción de abrir en nueva pestaña
+                            return Notification::make()
+                                ->title('Cotización Generada')
+                                ->body('La cotización ha sido generada. <a href="' . $url . '" target="_blank" style="color: green;">Haz clic aquí para verla</a>.')
                                 ->success()
                                 ->send();
-
-                            // Redirigir a la página de la cotización en PDF
-                            return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
                         })
                 ];
             } elseif ($this->record->estado == 'Cotizado') {
@@ -477,7 +488,7 @@ class EditPedidos extends EditRecord
 
                             // Guardar el pedido con todos los cambios
                             $record->save();
-                            
+
                             // Verificar si hay al menos una referencia activa
                             $referenciasActivas = \App\Models\PedidoReferencia::where('pedido_id', $record->id)
                                 ->where('estado', 1)
@@ -502,10 +513,14 @@ class EditPedidos extends EditRecord
 
 
 
+                            $url = route('pdf.cotizacion', ['id' => $cotizacion_id]);
 
-
-                            // Redirigir a la página de la cotización en PDF
-                            return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
+                            // Usar una notificación para mostrar el link con la opción de abrir en nueva pestaña
+                            return Notification::make()
+                                ->title('Cotización Generada')
+                                ->body('La cotización ha sido generada. <a href="' . $url . '" target="_blank" style="color: green;">Haz clic aquí para verla</a>.')
+                                ->success()
+                                ->send();
                         }),
                     Action::make('Aprobar')
                         ->label('Aprobar Cotización')
@@ -591,21 +606,6 @@ class EditPedidos extends EditRecord
 
                                 $ordenCompra->save();
                             }
-
-
-
-
-                            //Traer todos los proveedores de este pedido
-                            // $proveedor = PedidoReferenciaProveedor::where('pedido_id', $pedido_referencia->id)->first();
-                            // dd($proveedor);
-
-
-                            // $ordenCompra_id = $ordenCompra->id;
-
-                            // Redirigir a la página de la orden de compra en PDF
-                            // return redirect()->route('pdf.ordenCompra', ['id' => $ordenCompra_id]);
-
-
 
                             //Redirigir a la página de pedidos
                             $this->redirect($this->getResource()::getUrl('index'));

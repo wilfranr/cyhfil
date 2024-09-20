@@ -57,8 +57,9 @@ class OrdenCompraController extends Controller
             'ciudad_proveedor' => $ciudad_proveedor,
             'item' => $item,
         ]);
+        $fileName = 'OC' . $ordenCompra->id . '.pdf';
 
-        return $pdf->stream('ordenCompra.pdf', ['Attachment' => false]);
+        return $pdf->download($fileName);
     
         
         

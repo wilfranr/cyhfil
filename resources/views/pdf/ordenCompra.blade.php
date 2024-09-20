@@ -101,7 +101,7 @@
     </div>
 </div>
 
-<h1 class="cotizacion">Orden de Compra <span class="cot_id text-red">OC000{{ $id }}</span></h1>
+<h1 class="cotizacion">Orden de Compra <span class="cot_id text-red">OC{{ $id }}</span></h1>
 <table>
     <tr>
         <td colspan="8"><strong>SEÑOR(ES): </strong>{{ $proveedor->nombre }} </td>
@@ -141,50 +141,8 @@
                     <td>${{ $ordenCompra->valor_unitario*$ordenCompra->cantidad }}</td>
                 </tr>
 
-
-                {{-- <tr>
-                    <td colspan="6" class="text-right">Subtotal:</td>
-                    <td>${{ $totalGeneral }}</td>
-                </tr>
-                <tr>
-                    <td colspan="6" class="text-right">Iva</td>
-                    <td>${{ $totalGeneral * 0.19 }}</td>
-                </tr>
-                <tr>
-                    <td colspan="6" class="text-right text-red">Total</td>
-                    <td class="text-red">${{ $totalGeneral * 0.19 + $totalGeneral }}</td>
-                </tr> --}}
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- <div class="footer">
-    <p>
-        <strong>
-            CONSIGNAR A NOMBRE DE IMPORTACIONES E INVERSIONES CYH S.A.S.
-            CUENTA DE AHORROS NO. 073514564 DEL BANCO DE BOGOTA
-            CUENTA DE AHORROS NO. 108-000011-20 DE BANCOLOMBIA
-        </strong>
-    </p>
-    <p>
-        <small>
-            Cotización valida hasta la fecha establecida en el campo "validez". Esta cotización está sujeta a venta
-            previa. La garantía del producto ofrecido aquí
-            es la misma garantía ofrecida por el fabricante. IMPORTACIONES E INVERSIONES CYH S.A.S. no se hace
-            responsable por problemas consecuentes
-            por materiales de fabricación y/o instalación deficiente del producto, esto será responsabilidad del cliente
-            o el fabricante según corresponda el
-            caso. El tiempo de entrega estipulado en la cotización presente es una estimación según condiciones normales
-            de transporte o importación, no
-            cuenta con retrasos en vuelos, aduanas o casos fortuitos. En caso de cualquier anormalidad en la entrega del
-            producto, IMPORTACIONES E
-            INVERSIONES CYH SAS informara al cliente. Al comprar el cliente acepta que entiende a cabalidad lo
-            establecido en las anteriores líneas, cualquier
-            información adicional, favor consultarla en nuestra línea 801 2642 en Bogotá o escribanos un correo a
-            importacioneseinversionescyh@gmail.com
-        </small>
-    </p>
-    {{-- insertar imgaen --}}
-    {{-- <img src="{{ public_path('images/proveedores.png') }}" width="100%">
-</div>  --}}

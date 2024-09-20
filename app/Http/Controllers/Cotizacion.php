@@ -29,16 +29,6 @@ class Cotizacion extends Controller
         $pedido = Pedido::where('id', $pedido_id)->first();
         $pedidoReferencia = PedidoReferencia::where('pedido_id', $pedido_id)->get();
 
-        // Verificamos si hay al menos una referencia activa (estado == 1)
-        $referenciasActivas = $pedidoReferencia->filter(function ($ref) {
-            return $ref->estado == 1;
-        });
-
-        // Si no hay ninguna referencia activa, redirigimos con un mensaje de alerta
-        if ($referenciasActivas->isEmpty()) {
-            return redirect()->back()->with('error', 'Debe seleccionar al menos una referencia activa para generar la cotización.');
-        }
-
         $totalGeneral = 0; // Inicializa el total general a 0
         $pedidoReferenciaProveedor = collect(); // Inicializa una colección vacía para almacenar todos los proveedores
 
@@ -75,6 +65,8 @@ class Cotizacion extends Controller
             'ciudad_cliente' => $ciudad_cliente->name,
         ]);
 
-        return $pdf->stream('cotizacion.pdf', ['Attachment' => false]);
+        $fileName = 'COT' . $cotizacion->id . '.pdf';
+
+        return $pdf->download($fileName);
     }
 }
