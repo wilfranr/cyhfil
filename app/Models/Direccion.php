@@ -9,6 +9,8 @@ class Direccion extends Model
 {
     use HasFactory;
 
+    protected $table = 'direcciones';
+
     protected $fillable = [
         'tercero_id',
         'direccion',//placeholder reclama oficina

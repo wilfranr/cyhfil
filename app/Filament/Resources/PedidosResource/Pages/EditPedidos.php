@@ -456,7 +456,7 @@ class EditPedidos extends EditRecord
 
                             $cotizacion_id = $cotizacion->id;
 
-                            
+
 
                             $url = route('pdf.cotizacion', ['id' => $cotizacion_id]);
 
@@ -551,7 +551,6 @@ class EditPedidos extends EditRecord
 
                                     return $direccion->id;
                                 }),
-
                         ])
                         ->action(function (array $data) {
                             // Obtener el registro actual
@@ -564,7 +563,7 @@ class EditPedidos extends EditRecord
                             // Cambiar el estado del pedido a 'Aprobado'
                             $record->estado = 'Aprobado';
 
-                            // cambiar el estado de la cotización a 'Aprobado'
+                            // Cambiar el estado de la cotización a 'Aprobado'
                             $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
                             $cotizacion->estado = 'Aprobada';
 
@@ -578,20 +577,16 @@ class EditPedidos extends EditRecord
                                 ->success()
                                 ->send();
 
-                            //Viene desde la tabla pedido_referencia
+                            // Obtener referencias de la tabla pedido_referencia
                             $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
-                            // dd($pedido_referencia);
+
                             foreach ($pedido_referencia as $referencia) {
                                 $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
-                                // dd($proveedor);
-                                $referencia_nombre = Referencia::where('id', $referencia->referencia_id);
 
-
-                                //crear orden de compra
+                                // Crear orden de compra
                                 $ordenCompra = new \App\Models\OrdenCompra();
                                 $ordenCompra->pedido_id = $record->id;
                                 $ordenCompra->tercero_id = $record->tercero_id;
-                                // $ordenCompra->proveedor_id = $record->proveedor_id;
                                 $ordenCompra->referencia_id = $referencia->referencia_id;
                                 $ordenCompra->fecha_expedicion = now();
                                 $ordenCompra->fecha_entrega = now()->addDays(30);
@@ -601,15 +596,32 @@ class EditPedidos extends EditRecord
                                 $ordenCompra->proveedor_id = $proveedor->proveedor_id;
                                 $ordenCompra->cantidad = $proveedor->cantidad;
                                 $ordenCompra->valor_unitario = $proveedor->costo_unidad;
-
                                 $ordenCompra->valor_total = $proveedor->valor_total;
-
                                 $ordenCompra->save();
                             }
+                            // Obtener el texto de la dirección seleccionada
+                            $direccion = Direccion::find($data['direccion']);
 
-                            //Redirigir a la página de pedidos
+                            // Crear una sola orden de trabajo para el pedido completo
+                            $ordenTrabajo = new \App\Models\OrdenTrabajo();
+                            $ordenTrabajo->tercero_id = $record->tercero_id;
+                            $ordenTrabajo->pedido_id = $record->id;
+                            $ordenTrabajo->cotizacion_id = $cotizacion->id;
+                            $ordenTrabajo->estado = 'Pendiente';
+                            $ordenTrabajo->fecha_ingreso = now();
+                            $ordenTrabajo->fecha_entrega = now()->addDays(30);
+                            $ordenTrabajo->observaciones = $record->observaciones;
+                            $ordenTrabajo->direccion = $direccion->direccion; // Guardar el texto de la dirección
+                            $ordenTrabajo->telefono = $record->tercero->telefono;
+                            $ordenTrabajo->transportadora_id = null; // Puedes definir esto según tus necesidades
+                            $ordenTrabajo->guia = null; // Puedes definir esto según tus necesidades
+                            $ordenTrabajo->archivo = null; // Puedes definir esto según tus necesidades
+                            $ordenTrabajo->save();
+
+                            // Redirigir a la página de pedidos
                             $this->redirect($this->getResource()::getUrl('index'));
                         }),
+
 
                     Action::make('Rechazar')
                         ->label('Rechazar Cotización')

@@ -133,6 +133,10 @@ class MaquinasResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('foto')
                     ->searchable()
                     ->sortable(),

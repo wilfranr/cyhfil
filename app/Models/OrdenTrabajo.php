@@ -15,14 +15,10 @@ class OrdenTrabajo extends Model
         'cotizacion_id',
         'estado',
         'fecha_ingreso',
-        'fecha_entrega',//fecha_despacho
-        'descripcion',//quitar
+        'fecha_entrega',
+        'direccion',
+        'telefono',
         'observaciones',
-        'direccion',//traer desde la dirección seleccionada en el pedido
-        'telefono',//traer desde la dirección seleccionada en el pedido
-        'celular',//Quitar
-        'email',//quitar
-        'contacto_id',//quitar
         'guia',
         'transportadora_id',
         'archivo',
@@ -48,4 +44,8 @@ class OrdenTrabajo extends Model
         return $this->belongsTo(Transportadora::class);
     }
 
+    public function referencias()
+    {
+        return $this->hasMany(PedidoReferencia::class, 'pedido_id', 'pedido_id');
+    }
 }
