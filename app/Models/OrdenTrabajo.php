@@ -26,9 +26,6 @@ class OrdenTrabajo extends Model
         'guia',
         'transportadora_id',
         'archivo',
-        //referencias aprobadas
-        //cantidad
-        //
     ];
 
     public function tercero()

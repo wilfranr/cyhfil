@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Logistica\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Logistica\Resources\OrdenTrabajoResource\Pages;
-use App\Filament\Logistica\Resources\OrdenTrabajoResource\RelationManagers;
+use App\Filament\Resources\OrdenTrabajoResource\Pages;
+use App\Filament\Resources\OrdenTrabajoResource\RelationManagers;
 use App\Models\OrdenTrabajo;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,13 +18,6 @@ class OrdenTrabajoResource extends Resource
     protected static ?string $model = OrdenTrabajo::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function canCreate(): bool
-    {
-        // Puedes condicionar esto según el rol del usuario o cualquier otra lógica
-        return false;
-    }
-
 
     public static function form(Form $form): Form
     {
