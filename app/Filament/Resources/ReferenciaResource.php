@@ -55,6 +55,7 @@ class ReferenciaResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('articulo_id')
                     ->label('Articulo')
+                    ->placeholder('Seleccione un artículo o cree uno nuevo')
                     ->options(
                         \App\Models\Articulo::all()->pluck('descripcionEspecifica', 'id')->toArray()
                     )

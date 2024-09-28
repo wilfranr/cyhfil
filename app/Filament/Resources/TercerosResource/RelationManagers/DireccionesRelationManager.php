@@ -39,7 +39,7 @@ class DireccionesRelationManager extends RelationManager
                         $set('city_id', null);
                     }),
                 Select::make('state_id')
-                    ->options(fn (Get $get): Collection => State::query()
+                    ->options(fn(Get $get): Collection => State::query()
                         ->where('country_id', $get('country_id'))
                         ->pluck('name', 'id'))
                     ->label('Departamento')
@@ -50,7 +50,7 @@ class DireccionesRelationManager extends RelationManager
                         $set('city_id', null);
                     }),
                 Select::make('city_id')
-                    ->options(fn (Get $get): Collection => City::query()
+                    ->options(fn(Get $get): Collection => City::query()
                         ->where('state_id', $get('state_id'))
                         ->pluck('name', 'id'))
                     ->label('Ciudad')
