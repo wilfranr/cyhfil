@@ -48,4 +48,11 @@ class OrdenTrabajo extends Model
     {
         return $this->hasMany(PedidoReferencia::class, 'pedido_id', 'pedido_id');
     }
+
+    // App\Models\OrdenTrabajo.php
+
+    public function direccion()
+    {
+        return $this->belongsTo(Direccion::class, 'direccion_id');
+    }
 }

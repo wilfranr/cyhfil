@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Cotizacion;
 use App\Http\Controllers\OrdenCompraController;
+use App\Http\Controllers\OrdenTrabajoController;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -42,3 +43,5 @@ Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cot
 
 //ruta orden de compra
 Route::get('/pdf/generateOrdenCompra/{id}', [OrdenCompraController::class, 'generate'])->name('pdf.ordenCompra');
+
+Route::get('/ordenTrabajo/{id}/pdf', [OrdenTrabajoController::class, 'generarPDF'])->name('ordenTrabajo.pdf');

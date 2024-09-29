@@ -4,58 +4,127 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdenTrabajoResource\Pages;
 use App\Filament\Resources\OrdenTrabajoResource\RelationManagers;
+use App\Models\City;
+use App\Models\Direccion;
 use App\Models\OrdenTrabajo;
+use App\Models\State;
+use App\Models\Transportadora;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\View;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrdenTrabajoResource extends Resource
 {
     protected static ?string $model = OrdenTrabajo::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
+
+    public static function canCreate(): bool
+    {
+        // Puedes condicionar esto según el rol del usuario o cualquier otra lógica
+        return false;
+    }
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('tercero_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('pedido_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('cotizacion_id')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('estado')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('fecha_ingreso')
+                Placeholder::make('id')
+                    ->label('')
+                    ->content(fn($record) => $record->id ? "OT-$record->id" : 'N/A')
+                    ->columnSpan(2),
+                Placeholder::make('cliente')
+                    ->label('Cliente')
+                    ->content(fn($record) => $record->tercero->nombre ?? 'N/A'),
+
+                Placeholder::make('maquina')
+                    ->label('Máquina')
+                    ->content(fn($record) => $record->pedido->maquina->modelo ?? 'N/A'),
+
+                Placeholder::make('pedido')
+                    ->label('Pedido')
+                    ->content(fn($record) => $record->pedido->id ? $record->pedido->id : 'N/A'),
+
+                Placeholder::make('cotizacion')
+                    ->label('Cotización')
+                    ->content(fn($record) => $record->cotizacion->id ? 'COT-' . $record->cotizacion->id : 'N/A'),
+
+                Forms\Components\Select::make('estado')
+                    ->label('Estado')
+                    ->options([
+                        'Pendiente' => 'Pendiente',
+                        'En Proceso' => 'En Proceso',
+                        'Completado' => 'Completado',
+                        'Cancelado' => 'Cancelado',
+                    ])
                     ->required(),
-                Forms\Components\DatePicker::make('fecha_entrega'),
+
+                Forms\Components\DatePicker::make('fecha_ingreso')
+                    ->label('Fecha de Ingreso')
+                    ->required(),
+
+                Forms\Components\DatePicker::make('fecha_entrega')
+                    ->label('Fecha de Entrega'),
+
                 Forms\Components\Textarea::make('observaciones')
+                    ->label('Observaciones')
                     ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('direccion')
+                    ->label('Dirección')
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('telefono')
+                    ->label('Teléfono')
                     ->tel()
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('guia')
+                    ->label('Guía')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\TextInput::make('transportadora_id')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('archivo')
-                    ->maxLength(255)
-                    ->default(null),
+
+                Forms\Components\Select::make('transportadora_id')
+                    ->label('Transportadora')
+                    ->relationship('transportadora', 'nombre')
+                    ->required()
+                    ->preload()
+                    ->searchable(),
+
+                FileUpload::make('archivo')
+                    ->label('Archivo'),
+
+                Forms\Components\Placeholder::make('referencias_text')
+                    ->label('Referencias')
+                    ->content(function ($record) {
+                        return $record->referencias->map(function ($referencia) {
+                            return 'Referencia: ' . $referencia->referencia->referencia . ' - Cantidad: ' . $referencia->cantidad;
+                        })->implode("\n"); 
+                    })
+                    ->extraAttributes(['style' => 'white-space: pre-line;']),  
+                    
+
+
+
+
+
             ]);
     }
 
@@ -63,55 +132,79 @@ class OrdenTrabajoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tercero_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('pedido_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('cotizacion_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('estado')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('fecha_ingreso')
-                    ->date()
+                    ->label('Estado')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Pendiente' => 'warning',    // Amarillo
+                        'En Proceso' => 'info',      // Azul
+                        'Completado' => 'success',   // Verde
+                        'Cancelado' => 'danger',     // Rojo
+                        default => 'secondary',      // Gris para cualquier otro estado
+                    })
+                    ->icon(fn(string $state): ?string => match (strtolower(trim($state))) {
+                        'pendiente' => 'heroicon-o-clock',
+                        'en proceso' => 'ri-refresh-line',
+                        'completado' => 'heroicon-o-check-circle',
+                        'cancelado' => 'heroicon-o-x-circle',
+                        default => null
+                    }),
+
+                Tables\Columns\TextColumn::make('tercero.nombre')
+                    ->label('Cliente')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_entrega')
-                    ->date()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('direccion')
+                    ->label('Dirección')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('telefono')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('guia')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('transportadora_id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('transportadora.nombre')
+                    ->label('Transportadora')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('archivo')
-                    ->searchable(),
+
+                    Tables\Columns\TextColumn::make('referencias')
+                    ->label('Referencias')
+                    ->getStateUsing(function ($record) {
+                        return $record->referencias->map(function ($referencia) {
+                            return $referencia->referencia->referencia; // Ajusta según el campo de referencia
+                        })->implode(', ');
+                    })
+                    ->sortable()
+                    ->searchable()
+                    ->limit(50),
+                
+
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Última Actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Puedes agregar filtros aquí si es necesario
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('print')
+                    ->label('Imprimir Guia')
+                    ->icon('heroicon-o-printer')
+                    ->action(function (OrdenTrabajo $ordenTrabajo) {
+                        return redirect()->route('ordenTrabajo.pdf', $ordenTrabajo->id);
+                    }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
 
     public static function getRelations(): array
     {
@@ -126,6 +219,8 @@ class OrdenTrabajoResource extends Resource
             'index' => Pages\ListOrdenTrabajos::route('/'),
             'create' => Pages\CreateOrdenTrabajo::route('/create'),
             'edit' => Pages\EditOrdenTrabajo::route('/{record}/edit'),
+            'view' => Pages\ViewOrdenTrabajo::route('/{record}/view'),
+
         ];
     }
 }

@@ -20,6 +20,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +31,7 @@ class OrdenTrabajoResource extends Resource
 {
     protected static ?string $model = OrdenTrabajo::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     public static function canCreate(): bool
     {
@@ -127,13 +128,6 @@ class OrdenTrabajoResource extends Resource
             ]);
     }
 
-
-
-
-
-
-
-
     public static function table(Table $table): Table
     {
         return $table
@@ -152,7 +146,7 @@ class OrdenTrabajoResource extends Resource
                     })
                     ->icon(fn(string $state): ?string => match (strtolower(trim($state))) {
                         'pendiente' => 'heroicon-o-clock',
-                        'en proceso' => 'heroicon-o-refresh',
+                        'en proceso' => 'ri-refresh-line',
                         'completado' => 'heroicon-o-check-circle',
                         'cancelado' => 'heroicon-o-x-circle',
                         default => null
@@ -162,42 +156,25 @@ class OrdenTrabajoResource extends Resource
                     ->label('Cliente')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('pedido_id')
-                    ->label('Pedido')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('cotizacion_id')
-                    ->label('Cotización')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('fecha_ingreso')
-                    ->label('Fecha de Ingreso')
-                    ->date()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('fecha_entrega')
-                    ->label('Fecha de Entrega')
-                    ->date()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('direccion')
                     ->label('Dirección')
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('telefono')
-                    ->label('Teléfono')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('transportadora.nombre')
                     ->label('Transportadora')
                     ->sortable(),
 
-                // Columna para mostrar las referencias asociadas al pedido
-                Tables\Columns\TextColumn::make('referencias.referencia')
+                    Tables\Columns\TextColumn::make('referencias')
                     ->label('Referencias')
+                    ->getStateUsing(function ($record) {
+                        return $record->referencias->map(function ($referencia) {
+                            return $referencia->referencia->referencia; // Ajusta según el campo de referencia
+                        })->implode(', ');
+                    })
                     ->sortable()
                     ->searchable()
-                    ->limit(50), // Limita la longitud del texto
+                    ->limit(50),
+                
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha de Creación')
@@ -216,6 +193,12 @@ class OrdenTrabajoResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('print')
+                    ->label('Imprimir Guia')
+                    ->icon('heroicon-o-printer')
+                    ->action(function (OrdenTrabajo $ordenTrabajo) {
+                        return redirect()->route('ordenTrabajo.pdf', $ordenTrabajo->id);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

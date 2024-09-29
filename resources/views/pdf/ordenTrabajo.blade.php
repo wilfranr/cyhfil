@@ -6,34 +6,108 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        .header {
-            text-align: right;
+    
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .header img {
-            max-width: 150px;
+    
+        h3,
+        h4,
+        p {
+            margin: 5px 0;
         }
-        .content {
-            padding: 20px;
-            background-color: #f3f3f3;
-        }
-        .footer {
-            margin-top: 20px;
+    
+        .empresa-datos {
+            font-size: 12px;
+            margin-bottom: 20px;
             text-align: center;
         }
-        .footer img {
-            margin: 0 10px;
-            max-width: 80px;
+    
+        .articulos {
+            margin-bottom: 20px;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+    
+        td {
+            background-color: #f2f2f2;
+            border: 1px solid #fff;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #d6d6d6;
+        }
+    
+        .text-right {
+            text-align: right;
+        }
+    
+        .cotizacion {
+            text-align: center;
+            font-size: 16px;
+        }
+    
+        .cot_id {
+            font-size: 20px;
+        }
+    
+        .text-red {
+            color: crimson;
+        }
+    
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+            font-size: 8px;
+            text-align: justify;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="path_to_your_logo/logo.png" alt="Logo">
+    <div class="empresa">
+    <div class="logo">
+        <img src="{{ public_path('images/logo.png') }}" alt="Logo" width="60px" height="60px">
     </div>
+    <div class="empresa-datos">
+        <div class="empresa-header">
+            <h1>
+                @foreach ($empresas as $empresa)
+                @endforeach
+                {{ $empresa->nombre }}
+            </h1>
+            <h4>
+                NIT {{ $empresa->nit }}
+            </h4>
+        </div>
+        <div class="empresa-body">
+            <small>{{ $empresa->direccion }}</small><br>
+            <small>TELÉFONO: {{ $empresa->telefono }} - {{ $empresa->celular }}</small><br>
+            <small>{{ $empresa->email }}</small><br>
+            @php
+                $pais = App\Models\Country::find($empresa->country_id);
+                $ciudad = App\Models\City::find($empresa->city_id);
+            @endphp
+            <small>{{ $ciudad->name }}, {{ $pais->name }}</small>
+        </div>
+    </div>
+</div>
     <div class="content">
         <p><strong>DESTINATARIO:</strong> {{ $ordenTrabajo->tercero->nombre }}</p>
-        <p><strong>NIT/CC:</strong> {{ $ordenTrabajo->tercero->nit }}</p>
+        <p><strong>NIT/CC:</strong> {{ $ordenTrabajo->tercero->numero_documento }}</p>
         <p><strong>TRANSPORTADORA:</strong> {{ $ordenTrabajo->transportadora->nombre }}</p>
         <p><strong>FORMA DE PAGO:</strong> AL COBRO</p>
         <p><strong>DIRECCION:</strong> {{ $ordenTrabajo->direccion }}</p>
