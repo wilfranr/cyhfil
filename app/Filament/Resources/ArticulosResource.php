@@ -98,42 +98,7 @@ class ArticulosResource extends Resource
 
                                         return $definicion->nombre;
                                     })
-                                    // ->relationship('listas')
-                                    // ->createOptionForm(function () {
-                                    //     return [
-                                    //         TextInput::make('tipo')
-                                    //             ->default('Definición de artículo')
-                                    //             ->readonly()
-                                    //             ->required(),
-                                    //         TextInput::make('definicion')
-                                    //             ->default('Definición de artículo')
-                                    //             ->readonly()
-                                    //             ->required(),
-                                    //         TextInput::make('nombre')
-                                    //             ->label('Nombre')
-                                    //             ->placeholder('Nombre de la definición'),
-                                    //         TextInput::make('definicion')
-                                    //             ->label('Definición')
-                                    //             ->placeholder('Definición del artículo'),
-                                    //         FileUpload::make('foto')
-                                    //             ->label('Foto')
-                                    //             ->image()
-                                    //             ->imageEditor(),
-
-                                    //     ];
-                                    // })
-                                    // ->afterStateUpdated(function (Set $set, Get $get) {
-                                    //     $lista = Lista::find($get('definicion'));
-                                    //     // dd($lista);
-                                    //     // dd($lista->fotoMedida);
-                                    //     $set('fotoMedida', $lista->fotoMedida);
-
-                                    // })
-                                    // ->afterStateHydrated(function (Set $set, Get $get) {
-                                    //     //obtener el id de eta lista
-                                    //     $idLista = Lista::find($get('definicion'));
-                                    //     dd($idLista);
-                                    // })
+                                    
                                     ->searchable()
                                     ->preload()
                                     ->live()

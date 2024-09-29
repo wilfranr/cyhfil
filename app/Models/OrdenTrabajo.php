@@ -53,6 +53,6 @@ class OrdenTrabajo extends Model
 
     public function direccion()
     {
-        return $this->belongsTo(Direccion::class, 'direccion_id');
+        return $this->belongsTo(Direccion::class, 'direccion_id', 'id', 'direccion');
     }
 }

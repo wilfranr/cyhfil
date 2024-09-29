@@ -3,17 +3,20 @@
 namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
-use App\Models\{Direccion, PedidoReferencia, User, PedidoReferenciaProveedor, Referencia};
+use App\Models\{City, Country, State, Direccion, PedidoReferencia, User, PedidoReferenciaProveedor, Referencia};
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 // use Filament\Actions\Modal\Actions\Action;
 use Filament\Forms\Components\{Card, Select, Textarea, TextInput};
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Widgets\{StatsOverviewWidget, Widget};
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -539,6 +542,37 @@ class EditPedidos extends EditRecord
                                     TextInput::make('direccion')
                                         ->label('Nueva Dirección')
                                         ->required(),
+                                    Select::make('country_id')
+                                        ->options(fn(Get $get): Collection => Country::query()
+                                            ->pluck('name', 'id'))
+                                        ->label('País')
+                                        ->searchable()
+                                        ->preload()
+                                        ->live()
+                                        ->afterStateUpdated(function (Set $set) {
+                                            $set('state_id', null);
+                                            $set('city_id', null);
+                                        }),
+                                    Select::make('state_id')
+                                        ->options(fn(Get $get): Collection => State::query()
+                                            ->where('country_id', $get('country_id'))
+                                            ->pluck('name', 'id'))
+                                        ->label('Departamento')
+                                        ->searchable()
+                                        ->preload()
+                                        ->live()
+                                        ->afterStateUpdated(function (Set $set) {
+                                            $set('city_id', null);
+                                        }),
+
+                                    Select::make('city_id')
+                                        ->options(fn(Get $get): Collection => City::query()
+                                            ->where('state_id', $get('state_id'))
+                                            ->pluck('name', 'id'))
+                                        ->label('Ciudad')
+                                        ->searchable()
+                                        ->live()
+                                        ->preload(),
                                 ])
                                 ->createOptionUsing(function ($data) {
                                     $direccion = Direccion::create([
@@ -564,24 +598,27 @@ class EditPedidos extends EditRecord
                             $record->estado = 'Aprobado';
 
                             // Cambiar el estado de la cotización a 'Aprobado'
-                            $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
-                            $cotizacion->estado = 'Aprobada';
 
                             // Guardar el pedido con todos los cambios
                             $record->save();
 
-                            // Notificar al usuario
-                            Notification::make()
-                                ->title('Éxito')
-                                ->body('La cotización ha sido aprobada y todos los cambios han sido guardados.')
-                                ->success()
-                                ->send();
 
                             // Obtener referencias de la tabla pedido_referencia
                             $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
 
                             foreach ($pedido_referencia as $referencia) {
                                 $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
+
+                                if (!$proveedor) {
+                                    // Si no hay proveedor, mostrar una notificación de alerta
+                                    Notification::make()
+                                        ->title('Error')
+                                        ->body('Debe seleccionar al menos un proveedor para generar la orden de compra.')
+                                        ->danger() // Establece el color de la notificación como rojo (de error)
+                                        ->send();
+
+                                    return;
+                                }
 
                                 // Crear orden de compra
                                 $ordenCompra = new \App\Models\OrdenCompra();
@@ -599,6 +636,9 @@ class EditPedidos extends EditRecord
                                 $ordenCompra->valor_total = $proveedor->valor_total;
                                 $ordenCompra->save();
                             }
+
+                            $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
+                            $cotizacion->estado = 'Aprobada';
                             // Obtener el texto de la dirección seleccionada
                             $direccion = Direccion::find($data['direccion']);
 
@@ -611,12 +651,20 @@ class EditPedidos extends EditRecord
                             $ordenTrabajo->fecha_ingreso = now();
                             $ordenTrabajo->fecha_entrega = now()->addDays(30);
                             $ordenTrabajo->observaciones = $record->observaciones;
-                            $ordenTrabajo->direccion = $direccion->direccion; // Guardar el texto de la dirección
+                            $ordenTrabajo->direccion = $direccion->id; // Guardar el id de la dirección seleccionada
                             $ordenTrabajo->telefono = $record->tercero->telefono;
                             $ordenTrabajo->transportadora_id = null; // Puedes definir esto según tus necesidades
                             $ordenTrabajo->guia = null; // Puedes definir esto según tus necesidades
                             $ordenTrabajo->archivo = null; // Puedes definir esto según tus necesidades
                             $ordenTrabajo->save();
+
+                            // Notificar al usuario
+                            Notification::make()
+                                ->title('Éxito')
+                                ->body('La cotización ha sido aprobada y todos los cambios han sido guardados.')
+                                ->success()
+                                ->send();
+
 
                             // Redirigir a la página de pedidos
                             $this->redirect($this->getResource()::getUrl('index'));

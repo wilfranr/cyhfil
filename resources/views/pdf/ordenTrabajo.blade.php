@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,28 +9,28 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-    
+
         .container {
             max-width: 800px;
             margin: 0 auto;
         }
-    
+
         h3,
         h4,
         p {
             margin: 5px 0;
         }
-    
+
         .empresa-datos {
             font-size: 12px;
             margin-bottom: 20px;
             text-align: center;
         }
-    
+
         .articulos {
             margin-bottom: 20px;
         }
-    
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -37,35 +38,35 @@
             font-size: 12px;
             margin-bottom: 10px;
         }
-    
+
         td {
             background-color: #f2f2f2;
             border: 1px solid #fff;
             padding: 8px;
             text-align: left;
         }
-    
+
         th {
             background-color: #d6d6d6;
         }
-    
+
         .text-right {
             text-align: right;
         }
-    
+
         .cotizacion {
             text-align: center;
             font-size: 16px;
         }
-    
+
         .cot_id {
             font-size: 20px;
         }
-    
+
         .text-red {
             color: crimson;
         }
-    
+
         .footer {
             position: fixed;
             bottom: 0;
@@ -77,45 +78,53 @@
         }
     </style>
 </head>
+
 <body>
     <div class="empresa">
-    <div class="logo">
-        <img src="{{ public_path('images/logo.png') }}" alt="Logo" width="60px" height="60px">
-    </div>
-    <div class="empresa-datos">
-        <div class="empresa-header">
-            <h1>
-                @foreach ($empresas as $empresa)
-                @endforeach
-                {{ $empresa->nombre }}
-            </h1>
-            <h4>
-                NIT {{ $empresa->nit }}
-            </h4>
+        <div class="logo">
+            <img src="{{ public_path('images/logo.png') }}" alt="Logo" width="60px" height="60px">
         </div>
-        <div class="empresa-body">
-            <small>{{ $empresa->direccion }}</small><br>
-            <small>TELÉFONO: {{ $empresa->telefono }} - {{ $empresa->celular }}</small><br>
-            <small>{{ $empresa->email }}</small><br>
-            @php
-                $pais = App\Models\Country::find($empresa->country_id);
-                $ciudad = App\Models\City::find($empresa->city_id);
-            @endphp
-            <small>{{ $ciudad->name }}, {{ $pais->name }}</small>
+        <div class="empresa-datos">
+            <div class="empresa-header">
+                <h1>
+                    @foreach ($empresas as $empresa)
+                    @endforeach
+                    {{ $empresa->nombre }}
+                </h1>
+                <h4>
+                    NIT {{ $empresa->nit }}
+                </h4>
+            </div>
+            <div class="empresa-body">
+                <small>{{ $empresa->direccion }}</small><br>
+                <small>TELÉFONO: {{ $empresa->telefono }} - {{ $empresa->celular }}</small><br>
+                <small>{{ $empresa->email }}</small><br>
+                @php
+                    $pais = App\Models\Country::find($empresa->country_id);
+                    $ciudad = App\Models\City::find($empresa->city_id);
+                @endphp
+                <small>{{ $ciudad->name }}, {{ $pais->name }}</small>
+            </div>
         </div>
     </div>
-</div>
     <div class="content">
+        @php
+            $direccion = App\Models\Direccion::find($ordenTrabajo->direccion);
+            $ciudad = App\Models\City::find($direccion->city_id);
+            $state = App\Models\State::find($direccion->state_id);
+            $pais = App\Models\Country::find($direccion->country_id);
+        @endphp
         <p><strong>DESTINATARIO:</strong> {{ $ordenTrabajo->tercero->nombre }}</p>
         <p><strong>NIT/CC:</strong> {{ $ordenTrabajo->tercero->numero_documento }}</p>
         <p><strong>TRANSPORTADORA:</strong> {{ $ordenTrabajo->transportadora->nombre }}</p>
         <p><strong>FORMA DE PAGO:</strong> AL COBRO</p>
-        <p><strong>DIRECCION:</strong> {{ $ordenTrabajo->direccion }}</p>
+        <p><strong>DIRECCION:</strong> {{ $direccion->direccion }}</p>
         <p><strong>TELEFONO:</strong> {{ $ordenTrabajo->telefono }}</p>
-        <p><strong>CIUDAD:</strong> {{ $ordenTrabajo->direccion->city->name ?? '' }}, {{ $ordenTrabajo->direccion->state->name ?? '' }}</p>
+        <p><strong>CIUDAD:</strong> {{ $ciudad->name ?? '' }}, {{ $state->name ?? '' }}, {{ $pais->name ?? '' }}</p>
     </div>
     <div class="footer">
-      <img src="{{ public_path('images/proveedores.png') }}" width="100%">
+        <img src="{{ public_path('images/proveedores.png') }}" width="100%">
     </div>
 </body>
+
 </html>
