@@ -165,12 +165,7 @@ class MaquinasResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                // SelectFilter::make('marcas.nombre')
-                //     ->relationship('marcas', 'nombre')
-                //     ->label('Marca'),
-                // SelectFilter::make('listas.nombre')
-                //     ->relationship('listas', 'nombre')
-                //     ->label('Tipo'),
+          
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
