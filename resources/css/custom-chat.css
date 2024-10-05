@@ -1,0 +1,42 @@
+/* Sidebar derecho colapsable */
+#chatSidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 100vh;
+  background-color: #f8f9fa;
+  overflow-x: hidden;
+  transition: 0.5s; /* Transición suave */
+  z-index: 1000;
+  padding: 10px;
+  border-left: 1px solid #ddd;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Cuando el sidebar está abierto */
+#chatSidebar.open {
+  width: 300px; /* Ancho visible del sidebar */
+}
+
+/* Estilos del botón para abrir/cerrar el sidebar */
+#chatToggleButton {
+  position: fixed;
+  top: 20px;
+  right: 10px;
+  background-color: #1d4ed8;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1100; /* Por encima del sidebar */
+}
+
+/* Ajustar el contenido principal cuando el sidebar está abierto */
+.main-content {
+  transition: margin-right 0.5s;
+}
+
+.main-content.shifted {
+  margin-right: 300px; /* Mover el contenido cuando el sidebar está abierto */
+}

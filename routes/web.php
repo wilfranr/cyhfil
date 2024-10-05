@@ -45,3 +45,7 @@ Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cot
 Route::get('/pdf/generateOrdenCompra/{id}', [OrdenCompraController::class, 'generate'])->name('pdf.ordenCompra');
 
 Route::get('/ordenTrabajo/{id}/pdf', [OrdenTrabajoController::class, 'generarPDF'])->name('ordenTrabajo.pdf');
+
+Route::get('/auth-status', function () {
+    return response()->json(['isAuthenticated' => Auth::check()]);
+});
