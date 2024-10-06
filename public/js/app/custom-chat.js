@@ -1,4 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Cargar los mensajes del chat al cargar la página
+  fetch('/chat/messages')
+    .then(response => response.json())
+    .then(messages => {
+        let chatContent = document.getElementById('chatContent');
+        // Los mensajes ya vienen en orden ascendente (antiguo a nuevo), así que los mostramos directamente
+        messages.forEach(message => {
+            chatContent.innerHTML += `<p><strong>${message.sender || 'Usuario'}:</strong> ${message.message}</p>`;
+        });
+        // Desplazarse automáticamente al final del chat para ver los mensajes más recientes
+        chatContent.scrollTop = chatContent.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Error al cargar los mensajes:', error);
+    });
+
   if (typeof Pusher === 'undefined' || typeof Echo === 'undefined') {
     console.error('Pusher o Echo no están definidos. Asegúrate de que los scripts se cargan correctamente. desde resources/js/custom-chat.js');
     return;
@@ -94,12 +110,6 @@ function sendMessage() {
   let input = document.getElementById('messageInput');
   if (input.value.trim() !== '') {
     let message = input.value.trim();
-    
-    // Actualizar UI
-    let chatContent = document.getElementById('chatContent');
-    chatContent.innerHTML += `<p class="logistica"><strong>Logística:</strong> ${message}</p>`;
-    input.value = '';
-    chatContent.scrollTop = chatContent.scrollHeight;
 
     // Enviar mensaje al servidor
     fetch('/chat/send', {
@@ -113,9 +123,15 @@ function sendMessage() {
     .then(response => response.json())
     .then(data => {
       console.log('Mensaje enviado exitosamente:', data);
+
+      // Aquí eliminamos la actualización de la UI localmente para evitar duplicados
+      // La UI se actualizará automáticamente cuando el mensaje se reciba a través de Pusher
     })
     .catch(error => {
       console.error('Error al enviar el mensaje:', error);
     });
+
+    input.value = ''; // Limpiar el campo de entrada
   }
 }
+

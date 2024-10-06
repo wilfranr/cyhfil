@@ -24,15 +24,15 @@ class ChatController extends Controller
         // Agrega un log al inicio para verificar si la solicitud llega al controlador
         Log::info('Solicitud recibida en sendMessage.', ['request' => $request->all()]);
 
-    try {
-        $validated = $request->validate([
-            'message' => 'required|string',
-        ]);
-        Log::info('Validación exitosa', ['validated' => $validated]);
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        Log::error('Error de validación', ['errors' => $e->errors()]);
-        return response()->json(['error' => $e->errors()], 422);
-    }
+        try {
+            $validated = $request->validate([
+                'message' => 'required|string',
+            ]);
+            Log::info('Validación exitosa', ['validated' => $validated]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Error de validación', ['errors' => $e->errors()]);
+            return response()->json(['error' => $e->errors()], 422);
+        }
 
         // Si el mensaje es recibido correctamente, lo registramos en los logs
         Log::info('Mensaje recibido: ', ['message' => $request->message]);
@@ -54,7 +54,8 @@ class ChatController extends Controller
 
     public function fetchMessages()
     {
-        $messages = ChatMessage::latest()->limit(50)->get();
+        // Obtén los mensajes más antiguos primero
+        $messages = ChatMessage::oldest()->limit(50)->get();
         return response()->json($messages);
     }
 }
