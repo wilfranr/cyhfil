@@ -41,29 +41,11 @@ class AppServiceProvider extends ServiceProvider
                 ]);
         });
 
-        
-
-        // Verificar si el usuario está autenticado
-        if (Auth::check()) {
-            // Obtener el rol del usuario
-            $rol = Auth::user()->roles->first()->name;
-            
-            // Redirigir al usuario según su rol
-            if ($rol == 'Vendedor') {
-                redirect()->to('/ventas');
-            } elseif ($rol == 'Administrador') {
-                redirect()->to('/admin');
-            } elseif ($rol == 'Analista') {
-                redirect()->to('/partes');
-            } elseif ($rol == 'Logistica') {
-                redirect()->to('/logistica');
-            } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
-                redirect('/admin');
-            }
-        }
         // Registrar el script JavaScript personalizado con FilamentAsset
         FilamentAsset::register([
             Js::make('custom-chat', __DIR__ . '/../../resources/js/custom-chat.js'), // Usamos Js::make() para registrar
+            Js::make('pusher', 'https://js.pusher.com/7.0/pusher.min.js'),
+            Js::make('echo', 'https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.3/echo.iife.js'),
         ]);
 
         // Puedes registrar archivos CSS de manera similar con FilamentAsset::register()
