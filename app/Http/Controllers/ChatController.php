@@ -53,9 +53,18 @@ class ChatController extends Controller
     }
 
     public function fetchMessages()
-    {
-        // Obtén los mensajes más antiguos primero
-        $messages = ChatMessage::oldest()->limit(50)->get();
-        return response()->json($messages);
-    }
+{
+    // Ordenar los mensajes por fecha de creación ascendente
+    $messages = ChatMessage::orderBy('created_at', 'asc')->limit(50)->get();
+    
+    // Devuelve los mensajes en un formato JSON, con el nombre del remitente y la fecha
+    return response()->json($messages->map(function ($message) {
+        return [
+            'message' => $message->message,
+            'sender' => $message->user->name ?? 'Usuario', // Asegúrate de incluir el nombre del usuario
+            'created_at' => $message->created_at->format('d M, H:i'),
+        ];
+    }));
+}
+
 }

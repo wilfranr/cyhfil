@@ -3,16 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch('/chat/messages')
     .then(response => response.json())
     .then(messages => {
-        let chatContent = document.getElementById('chatContent');
-        // Los mensajes ya vienen en orden ascendente (antiguo a nuevo), así que los mostramos directamente
-        messages.forEach(message => {
-            chatContent.innerHTML += `<p><strong>${message.sender || 'Usuario'}:</strong> ${message.message}</p>`;
-        });
-        // Desplazarse automáticamente al final del chat para ver los mensajes más recientes
-        chatContent.scrollTop = chatContent.scrollHeight;
+      let chatContent = document.getElementById('chatContent');
+      // Los mensajes ya vienen en orden ascendente (antiguo a nuevo), así que los mostramos directamente
+      messages.forEach(message => {
+        chatContent.innerHTML += `<p><strong>${message.sender}:</strong> ${message.message} 
+        <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span></p>`;
+      });
+      // Desplazarse automáticamente al final del chat para ver los mensajes más recientes
+      chatContent.scrollTop = chatContent.scrollHeight;
     })
     .catch(error => {
-        console.error('Error al cargar los mensajes:', error);
+      console.error('Error al cargar los mensajes:', error);
     });
 
   if (typeof Pusher === 'undefined' || typeof Echo === 'undefined') {
@@ -31,13 +32,16 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Pusher y Echo configurados correctamente desde resources/js/custom-chat.js");
 
   // Suscribirse al canal público "chat"
-window.Echo.channel('new-public-chat')
-.listen('.message.sent', (e) => {
-    console.log('Nuevo mensaje recibido:', e.message);
-    let chatContent = document.getElementById('chatContent');
-    chatContent.innerHTML += `<p><strong>${e.message.sender || 'Usuario'}:</strong> ${e.message.message}</p>`;
-    chatContent.scrollTop = chatContent.scrollHeight;
-});
+  window.Echo.channel('new-public-chat')
+    .listen('.message.sent', (e) => {
+      console.log('Nuevo mensaje recibido:', e.message);
+      let chatContent = document.getElementById('chatContent');
+      // Mostrar mensaje con el nombre del usuario y la hora
+      chatContent.innerHTML += `
+     <p><strong>${e.sender || 'Usuario'}:</strong> ${e.message} 
+     <span style="color: gray; font-size: 0.85em;">(${e.created_at})</span></p>`;
+      chatContent.scrollTop = chatContent.scrollHeight;
+    });
 
 
   // Lógica de chat// Crear el botón flotante para abrir/cerrar el chat en la esquina inferior derecha
@@ -111,6 +115,8 @@ function sendMessage() {
   if (input.value.trim() !== '') {
     let message = input.value.trim();
 
+    input.value = ''; // Limpiar el campo de entrada
+
     // Enviar mensaje al servidor
     fetch('/chat/send', {
       method: 'POST',
@@ -123,15 +129,10 @@ function sendMessage() {
     .then(response => response.json())
     .then(data => {
       console.log('Mensaje enviado exitosamente:', data);
-
-      // Aquí eliminamos la actualización de la UI localmente para evitar duplicados
-      // La UI se actualizará automáticamente cuando el mensaje se reciba a través de Pusher
     })
     .catch(error => {
       console.error('Error al enviar el mensaje:', error);
     });
-
-    input.value = ''; // Limpiar el campo de entrada
   }
 }
 
