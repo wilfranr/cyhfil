@@ -4,17 +4,35 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.json())
     .then(messages => {
       let chatContent = document.getElementById('chatContent');
-      // Los mensajes ya vienen en orden ascendente (antiguo a nuevo), así que los mostramos directamente
+
+      // Define los colores según los roles
+      const roleColors = {
+        'super_admin': '#FFBF00',  // Ámbar
+        'panel_user': '#00AEEF',   // Azul claro
+        'Vendedor': '#4CAF50',     // Verde
+        'Analista': '#FF5733',     // Naranja
+        'Administrador': '#FFBF00',// Ámbar
+        'Logistica': '#800080',    // Púrpura
+      };
+
+      // Mostrar los mensajes en el chat
       messages.forEach(message => {
-        chatContent.innerHTML += `<p><strong>${message.sender}:</strong> ${message.message} 
-        <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span></p>`;
+        const roleColor = roleColors[message.role] || '#000000'; // Por defecto color negro si el rol no está definido
+
+        chatContent.innerHTML += `
+      <p style="color: ${roleColor};">
+        <strong>${message.sender}:</strong> ${message.message} 
+        <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span>
+      </p>`;
       });
+
       // Desplazarse automáticamente al final del chat para ver los mensajes más recientes
       chatContent.scrollTop = chatContent.scrollHeight;
     })
     .catch(error => {
       console.error('Error al cargar los mensajes:', error);
     });
+
 
   if (typeof Pusher === 'undefined' || typeof Echo === 'undefined') {
     console.error('Pusher o Echo no están definidos. Asegúrate de que los scripts se cargan correctamente. desde resources/js/custom-chat.js');
@@ -31,18 +49,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("Pusher y Echo configurados correctamente desde resources/js/custom-chat.js");
 
-  // Suscribirse al canal público "chat"
+  // Escuchar el evento de Pusher para actualizar la interfaz
   window.Echo.channel('new-public-chat')
     .listen('.message.sent', (e) => {
       console.log('Nuevo mensaje recibido:', e.message);
+
+      const roleColors = {
+        'super_admin': '#FFBF00',  // Ámbar
+        'panel_user': '#00AEEF',   // Azul claro
+        'Vendedor': '#4CAF50',     // Verde
+        'Analista': '#FF5733',     // Naranja
+        'Administrador': '#FFBF00',// Ámbar
+        'Logistica': '#800080',    // Púrpura
+      };
+
       let chatContent = document.getElementById('chatContent');
-      // Mostrar mensaje con el nombre del usuario y la hora
-      chatContent.innerHTML += `
-     <p><strong>${e.sender || 'Usuario'}:</strong> ${e.message} 
-     <span style="color: gray; font-size: 0.85em;">(${e.created_at})</span></p>`;
+      let roleColor = roleColors[e.role] || '#000000'; // Color por defecto: negro si no hay rol
+
+      // Mostrar mensaje con el color según el rol del usuario
+      chatContent.innerHTML += `<p style="color: ${roleColor};"><strong>${e.sender || 'Usuario'}:</strong> ${e.message} 
+  <span style="color: gray; font-size: 0.85em;">(${e.created_at})</span></p>`;
+
       chatContent.scrollTop = chatContent.scrollHeight;
     });
-
 
   // Lógica de chat// Crear el botón flotante para abrir/cerrar el chat en la esquina inferior derecha
   let chatToggleButton = document.createElement('div');
@@ -126,13 +155,13 @@ function sendMessage() {
       },
       body: JSON.stringify({ message: message })
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Mensaje enviado exitosamente:', data);
-    })
-    .catch(error => {
-      console.error('Error al enviar el mensaje:', error);
-    });
+      .then(response => response.json())
+      .then(data => {
+        console.log('Mensaje enviado exitosamente:', data);
+      })
+      .catch(error => {
+        console.error('Error al enviar el mensaje:', error);
+      });
   }
 }
 

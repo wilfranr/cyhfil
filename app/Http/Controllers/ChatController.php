@@ -40,8 +40,10 @@ class ChatController extends Controller
         $userId = $request->user()->id;
         $message = $this->chatService->sendMessage($userId, $request->message);
 
+        $user = $request->user();
+
         // Disparar el evento MessageSent
-        broadcast(new MessageSent($message))->toOthers();
+        broadcast(new MessageSent($message, $user->roles->first()->name))->toOthers();
 
         return response()->json(['message' => 'Mensaje enviado', 'data' => $message]);
     }
@@ -53,18 +55,17 @@ class ChatController extends Controller
     }
 
     public function fetchMessages()
-{
-    // Ordenar los mensajes por fecha de creación ascendente
-    $messages = ChatMessage::orderBy('created_at', 'asc')->limit(50)->get();
-    
-    // Devuelve los mensajes en un formato JSON, con el nombre del remitente y la fecha
-    return response()->json($messages->map(function ($message) {
-        return [
-            'message' => $message->message,
-            'sender' => $message->user->name ?? 'Usuario', // Asegúrate de incluir el nombre del usuario
-            'created_at' => $message->created_at->format('d M, H:i'),
-        ];
-    }));
-}
+    {
+        // Asegúrate de incluir el nombre del rol del usuario en cada mensaje
+        $messages = ChatMessage::with('user')->oldest()->limit(50)->get()->map(function ($message) {
+            return [
+                'message' => $message->message,
+                'created_at' => $message->created_at->format('d M, H:i'),
+                'sender' => $message->user->name,
+                'role' => $message->user->getRoleNames()->first() // Obtener el primer rol del usuario
+            ];
+        });
 
+        return response()->json($messages);
+    }
 }

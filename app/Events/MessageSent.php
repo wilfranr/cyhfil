@@ -20,7 +20,7 @@ class MessageSent implements ShouldBroadcast
     {
         $this->message = $message;
         // Incluye el nombre del usuario que envió el mensaje
-        $this->user = $message->user->name; // Asegúrate de que ChatMessage tiene una relación con el modelo User
+        $this->user = $message->user->name; // Relación con el usuario
     }
 
     public function broadcastOn()
@@ -33,12 +33,13 @@ class MessageSent implements ShouldBroadcast
         return 'message.sent';
     }
 
-    // Incluye el nombre del usuario junto con el mensaje
+    // Incluye el nombre del usuario y el rol junto con el mensaje
     public function broadcastWith()
     {
         return [
             'message' => $this->message->message,
             'sender' => $this->user, // Envía el nombre del usuario
+            'role' => $this->message->user->roles->first()->name ?? 'default', // Envía el rol del usuario
             'created_at' => $this->message->created_at->format('d M H:i'),
         ];
     }
