@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Pedido;
+use App\Observers\PedidoObserver;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Facades\Filament;
@@ -57,5 +59,7 @@ class AppServiceProvider extends ServiceProvider
         FilamentAsset::registerScriptData([
             'isAuthenticated' => auth()->check(),
         ]);
+
+        Pedido::observe(PedidoObserver::class);
     }
 }
