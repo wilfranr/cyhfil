@@ -22,6 +22,7 @@ class OrdenTrabajo extends Model
         'guia',
         'transportadora_id',
         'archivo',
+        'motivo_cancelacion',
     ];
 
     public function tercero()

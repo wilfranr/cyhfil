@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const roleColors = {
         'super_admin': '#FFBF00',  // Ámbar
         'panel_user': '#00AEEF',   // Azul claro
-        'Vendedor': '#4CAF50',     // Verde
-        'Analista': '#FF5733',     // Naranja
+        'Vendedor': '#9f86c0',     // Violeta
+        'Analista': '#A3E635',     // Lima
         'Administrador': '#FFBF00',// Ámbar
-        'Logistica': '#800080',    // Púrpura
+        'Logistica': '#14B8A6',    // Teal
       };
 
       // Mostrar los mensajes en el chat
@@ -57,10 +57,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const roleColors = {
         'super_admin': '#FFBF00',  // Ámbar
         'panel_user': '#00AEEF',   // Azul claro
-        'Vendedor': '#4CAF50',     // Verde
-        'Analista': '#FF5733',     // Naranja
+        'Vendedor': '#9f86c0',     // Violeta
+        'Analista': '#A3E635',     // Lima
         'Administrador': '#FFBF00',// Ámbar
-        'Logistica': '#800080',    // Púrpura
+        'Logistica': '#14B8A6',    // Teal
       };
 
       let chatContent = document.getElementById('chatContent');

@@ -119,6 +119,10 @@ class OrdenTrabajoResource extends Resource
                         })->implode("\n"); 
                     })
                     ->extraAttributes(['style' => 'white-space: pre-line;']),  
+                Placeholder::make('motivo_cancelacion')
+                    ->label('Motivo de Cancelación')
+                    ->content(fn($record) => $record->motivo_cancelacion ?? 'N/A')
+                    ->columnSpanFull(),
                     
 
 

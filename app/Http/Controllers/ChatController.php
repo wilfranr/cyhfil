@@ -56,15 +56,22 @@ class ChatController extends Controller
 
     public function fetchMessages()
     {
-        // Asegúrate de incluir el nombre del rol del usuario en cada mensaje
-        $messages = ChatMessage::with('user')->oldest()->limit(50)->get()->map(function ($message) {
-            return [
-                'message' => $message->message,
-                'created_at' => $message->created_at->format('d M, H:i'),
-                'sender' => $message->user->name,
-                'role' => $message->user->getRoleNames()->first() // Obtener el primer rol del usuario
-            ];
-        });
+        // Obtener la fecha de hace 7 días a partir de hoy
+        $sevenDaysAgo = now()->subDays(7);
+
+        // Obtener los mensajes creados en los últimos 7 días y asegurar que se incluya el nombre del rol del usuario
+        $messages = ChatMessage::with('user')
+            ->where('created_at', '>=', $sevenDaysAgo) // Filtrar por los últimos 7 días
+            ->oldest()
+            ->get()
+            ->map(function ($message) {
+                return [
+                    'message' => $message->message,
+                    'created_at' => $message->created_at->format('d M, H:i'),
+                    'sender' => $message->user->name,
+                    'role' => $message->user->getRoleNames()->first() // Obtener el primer rol del usuario
+                ];
+            });
 
         return response()->json($messages);
     }
