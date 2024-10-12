@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class OrdenCompraResource extends Resource
 {
     protected static ?string $model = OrdenCompra::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

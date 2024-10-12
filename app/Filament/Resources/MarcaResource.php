@@ -25,7 +25,7 @@ class MarcaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 7;
 
     protected static ?string $recordTitleAttribute = 'nombre';
 

@@ -21,6 +21,7 @@ class CotizacionResource extends Resource
 
     protected static ?string $label = 'Cotizaciones';
     protected static ?string $navigationIcon = 'ri-currency-fill';
+    protected static ?int $navigationSort = 1;
 
 
 

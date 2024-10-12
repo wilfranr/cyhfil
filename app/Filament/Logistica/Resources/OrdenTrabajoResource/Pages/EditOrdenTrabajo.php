@@ -108,7 +108,7 @@ class EditOrdenTrabajo extends EditRecord
                             ])
                             ->required(),
                     ])
-                    ->action(function (array $data){
+                    ->action(function (array $data) {
                         //obtener el registro actual
                         $record = $this->getRecord();
                         //obtener el motivo de cancelación
@@ -132,9 +132,9 @@ class EditOrdenTrabajo extends EditRecord
                         //retornar al index
                         return redirect(request()->header('Referer')); // Esto recargará la página actual
                     }),
-                    
-            
-                ];
+
+
+            ];
         } else if ($this->getRecord()->estado == 'En Proceso') {
             return [
                 Actions\DeleteAction::make(),
@@ -248,7 +248,70 @@ class EditOrdenTrabajo extends EditRecord
                         return redirect(request()->header('Referer')); // Esto recargará la página actual
 
                     }),
+                Action::make('Cancelar Entrega')
+                    ->label('Cancelar Entrega')
+                    ->icon('ri-close-line')
+                    ->color('danger')
+                    ->form([
+                        Select::make('motivo')
+                            ->label('Motivo de Cancelación')
+                            ->options([
+                                'No hay disponibilidad de productos' => 'No hay disponibilidad de productos',
+                                'El cliente canceló el pedido' => 'El cliente canceló el pedido',
+                                'Cliente no responde' => 'Cliente no responde',
+                                'Otro' => 'Otro',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        //obtener el registro actual
+                        $record = $this->getRecord();
+                        //obtener el motivo de cancelación
+                        $motivo = $data['motivo'];
+                        //cambiar estado a cancelado
+                        $record->estado = 'Cancelado';
+                        //guardar motivo de cancelación
+                        $record->motivo_cancelacion = $motivo;
+                        //obtener idPedido
+                        $idPedido = $record->pedido_id;
+                        //cambiar estado de pedido
+                        Pedido::find($idPedido)->update(['estado' => 'Cancelado']);
+                        // Guardar el pedido con todos los cambios
+                        $record->save();
+                        //enviar notificación
+                        Notification::make()
+                            ->title('Pedido Cancelado')
+                            ->body('El pedido ha sido cancelado')
+                            ->danger()
+                            ->send();
+                        //retornar al index
+                        return redirect(request()->header('Referer')); // Esto recargará la página actual
+                    }),
 
+            ];
+        } else if ($this->getRecord()->estado == 'Cancelado') {
+            return [
+                Actions\DeleteAction::make(),
+                Action::make('ver_cliente')
+                    ->label('Ver Cliente')
+                    ->icon('heroicon-o-user')
+                    ->color('')
+                    ->url(function (array $data) {
+                        $record = $this->getRecord();
+                        return TerceroResource::getUrl('edit', ['record' => $record->tercero_id]);
+                    }, shouldOpenInNewTab: true),
+            ];
+        } else if ($this->getRecord()->estado == 'Completado') {
+            return [
+                Actions\DeleteAction::make(),
+                Action::make('ver_cliente')
+                    ->label('Ver Cliente')
+                    ->icon('heroicon-o-user')
+                    ->color('')
+                    ->url(function (array $data) {
+                        $record = $this->getRecord();
+                        return TerceroResource::getUrl('edit', ['record' => $record->tercero_id]);
+                    }, shouldOpenInNewTab: true),
             ];
         }
         return [
@@ -261,6 +324,50 @@ class EditOrdenTrabajo extends EditRecord
                     $record = $this->getRecord();
                     return TerceroResource::getUrl('edit', ['record' => $record->tercero_id]);
                 }, shouldOpenInNewTab: true),
+            Action::make('Cancelar Entrega')
+                ->label('Cancelar Entrega')
+                ->icon('ri-close-line')
+                ->color('danger')
+                ->form([
+                    Select::make('motivo')
+                        ->label('Motivo de Cancelación')
+                        ->options([
+                            'No hay disponibilidad de productos' => 'No hay disponibilidad de productos',
+                            'El cliente canceló el pedido' => 'El cliente canceló el pedido',
+                            'Cliente no responde' => 'Cliente no responde',
+                            'Otro' => 'Otro',
+                        ])
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    //obtener el registro actual
+                    $record = $this->getRecord();
+                    //obtener el motivo de cancelación
+                    $motivo = $data['motivo'];
+                    //cambiar estado a cancelado
+                    $record->estado = 'Cancelado';
+                    //guardar motivo de cancelación
+                    $record->motivo_cancelacion = $motivo;
+                    //obtener idPedido
+                    $idPedido = $record->pedido_id;
+                    //cambiar estado de pedido
+                    Pedido::find($idPedido)->update(['estado' => 'Cancelado']);
+                    // Guardar el pedido con todos los cambios
+                    $record->save();
+                    //enviar notificación
+                    Notification::make()
+                        ->title('Pedido Cancelado')
+                        ->body('El pedido ha sido cancelado')
+                        ->danger()
+                        ->send();
+                    //retornar al index
+                    return redirect(request()->header('Referer')); // Esto recargará la página actual
+                }),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    } 
 }

@@ -21,7 +21,7 @@ class TercerosResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 10;
 
     // protected static ?string $recordTitleAttribute = 'nombre';
     // public static function getPermissionPrefixes(): array

@@ -42,7 +42,7 @@ class ArticulosResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-cube-transparent';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'definicion';
 

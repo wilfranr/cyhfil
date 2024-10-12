@@ -23,7 +23,7 @@ class SistemasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-c-wrench';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 8;
 
     protected static ?string $recordTitleAttribute = 'nombre';
 

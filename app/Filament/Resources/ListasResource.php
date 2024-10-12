@@ -30,7 +30,7 @@ class ListasResource extends Resource
 
     protected static ?string $navigationIcon = 'ri-list-check';
 
-    protected static ?int $navigationSort = 6   ;
+    protected static ?int $navigationSort = 9   ;
 
     public static function form(Form $form): Form
     {

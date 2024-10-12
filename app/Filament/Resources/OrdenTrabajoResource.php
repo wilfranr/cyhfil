@@ -3,35 +3,23 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdenTrabajoResource\Pages;
-use App\Filament\Resources\OrdenTrabajoResource\RelationManagers;
-use App\Models\City;
 use App\Models\Direccion;
 use App\Models\OrdenTrabajo;
-use App\Models\State;
-use App\Models\Transportadora;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\View;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrdenTrabajoResource extends Resource
 {
     protected static ?string $model = OrdenTrabajo::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?int $navigationSort = 3;
 
     public static function canCreate(): bool
     {
@@ -82,13 +70,31 @@ class OrdenTrabajoResource extends Resource
                     ->label('Fecha de Entrega'),
 
                 Forms\Components\Textarea::make('observaciones')
-                    ->label('Observaciones')
-                    ->columnSpanFull(),
+                    ->label('Observaciones'),
 
-                Forms\Components\TextInput::make('direccion')
+                Select::make('direccion')
                     ->label('Dirección')
+                    ->options(function ($get) {
+                        $terceroId = $get('tercero_id'); // Obtener el tercero_id del formulario actual
+
+                        // Verificar si existe un tercero_id
+                        if ($terceroId) {
+                            // Filtra las direcciones solo del cliente (tercero)
+                            return Direccion::where('tercero_id', $terceroId)
+                                ->pluck('direccion', 'id')
+                                ->toArray();
+                        }
+
+                        // Si no hay cliente asignado aún, retorna un array vacío
+                        return [];
+                    })
                     ->required()
-                    ->maxLength(255),
+                    ->preload()
+                    ->searchable()
+                    ->placeholder('Selecciona una dirección'),
+
+
+
 
                 Forms\Components\TextInput::make('telefono')
                     ->label('Teléfono')
@@ -116,14 +122,14 @@ class OrdenTrabajoResource extends Resource
                     ->content(function ($record) {
                         return $record->referencias->map(function ($referencia) {
                             return 'Referencia: ' . $referencia->referencia->referencia . ' - Cantidad: ' . $referencia->cantidad;
-                        })->implode("\n"); 
+                        })->implode("\n");
                     })
-                    ->extraAttributes(['style' => 'white-space: pre-line;']),  
+                    ->extraAttributes(['style' => 'white-space: pre-line;']),
                 Placeholder::make('motivo_cancelacion')
                     ->label('Motivo de Cancelación')
                     ->content(fn($record) => $record->motivo_cancelacion ?? 'N/A')
                     ->columnSpanFull(),
-                    
+
 
 
 
@@ -136,6 +142,10 @@ class OrdenTrabajoResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->searchable()
@@ -160,15 +170,11 @@ class OrdenTrabajoResource extends Resource
                     ->label('Cliente')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('direccion')
-                    ->label('Dirección')
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('transportadora.nombre')
                     ->label('Transportadora')
                     ->sortable(),
 
-                    Tables\Columns\TextColumn::make('referencias')
+                Tables\Columns\TextColumn::make('referencias')
                     ->label('Referencias')
                     ->getStateUsing(function ($record) {
                         return $record->referencias->map(function ($referencia) {
@@ -178,7 +184,7 @@ class OrdenTrabajoResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                
+
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha de Creación')

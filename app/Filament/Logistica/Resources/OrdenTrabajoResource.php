@@ -3,29 +3,17 @@
 namespace App\Filament\Logistica\Resources;
 
 use App\Filament\Logistica\Resources\OrdenTrabajoResource\Pages;
-use App\Filament\Logistica\Resources\OrdenTrabajoResource\RelationManagers;
-use App\Models\City;
 use App\Models\Direccion;
 use App\Models\OrdenTrabajo;
-use App\Models\State;
-use App\Models\Transportadora;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\View;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrdenTrabajoResource extends Resource
 {
