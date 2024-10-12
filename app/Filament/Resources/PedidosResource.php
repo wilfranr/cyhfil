@@ -267,7 +267,7 @@ class PedidosResource extends Resource
                             ])->hiddenOn('edit'),
 
                         // Referencias
-                            Step::make('Referencias')
+                        Step::make('Referencias')
                             ->icon('heroicon-s-clipboard-document-list')
                             ->schema([
                                 Repeater::make('referencias')
@@ -356,8 +356,8 @@ class PedidosResource extends Resource
                                                     $set('articulo_definicion', $articulo->definicion);
                                                     $set('articulo_id', $articulo->id);
                                                     $set('peso', $articulo->peso);
-                                                    $set('marca_id', $marca->id);
-                                                    $set('marca_seleccionada', $marca->id);
+                                                    // $set('marca_id', $marca->id);
+                                                    // $set('marca_seleccionada', $marca->id);
                                                     $set('referencia_seleccionada', $referencia->id);
                                                 }
                                             })
@@ -582,31 +582,66 @@ class PedidosResource extends Resource
                                             ->url(function (array $arguments, Repeater $component): ?string {
                                                 // Usamos $component->getRawItemState() para obtener el estado crudo del ítem
                                                 $itemData = $component->getRawItemState($arguments['item']);
-                                    
+
                                                 // Obtenemos el referencia_id del estado
                                                 $referenciaId = $itemData['referencia_id'] ?? null;
-                                    
+
                                                 // Verificamos si referencia_id existe
                                                 if (! $referenciaId) {
                                                     return null;
                                                 }
-                                    
+
                                                 // Buscamos la referencia en la base de datos
                                                 $referencia = Referencia::find($referenciaId);
-                                    
+
                                                 // Verificamos si la referencia fue encontrada
                                                 if (! $referencia) {
                                                     return null;
                                                 }
-                                    
+
                                                 // Retornamos la ruta para editar la referencia
                                                 return ReferenciaResource::getUrl('edit', ['record' => $referencia->id]);
                                             }, shouldOpenInNewTab: true)
-                                            ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
-                                    ])
-                                    ,
-                            ])
+                                            ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
+                                    ]),
+                            ]),
+                        Step::make('Referencias_Masivas')
+                            ->icon('heroicon-s-clipboard-document-list')
+                            ->schema([
+                                Textarea::make('referencias_copiadas')
+                                    ->label('Copiar Referencias')
+                                    ->helperText('Pega las referencias y cantidades desde Excel en el siguiente formato: REFERENCIA (TAB) CANTIDAD (nueva línea para cada referencia)')
+                                    ->placeholder("Ejemplo:\nREF123[TAB]10\nREF456[TAB]5")
+                                    ->rows(5)
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                                        // Procesar las referencias pegadas en formato tabulado desde Excel
+                                        $referenciasArray = explode("\n", $state); // Separar por líneas (cada línea es una referencia)
 
+                                        foreach ($referenciasArray as $referencia) {
+                                            // Asegurarse de que la referencia contiene tanto el código como la cantidad
+                                            $referenciaData = explode("\t", $referencia); // Separar por tabulación (TAB)
+
+                                            if (count($referenciaData) === 2) {
+                                                list($codigoReferencia, $cantidad) = $referenciaData;
+
+                                                // Aquí buscamos la referencia por código
+                                                $referenciaModel = \App\Models\Referencia::firstOrCreate(
+                                                    ['referencia' => trim($codigoReferencia)], // Criterio de búsqueda
+                                                    ['referencia' => trim($codigoReferencia)] // Datos para crear si no existe
+                                                );
+
+                                                // Agregar la referencia al Repeater de referencias con la cantidad indicada
+                                                $set('referencias', array_merge($get('referencias'), [
+                                                    [
+                                                        'referencia_id' => $referenciaModel->id,
+                                                        'cantidad' => (int) $cantidad,
+                                                        'comentario' => '',
+                                                    ]
+                                                ]));
+                                            }
+                                        }
+                                    }),
+                            ])
 
                     ]
                 )->skippable()->columnSpan('full'),
