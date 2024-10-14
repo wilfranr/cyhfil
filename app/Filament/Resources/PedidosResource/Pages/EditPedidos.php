@@ -61,7 +61,31 @@ class EditPedidos extends EditRecord
                             // Guardar el pedido con todos los cambios
                             $record->save();
 
-                            // Notificar al usuario
+                            // Obtener el vendedor (usuario que creó el pedido)
+                            $vendedor = User::find($record->user_id);
+
+                            // Obtener el id del pedido
+                            $pedido = $this->record;
+
+                            // Obtener el panel correcto para el vendedor
+                            $panel = $this->getPanelBasedOnRole($vendedor);
+
+                            $url = "{$panel}/pedidos/{$pedido->id}/edit";
+
+                            // Enviar la notificación al vendedor
+                            if ($vendedor) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Pedido Enviado a Costeo')
+                                    ->body("El pedido No. {$record->id} ha sido enviado a Costeo.")
+                                    ->actions([
+                                        \Filament\Notifications\Actions\Action::make('Ver Pedido')
+                                            ->button()
+                                            ->url($url), // Enlace para ver el pedido
+                                    ])
+                                    ->sendToDatabase($vendedor);
+                            }
+
+                            // Notificar al usuario actual sobre el éxito
                             Notification::make()
                                 ->title('Éxito')
                                 ->body('El estado del pedido se ha cambiado a En Costeo y todos los cambios han sido guardados.')
@@ -74,7 +98,7 @@ class EditPedidos extends EditRecord
                         ->color('info')
                         ->requiresConfirmation()
                         ->modalHeading('¿Enviar a Costeo?')
-                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.'),
+                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
 
                 ];
             } else {
@@ -329,6 +353,30 @@ class EditPedidos extends EditRecord
 
                             // Guardar el pedido con todos los cambios
                             $record->save();
+
+                            // Obtener el vendedor (usuario que creó el pedido)
+                            $vendedor = User::find($record->user_id);
+
+                            // Obtener el id del pedido
+                            $pedido = $this->record;
+
+                            // Obtener el panel correcto para el vendedor
+                            $panel = $this->getPanelBasedOnRole($vendedor);
+
+                            $url = "{$panel}/pedidos/{$pedido->id}/edit";
+
+                            // Enviar la notificación al vendedor
+                            if ($vendedor) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Pedido Enviado a Costeo')
+                                    ->body("El pedido No. {$record->id} ha sido enviado a Costeo.")
+                                    ->actions([
+                                        \Filament\Notifications\Actions\Action::make('Ver Pedido')
+                                            ->button()
+                                            ->url($url), // Enlace para ver el pedido
+                                    ])
+                                    ->sendToDatabase($vendedor);
+                            }
 
                             // Notificar al usuario
                             Notification::make()
@@ -799,5 +847,27 @@ class EditPedidos extends EditRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    /**
+     * Determinar el panel basado en el rol del usuario.
+     */
+    protected function getPanelBasedOnRole(User $user): string
+    {
+        if ($user->hasRole('Administrador') || $user->hasRole('super_admin')) {
+            return '/admin'; // Panel de administración
+        }
+
+        if ($user->hasRole('Analista')) {
+            return '/partes'; // Panel de partes para el analista
+        }
+
+        if ($user->hasRole('Vendedor')) {
+            return '/ventas'; // Panel de ventas para el vendedor
+        }
+
+        if ($user->hasRole('Logistica')) {
+            return '/logistica'; // Panel de logistica para el logistica
+        }
     }
 }
