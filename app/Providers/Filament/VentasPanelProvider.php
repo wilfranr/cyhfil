@@ -85,6 +85,7 @@ class VentasPanelProvider extends PanelProvider
                 PanelRoles::make()
                     ->restrictedRoles(['super_admin', 'Administrador', 'Vendedor']),
             ])
+            ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
             ]);

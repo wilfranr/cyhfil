@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User};
+use App\Notifications\PedidoCreadoNotification;
+use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
 use Filament\Tables\{Table, Grouping\Group, Filters\Filter};
@@ -792,4 +794,6 @@ class PedidosResource extends Resource
             'edit' => Pages\EditPedidos::route('/{record}/edit'),
         ];
     }
+
+    
 }

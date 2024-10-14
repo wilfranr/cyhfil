@@ -92,6 +92,7 @@ class DashboardPanelProvider extends PanelProvider
                 PanelRoles::make()
                     ->restrictedRoles(['super_admin', 'Administrador'])
             ])
+            ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
                 

@@ -61,6 +61,7 @@ class LogisticaPanelProvider extends PanelProvider
                 PanelRoles::make()
                     ->restrictedRoles(['super_admin', 'Administrador', 'Logistica']),
             ])
+            ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
             ]);

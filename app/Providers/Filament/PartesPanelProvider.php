@@ -84,6 +84,7 @@ class PartesPanelProvider extends PanelProvider
                 ->restrictedRoles(['super_admin', 'Administrador', 'Analista'])
 
             ])
+            ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
             ]);
