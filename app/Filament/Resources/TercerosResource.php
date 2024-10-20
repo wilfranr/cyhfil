@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TercerosResource\{Pages, RelationManagers, RelationManagers\ContactosRelationManager};
+use App\Filament\Resources\TercerosResource\{Pages, RelationManagers};
 
 use App\Models\{Tercero, City, Country, State, Maquina, Contacto};
 use Filament\Forms;

@@ -179,8 +179,9 @@ class MaquinasResource extends Resource
 
     public static function getRelations(): array
     {
-        //obtener la relacion de la tabla pivot maquina_marca
-        return [];
+        return [
+            'terceros' => RelationManagers\TercerosRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
