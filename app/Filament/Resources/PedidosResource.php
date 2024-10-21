@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista};
 use App\Notifications\PedidoCreadoNotification;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Forms\{Form, Get, Set};
@@ -109,14 +109,14 @@ class PedidosResource extends Resource
                             })
                             ->hiddenOn('create')
                             ->label('Contacto'),
-                        Select::make('maquina_id')
-                            ->label('Máquina')
-                            ->options(Maquina::all()->mapWithKeys(function ($maquina) {
-                                return [$maquina->id => "{$maquina->tipo}, {$maquina->modelo}, {$maquina->serie}"];
-                            }))
-                            ->searchable()
-                            ->live()
-                            ->preload('tipo'),
+                        // Select::make('maquina_id')
+                        //     ->label('Máquina')
+                        //     ->options(Maquina::all()->mapWithKeys(function ($maquina) {
+                        //         return [$maquina->id => "{$maquina->tipo}, {$maquina->modelo}, {$maquina->serie}"];
+                        //     }))
+                        //     ->searchable()
+                        //     ->live()
+                        //     ->preload('tipo'),
                         Placeholder::make('motivo_rechazo')
                             ->content(fn(Pedido $record): string => $record->motivo_rechazo)
                             ->hiddenOn('create')
@@ -256,15 +256,108 @@ class PedidosResource extends Resource
                                     ->searchable()
                                     ->searchPrompt('Buscar contactos por nombre')
                                     ->preload()
-                                    ->live(),
+                                    ->live()
+                                    ->createOptionForm([
+                                        TextInput::make('nombre')
+                                            ->label('Nombre')
+                                            ->required(),
+                                        TextInput::make('cargo')
+                                            ->label('Cargo')
+                                            ->required(),
+                                        TextInput::make('telefono')
+                                            ->label('Telefono')
+                                            ->required(),
+                                        TextInput::make('email')
+                                            ->label('Email')
+                                            ->required(),
+                                    ])
+                                    ->createOptionUsing(function ($data, $get) {
+                                        $terceroId = $get('tercero_id');
+                                        $contacto = Contacto::create([
+                                            'nombre' => $data['nombre'],
+                                            'cargo' => $data['cargo'],
+                                            'telefono' => $data['telefono'],
+                                            'email' => $data['email'],
+                                            'tercero_id' => $terceroId,
+                                        ]);
+                                        return $contacto->id;
+                                    }),
 
-
-                                // Select::make('maquina_id')
-                                //     ->label('Máquina')
-                                //     ->relationship('maquina', 'serie')
-                                //     ->live()
-                                //     ->preload('tipo'),
-
+                                    Select::make('maquina_id')
+                                    ->label('Máquina')
+                                    ->options(function ($get) {
+                                        // Obtenemos el 'tercero_id' seleccionado en el formulario
+                                        $terceroId = $get('tercero_id');
+                                        
+                                        if ($terceroId) {
+                                            // Filtramos las máquinas asociadas al tercero
+                                            return Maquina::whereHas('terceros', function ($query) use ($terceroId) {
+                                                $query->where('tercero_id', $terceroId);
+                                            })
+                                            ->get()
+                                            ->mapWithKeys(function ($maquina) {
+                                                // Concatenamos tipo, modelo, y serie
+                                                $tipo = Lista::find($maquina->tipo)->nombre;  // Obtenemos el nombre del tipo de máquina desde la relación
+                                                return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"];
+                                            });
+                                        }
+                                
+                                        return [];  // Si no hay 'tercero_id', devolvemos una lista vacía
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->createOptionForm([
+                                        Select::make('tipo')
+                                            ->label('Tipo de Máquina')
+                                            ->options(function () {
+                                                return Lista::where('tipo', 'Tipo de Máquina')
+                                                    ->pluck('nombre', 'id');
+                                            })
+                                            ->required(),
+                                        Select::make('marca_id')
+                                            ->label('Marca')
+                                            ->options(function () {
+                                                return Marca::pluck('nombre', 'id');
+                                            })
+                                            ->required()
+                                            ->searchable()
+                                            ->preload(),
+                                        TextInput::make('modelo')
+                                            ->label('Modelo')
+                                            ->required(),
+                                        TextInput::make('serie')
+                                            ->label('Serie')
+                                            ->required(),
+                                        TextInput::make('arreglo')
+                                            ->label('Arreglo'),
+                                        FileUpload::make('foto')
+                                            ->label('Foto')
+                                            ->image(),
+                                    ])
+                                    ->createOptionUsing(function ($data, $get) {
+                                        // Obtenemos el 'tercero_id' directamente desde el formulario principal usando $get
+                                        $terceroId = $get('tercero_id');
+                                        
+                                        // Creamos la máquina con los datos proporcionados
+                                        $maquina = Maquina::create([
+                                            'tipo' => $data['tipo'],  // Guardamos el tipo de máquina como una relación
+                                            'marca_id' => $data['marca_id'],  // Guardamos la marca seleccionada
+                                            'modelo' => $data['modelo'],
+                                            'serie' => $data['serie'],
+                                            'arreglo' => $data['arreglo'],
+                                            'foto' => $data['foto'],
+                                        ]);
+                                    
+                                        // Si hay un cliente seleccionado, asociamos la máquina con ese cliente
+                                        if ($terceroId) {
+                                            $maquina->terceros()->attach($terceroId);  // Asociamos la máquina con el cliente
+                                        }
+                                    
+                                        return $maquina->id;
+                                    })
+                                    
+                                    
 
                             ])->hiddenOn('edit'),
 
@@ -794,6 +887,4 @@ class PedidosResource extends Resource
             'edit' => Pages\EditPedidos::route('/{record}/edit'),
         ];
     }
-
-    
 }
