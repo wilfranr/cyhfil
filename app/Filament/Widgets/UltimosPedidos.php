@@ -2,6 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Logistica\Resources\PedidoResource;
+use App\Filament\Resources\PedidosResource;
 use App\Models\Pedido;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -62,7 +64,9 @@ class UltimosPedidos extends BaseWidget
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('Ver'),
+                Tables\Actions\Action::make('Ver')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn(Pedido $record): string => PedidosResource::getUrl('edit', ['record' => $record])),
             ])
             ->defaultSort('created_at', 'desc');
     }
