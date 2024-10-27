@@ -7,27 +7,30 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class StatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 0;
+
     protected function getStats(): array
     {
         $user = Auth::user();
-        // dd($user);
         $rol = $user->roles->first()->name;
-        // dd($rol);
+
         if ($rol == 'Analista') {
             return [
                 Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
                     ->icon('heroicon-o-star')
                     ->description('Pendientes por procesar')
-                    ->chart($this->getChartData('nuevo'))
+                    ->chart($this->getBarChartData('nuevo'))
                     ->color('primary'),
             ];
         } elseif ($rol == 'Logistica') {
             return [
                 Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
-                    ->chart($this->getChartData('Aprobado'))
+                    ->chart($this->getBarChartData('Aprobado'))
                     ->description('Pendientes por enviar al cliente')
                     ->color('warning')
                     ->icon('ri-checkbox-line'),
@@ -37,23 +40,23 @@ class StatsOverview extends BaseWidget
                 Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
                     ->icon('heroicon-o-star')
                     ->description('Pendientes por procesar')
-                    ->chart($this->getChartData('nuevo'))
+                    ->chart($this->getBarChartData('nuevo'))
                     ->color('primary'),
 
                 Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
                     ->icon('heroicon-c-list-bullet')
                     ->description('Pendientes por enviar cotización')
-                    ->chart($this->getChartData('En_Costeo'))
+                    ->chart($this->getBarChartData('En_Costeo'))
                     ->color('secondary'),
 
                 Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
                     ->icon('heroicon-o-currency-dollar')
                     ->description('Pendientes por aprobación')
-                    ->chart($this->getChartData('Cotizado'))
+                    ->chart($this->getBarChartData('Cotizado'))
                     ->color('info'),
 
                 Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
-                    ->chart($this->getChartData('Aprobado'))
+                    ->chart($this->getBarChartData('Aprobado'))
                     ->description('Pendientes por enviar al cliente')
                     ->color('warning')
                     ->icon('ri-checkbox-line'),
@@ -61,71 +64,37 @@ class StatsOverview extends BaseWidget
                 Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
                     ->icon('ri-truck-line')
                     ->description('Pendientes por entrega al cliente')
-                    ->chart($this->getChartData('Enviado'))
+                    ->chart($this->getBarChartData('Enviado'))
                     ->color('info'),
 
                 Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
                     ->icon('heroicon-o-check-circle')
-                    ->chart($this->getChartData('entregado'))
+                    ->chart($this->getBarChartData('entregado'))
                     ->color('success'),
             ];
         }
-
-        // return [
-        //     Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
-        //         ->icon('heroicon-o-star')
-        //         ->description('Pendientes por procesar')
-        //         ->chart($this->getChartData('nuevo'))
-        //         ->color('primary'),
-
-        //     Stat::make('Pedidos En costeo', Pedido::where('estado', 'En_Costeo')->count())
-        //         ->icon('heroicon-c-list-bullet')
-        //         ->description('Pendientes por enviar cotización')
-        //         ->chart($this->getChartData('En_Costeo'))
-        //         ->color('secondary'),
-
-        //     Stat::make('Pedidos Cotizados', Pedido::where('estado', 'Cotizado')->count())
-        //         ->icon('heroicon-o-currency-dollar')
-        //         ->description('Pendientes por aprobación')
-        //         ->chart($this->getChartData('Cotizado'))
-        //         ->color('info'),
-                
-        //         Stat::make('Pedidos Aprobados', Pedido::where('estado', 'Aprobado')->count())
-        //         ->chart($this->getChartData('Aprobado'))
-        //         ->description('Pendientes por enviar al cliente')
-        //         ->color('warning')
-        //         ->icon('ri-checkbox-line'),
-        //     Stat::make('Pedidos Enviados', Pedido::where('estado', 'Enviado')->count())
-        //         ->icon('ri-truck-line')
-        //         ->description('Pendientes por entrega al cliente')
-        //         ->chart($this->getChartData('Enviado'))
-        //         ->color('info'),
-
-        //     Stat::make('Pedidos Entregados', Pedido::where('estado', 'entregado')->count())
-        //         ->icon('heroicon-o-check-circle')
-        //         ->chart($this->getChartData('entregado'))
-        //         ->color('success'),
-
-        // ];
     }
 
-    protected function getChartData(string $estado): array
+    protected function getBarChartData(string $estado): array
     {
-        $orders = Pedido::select(DB::raw('DATE(updated_at) as date'), DB::raw('count(*) as count'))
+        // Obtiene la cantidad de pedidos agrupados por mes para el año actual
+        $orders = Pedido::select(DB::raw('MONTH(updated_at) as month'), DB::raw('count(*) as count'))
             ->where('estado', $estado)
-            ->where('updated_at', '>=', now()->subDays(7))
-            ->groupBy('date')
-            ->orderBy('date')
+            ->whereYear('updated_at', Carbon::now()->year) // Filtra por el año actual
+            ->groupBy('month')
+            ->orderBy('month')
             ->get()
-            ->pluck('count', 'date')
+            ->pluck('count', 'month')
             ->toArray();
+        // dd($orders);
 
-        // Ensure there are entries for each of the last 7 days
-        $dates = collect(range(0, 6))->mapWithKeys(function ($i) {
-            return [now()->subDays($i)->format('Y-m-d') => 0];
+        // Asegura que haya datos para cada mes
+        $months = collect(range(1, 12))->mapWithKeys(function ($i) {
+            return [$i => 0];
         });
 
-        $data = $dates->merge($orders)->values()->toArray();
+        $data = $months->merge($orders)->values()->toArray();
+        
 
         return $data;
     }

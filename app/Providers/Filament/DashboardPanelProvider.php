@@ -16,6 +16,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Shanerbaner82\PanelRoles\PanelRoles;
+use App\Filament\Widgets\OrdersPerMonthChart;
+
 
 
 class DashboardPanelProvider extends PanelProvider
@@ -59,6 +61,8 @@ class DashboardPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
+                \App\Filament\Resources\TercerosResource\Widgets\ClientesChart::make(),
+                // \App\Filament\Widgets\PedidosChart::make(),
                 // \App\Filament\Widgets\TrmInputWidget::class,
             ])
             ->middleware([
@@ -90,7 +94,8 @@ class DashboardPanelProvider extends PanelProvider
                         'sm' => 2,
                     ]),
                 PanelRoles::make()
-                    ->restrictedRoles(['super_admin', 'Administrador'])
+                    ->restrictedRoles(['super_admin', 'Administrador']),
+                
             ])
             ->databaseNotifications()
             ->authMiddleware([

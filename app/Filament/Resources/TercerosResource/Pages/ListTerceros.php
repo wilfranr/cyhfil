@@ -34,4 +34,10 @@ class ListTerceros extends ListRecords
             }),
         ];
     } 
+    protected function getFooterWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\TercerosResource\Widgets\ClientesChart::make(),
+        ];
+    }
 }
