@@ -55,7 +55,7 @@ class Maquina extends Model
 
     
 
-    //relación con litas para traer lo tipos de maquina
+    //relación con listas para traer lo tipos de maquina
     public function listas(): BelongsTo
     {
         // Reference to the listas table

@@ -84,6 +84,22 @@ class PedidosResource extends Resource
                             ->content(fn(Pedido $record): string => $record->user->name)
                             ->hiddenOn('create')
                             ->label('Vendedor'),
+
+
+                        Placeholder::make('motivo_rechazo')
+                            ->content(fn(Pedido $record): string => $record->motivo_rechazo)
+                            ->hiddenOn('create')
+                            ->label('Motivo de rechazo')
+                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
+                        Placeholder::make('comentarios_rechazo')
+                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo)
+                            ->hiddenOn('create')
+                            ->label('Comentario de rechazo')
+                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
+                    ])->collapsed()->hiddenOn('create'),
+                Section::make('Información de cliente')
+                    ->columns(4)
+                    ->schema([
                         Placeholder::make('cliente')
                             ->content(fn(Pedido $record): string => $record->tercero->nombre)
                             ->hiddenOn('create')
@@ -109,31 +125,56 @@ class PedidosResource extends Resource
                             })
                             ->hiddenOn('create')
                             ->label('Contacto'),
-                        // Select::make('maquina_id')
-                        //     ->label('Máquina')
-                        //     ->options(Maquina::all()->mapWithKeys(function ($maquina) {
-                        //         return [$maquina->id => "{$maquina->tipo}, {$maquina->modelo}, {$maquina->serie}"];
-                        //     }))
-                        //     ->searchable()
-                        //     ->live()
-                        //     ->preload('tipo'),
-                        Placeholder::make('motivo_rechazo')
-                            ->content(fn(Pedido $record): string => $record->motivo_rechazo)
+                        Placeholder::make('Teléfono de contacto')
+                            ->content(function (Pedido $record) {
+                                $contacto = Contacto::find($record->contacto_id);
+                                if ($contacto != null) {
+                                    return $contacto->telefono;
+                                }
+                            })
                             ->hiddenOn('create')
-                            ->label('Motivo de rechazo')
-                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
-                        Placeholder::make('comentarios_rechazo')
-                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo)
+                            ->label('Teléfono de contacto'),
+                        Placeholder::make('email_contacto')
+                            ->content(function (Pedido $record) {
+                                $contacto = Contacto::find($record->contacto_id);
+                                if ($contacto != null) {
+                                    return $contacto->email;
+                                }
+                            })
                             ->hiddenOn('create')
-                            ->label('Comentario de rechazo')
-                            ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
-                    ])->hidden(function () {
+                            ->label('Email de contacto'),
+                        Placeholder::make('cargo')
+                            ->content(function (Pedido $record) {
+                                $contacto = Contacto::find($record->contacto_id);
+                                if ($contacto != null) {
+                                    return $contacto->cargo;
+                                }
+                            })
+                            ->hiddenOn('create')
+                            ->label('Cargo de contacto'),
+                    ])
+                    ->collapsed()
+                    ->hidden(function () {
                         $user = Auth::user();
-                        if ($user != null) {
+                        if ($user !== null) {
                             $rol = $user->roles->first()->name;
-                            return $rol == 'Analista';
+                            return $rol == 'Analista'; // Se oculta para todos los roles que no sean "Analista"
                         }
-                    }),
+                        return true; // Si no hay usuario, se oculta por defecto
+                    })->hiddenOn('create'),
+
+                Section::make()
+                    ->schema([
+                        Placeholder::make('maquina')
+                            ->content(
+                                fn(Pedido $record): string => $record->maquina
+                                    ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie}"
+                                    : ''
+                            )
+                            ->hiddenOn('create')
+                            ->label('Máquina')
+                    ])->hiddenOn('create'),
+
                 Wizard::make(
                     [
                         Step::make('Información del cliente')
@@ -624,13 +665,14 @@ class PedidosResource extends Resource
                                                         TextInput::make('utilidad')
                                                             ->label('Utilidad')
                                                             ->reactive()
+                                                            ->required()
                                                             ->live()
                                                             ->numeric()
                                                             ->prefix('%')
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $costo_unidad = $get('costo_unidad');
                                                                 $utilidad = $get('utilidad');
-                                                                $cantidad = $get('../../cantidad');
+                                                                $cantidad = $get('cantidad');
                                                                 $trm = TRM::query()->first()->trm;
                                                                 if ($get('ubicacion') == 'Internacional') {
                                                                     $costo_total = $costo_unidad * $cantidad;
@@ -640,30 +682,18 @@ class PedidosResource extends Resource
                                                                 } else {
                                                                     $costo_total = $costo_unidad + (($utilidad * $costo_unidad) / 100);
                                                                     $costo_total = ($costo_unidad + (($utilidad * $costo_unidad) / 100)) * $cantidad;
+                                                                    $valor_total = $costo_total;
+                                                                    $valor_unidad = $valor_total / $cantidad;
                                                                     $set('valor_total', $costo_total);
+                                                                    $set('valor_unidad', $valor_unidad);
                                                                 }
                                                             }),
+                                                        TextInput::make('valor_unidad')
+                                                            ->label('Valor Unidad')
+                                                            ->prefix('$')
+                                                            ->numeric()
+                                                            ->readOnly(),
                                                         TextInput::make('valor_total')
-                                                            // ->content(function (Set $set, Get $get) {
-                                                            //     $pais = $get('pais');
-                                                            //     $costo_unidad = $get('costo_unidad');
-                                                            //     $cantidad = $get('../../cantidad');
-                                                            //     $peso = $get('../../peso');
-                                                            //     $costo_total = $costo_unidad * $cantidad;
-                                                            //     $trm = TRM::query()->first()->trm;
-                                                            //     if ($pais == 'Internacional'){
-
-                                                            //         $costo_total = $costo_total*$trm;
-                                                            //         $utilidad = (($get('utilidad')*$costo_total)/100);
-                                                            //         $valor_total = ((($peso * 2.15 + $utilidad) + $costo_total));
-                                                            //     }
-                                                            //     else {
-                                                            //     $utilidad = (($get('utilidad')*$costo_total)/100);
-                                                            //     $valor_total = $costo_total+$utilidad;
-                                                            //     }
-
-                                                            //     return $valor_total;
-                                                            // })
                                                             ->live()
                                                             ->prefix('$')
                                                             ->readOnly()
@@ -679,6 +709,61 @@ class PedidosResource extends Resource
                                                             'sistema_id' => $get('../../sistema_id'),
                                                         ];
                                                     })
+                                                    ->extraItemActions([
+                                                        Action::make('verProveedor')
+                                                            ->tooltip('Ver proveedor')
+                                                            ->icon('heroicon-o-eye')
+                                                            ->url(function (array $arguments, Repeater $component): ?string {
+                                                                // Usamos $component->getRawItemState() para obtener el estado crudo del ítem
+                                                                $itemData = $component->getRawItemState($arguments['item']);
+
+                                                                // Obtenemos el proveedor_id del estado
+                                                                $proveedorId = $itemData['proveedor_id'] ?? null;
+
+                                                                // Verificamos si proveedor_id existe
+                                                                if (! $proveedorId) {
+                                                                    return null;
+                                                                }
+
+                                                                // Buscamos el proveedor en la base de datos
+                                                                $proveedor = Tercero::find($proveedorId);
+
+                                                                // Verificamos si el proveedor fue encontrado
+                                                                if (! $proveedor) {
+                                                                    return null;
+                                                                }
+
+                                                                // Retornamos la ruta para editar el proveedor
+                                                                return TercerosResource::getUrl('edit', ['record' => $proveedor->id]);
+                                                            }, shouldOpenInNewTab: true)
+                                                            ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['proveedor_id'])),
+                                                        Action::make('EnviarWhatsapp')
+                                                            ->tooltip('Enviar mensaje por whatsapp')
+                                                            ->icon('ri-whatsapp-line')
+                                                            ->url(function (array $arguments, Repeater $component): ?string {
+                                                                // Usamos $component->getRawItemState() para obtener el estado crudo del ítem
+                                                                $itemData = $component->getRawItemState($arguments['item']);
+
+                                                                // Obtenemos el proveedor_id del estado
+                                                                $proveedorId = $itemData['proveedor_id'] ?? null;
+
+                                                                // Verificamos si proveedor_id existe
+                                                                if (! $proveedorId) {
+                                                                    return null;
+                                                                }
+
+                                                                // Buscamos el proveedor en la base de datos
+                                                                $proveedor = Tercero::find($proveedorId);
+
+                                                                // Verificamos si el proveedor fue encontrado
+                                                                if (! $proveedor) {
+                                                                    return null;
+                                                                }
+
+                                                                // Retornamos la ruta para editar el proveedor
+                                                                return "https://wa.me/57$proveedor->telefono";
+                                                            }, shouldOpenInNewTab: true)
+                                                    ])
                                                     ->hiddenOn('create')
                                                     ->columns(3)->itemLabel(function (array $state): ?string {
                                                         $proveedor = Tercero::find($state['proveedor_id']);

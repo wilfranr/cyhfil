@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PedidosResource\Pages;
 
 use App\Filament\Resources\PedidosResource;
-use App\Models\{City, Country, State, Direccion, PedidoReferencia, User, PedidoReferenciaProveedor, Referencia};
+use App\Models\{City, Contacto, Country, State, Direccion, PedidoReferencia, User, PedidoReferenciaProveedor, Referencia};
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -152,7 +152,30 @@ class EditPedidos extends EditRecord
 
                             // Redirigir a la página de la cotización en PDF
                             return redirect()->route('pdf.cotizacion', ['id' => $cotizacion_id]);
+                        }),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
                         })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
                 ];
             } elseif ($this->record->estado == 'Cotizado') {
                 return [
@@ -391,7 +414,30 @@ class EditPedidos extends EditRecord
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('¿Enviar a Costeo?')
-                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
+                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.'),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
+                        })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
                 ];
             } else {
 
@@ -463,6 +509,31 @@ class EditPedidos extends EditRecord
                         ->requiresConfirmation()
                         ->modalHeading('¿Enviar a Costeo?')
                         ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.'),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
+                        })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
+
+
 
                 ];
             } elseif ($this->record->estado == 'En_Costeo') {
@@ -517,7 +588,31 @@ class EditPedidos extends EditRecord
                                 ->body('La cotización ha sido generada. <a href="' . $url . '" target="_blank" style="color: green;">Haz clic aquí para verla</a>.')
                                 ->success()
                                 ->send();
+                        }),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
                         })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
+
                 ];
             } elseif ($this->record->estado == 'Cotizado') {
                 return [
@@ -795,11 +890,57 @@ class EditPedidos extends EditRecord
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('¿Enviar a Costeo?')
-                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.')
+                        ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.'),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
+                        })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
                 ];
             } else {
                 return [
                     Action::make('Guardar Cambios')->action('save')->color('primary'),
+                    Action::make('Whatsapp Cliente')
+                        ->label(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el nombre del contacto si existe, de lo contrario usa el nombre del tercero
+                            return $contacto ? $contacto->nombre : $record->tercero->nombre;
+                        })
+                        ->icon('ri-whatsapp-line')
+                        ->color('success')
+                        ->url(function () {
+                            $record = $this->getRecord();
+
+                            // Busca el contacto usando el contacto_id del pedido, si existe
+                            $contacto = Contacto::find($record->contacto_id);
+
+                            // Usa el teléfono del contacto si existe, de lo contrario usa el teléfono del tercero
+                            $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
+
+                            return "https://wa.me/57$telefono";
+                        }, shouldOpenInNewTab: true),
                 ];
             }
         }
