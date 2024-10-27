@@ -283,25 +283,25 @@ class PedidosResource extends Resource
                                         return $contacto->id;
                                     }),
 
-                                    Select::make('maquina_id')
+                                Select::make('maquina_id')
                                     ->label('Máquina')
                                     ->options(function ($get) {
                                         // Obtenemos el 'tercero_id' seleccionado en el formulario
                                         $terceroId = $get('tercero_id');
-                                        
+
                                         if ($terceroId) {
                                             // Filtramos las máquinas asociadas al tercero
                                             return Maquina::whereHas('terceros', function ($query) use ($terceroId) {
                                                 $query->where('tercero_id', $terceroId);
                                             })
-                                            ->get()
-                                            ->mapWithKeys(function ($maquina) {
-                                                // Concatenamos tipo, modelo, y serie
-                                                $tipo = Lista::find($maquina->tipo)->nombre;  // Obtenemos el nombre del tipo de máquina desde la relación
-                                                return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"];
-                                            });
+                                                ->get()
+                                                ->mapWithKeys(function ($maquina) {
+                                                    // Concatenamos tipo, modelo, y serie
+                                                    $tipo = Lista::find($maquina->tipo)->nombre;  // Obtenemos el nombre del tipo de máquina desde la relación
+                                                    return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"];
+                                                });
                                         }
-                                
+
                                         return [];  // Si no hay 'tercero_id', devolvemos una lista vacía
                                     })
                                     ->searchable()
@@ -338,7 +338,7 @@ class PedidosResource extends Resource
                                     ->createOptionUsing(function ($data, $get) {
                                         // Obtenemos el 'tercero_id' directamente desde el formulario principal usando $get
                                         $terceroId = $get('tercero_id');
-                                        
+
                                         // Creamos la máquina con los datos proporcionados
                                         $maquina = Maquina::create([
                                             'tipo' => $data['tipo'],  // Guardamos el tipo de máquina como una relación
@@ -348,16 +348,16 @@ class PedidosResource extends Resource
                                             'arreglo' => $data['arreglo'],
                                             'foto' => $data['foto'],
                                         ]);
-                                    
+
                                         // Si hay un cliente seleccionado, asociamos la máquina con ese cliente
                                         if ($terceroId) {
                                             $maquina->terceros()->attach($terceroId);  // Asociamos la máquina con el cliente
                                         }
-                                    
+
                                         return $maquina->id;
                                     })
-                                    
-                                    
+
+
 
                             ])->hiddenOn('edit'),
 
@@ -465,16 +465,45 @@ class PedidosResource extends Resource
                                         TextInput::make('peso')->label('Peso')->disabled(),
                                         Select::make('sistema_id')
                                             ->label('Sistema')
+                                            ->searchable()
+                                            ->preload()
                                             ->options(
                                                 Sistema::query()->pluck('nombre', 'id')
                                             )
-                                            ->placeholder('Ninguno'),
+                                            ->createOptionForm([
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->placeholder('Nombre del sistema'),
+                                                TextInput::make('descripcion')
+                                                    ->label('Descripción'),
+                                                FileUpload::make('imagen')
+                                                    ->label('Imagen')
+                                                    ->image()
+                                                    ->imageEditor(),
+                                            ])
+                                            ->createOptionUsing(function ($data) {
+                                                return Sistema::create($data)->id;
+                                            }),
                                         Select::make('marca_id')
                                             ->label('Marca')
                                             ->options(
                                                 Marca::query()->pluck('nombre', 'id')->toArray()
                                             )
-                                            ->live(),
+                                            ->searchable()
+                                            ->live()
+                                            ->createOptionForm([
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->unique('marcas', 'nombre', ignoreRecord: true)
+                                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                                    ->required(),
+                                                FileUpload::make('logo')
+                                                    ->label('Logo')
+                                                    ->image()
+                                                    ->imageEditor(),
+                                            ]),
                                         TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required(),
                                         TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
