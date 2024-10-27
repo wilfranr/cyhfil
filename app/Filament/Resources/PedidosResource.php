@@ -169,7 +169,7 @@ class PedidosResource extends Resource
                             ->content(
                                 fn(Pedido $record): string => $record->maquina
                                     ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie}"
-                                    : ''
+                                    : 'Sin máquina asociada'
                             )
                             ->hiddenOn('create')
                             ->label('Máquina')
@@ -622,7 +622,8 @@ class PedidosResource extends Resource
                                                                 $set('costo_unidad', $proveedor->costo_unidad);
                                                                 $set('utilidad', $proveedor->utilidad);
                                                                 $set('valor_total', $proveedor->valor_total);
-                                                                $set('cantidad', $get('../../cantidad'));
+                                                                $set('cantidad', $get('cantidad'));
+
                                                             })
                                                             ->live()
                                                             ->reactive()
@@ -678,7 +679,10 @@ class PedidosResource extends Resource
                                                                     $costo_total = $costo_unidad * $cantidad;
                                                                     $costo_total = $costo_total * $trm;
                                                                     $costo_total = $costo_total + (($utilidad * $costo_total) / 100);
+                                                                    $valor_total = $costo_total;
+                                                                    $valor_unidad = $valor_total / $cantidad;
                                                                     $set('valor_total', $costo_total);
+                                                                    $set('valor_unidad', $valor_unidad);
                                                                 } else {
                                                                     $costo_total = $costo_unidad + (($utilidad * $costo_unidad) / 100);
                                                                     $costo_total = ($costo_unidad + (($utilidad * $costo_unidad) / 100)) * $cantidad;
