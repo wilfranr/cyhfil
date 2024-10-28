@@ -6,36 +6,21 @@ use App\Models\Articulo;
 use App\Filament\Resources\ArticulosResource\Pages;
 use App\Filament\Resources\ArticulosResource\RelationManagers;
 use App\Models\Lista;
-// use Filament\Actions\Action;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Modal\Actions\ButtonAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Widgets\StatsOverviewWidget;
 use App\Models\Referencia;
-use Faker\Provider\ar_EG\Text;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\ViewField;
-use Filament\Forms\Components\Wizard;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Filament\Forms\Components\Actions\Action;  // Usa la clase correcta de acciones para Forms
+use Filament\Forms\Components\Actions\Action;
 
 
 class ArticulosResource extends Resource
@@ -134,25 +119,31 @@ class ArticulosResource extends Resource
                                         Select::make('referencia')
                                             ->label('Referencia')
                                             ->options(
-                                                Referencia::query()->pluck('referencia', 'id')
+                                                Referencia::query()
+                                                    ->whereNotNull('referencia') // Filtra registros nulos
+                                                    ->pluck('referencia', 'id')
+                                                    ->toArray()
+
+
                                             )
                                             ->createOptionForm(function () {
                                                 return [
                                                     TextInput::make('referencia')
                                                         ->label('Referencia')
                                                         ->placeholder('Referencia del artículo'),
-                                                    Select::make('marca_id')
-                                                        ->options(
-                                                            \App\Models\Marca::pluck('nombre', 'id')
-                                                        )
-                                                        ->searchable()
-                                                        ->label('Marca'),
+                                                    // Select::make('marca_id')
+                                                    //     ->options(
+                                                    //         \App\Models\Marca::pluck('nombre', 'id')
+
+                                                    //     )
+                                                    //     ->searchable()
+                                                    //     ->label('Marca'),
                                                 ];
                                             })
                                             ->createOptionUsing(function ($data) {
                                                 $referencia = Referencia::create([
                                                     'referencia' => $data['referencia'],
-                                                    'marca_id' => $data['marca_id'],
+                                                    // 'marca_id' => $data['marca_id'],
                                                 ]);
 
                                                 return $referencia->id;
