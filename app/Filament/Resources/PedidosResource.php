@@ -854,7 +854,7 @@ class PedidosResource extends Resource
                                             }
                                         }
                                     }),
-                            ])
+                            ])->visibleOn('create'),
 
                     ]
                 )->skippable()->columnSpan('full'),

@@ -9,6 +9,7 @@ use App\Models\Marca;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -23,7 +24,7 @@ class MarcaResource extends Resource
 {
     protected static ?string $model = Marca::class;
 
-    protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
+    protected static ?string $navigationIcon = 'heroicon-o-bookmark-square';
 
     protected static ?int $navigationSort = 7;
 
@@ -35,15 +36,19 @@ class MarcaResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('nombre')
-                    ->label('Nombre')
-                    ->unique('marcas', 'nombre', ignoreRecord:true)
-                    ->dehydrateStateUsing(fn (string $state): string => ucwords($state))
-                    ->required(),
-                FileUpload::make('logo')
-                    ->label('Logo')
-                    ->image()
-                    ->imageEditor(),
+                Section::make('Información de la Marca')
+                    ->columns(1)
+                    ->schema([
+                        TextInput::make('nombre')
+                            ->label('Nombre')
+                            ->unique('marcas', 'nombre', ignoreRecord: true)
+                            ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                            ->required(),
+                        FileUpload::make('logo')
+                            ->label('Logo')
+                            ->image()
+                            ->imageEditor(),
+                    ]),
 
             ]);
     }
@@ -61,7 +66,7 @@ class MarcaResource extends Resource
                 Tables\Columns\ImageColumn::make('logo')
                     ->searchable()
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -81,7 +86,7 @@ class MarcaResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    
+
                 ]),
             ]);
     }
@@ -89,7 +94,7 @@ class MarcaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'terceros' => RelationManagers\TercerosRelationManager::class,
         ];
     }
 

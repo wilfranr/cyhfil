@@ -78,7 +78,7 @@ class SistemasResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'terceros' => RelationManagers\TercerosRelationManager::class,
         ];
     }
 
