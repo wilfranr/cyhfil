@@ -25,6 +25,11 @@ class OrdenCompraResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?int $navigationSort = 2;
 
+    public static  function getNavigationBadge(): ?string
+    {
+        return OrdenCompra::where('color', '#FFFF00')->count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form

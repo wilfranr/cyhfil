@@ -27,6 +27,11 @@ class OrdenTrabajoResource extends Resource
         return false;
     }
 
+    public static  function getNavigationBadge(): ?string
+    {
+        return OrdenTrabajo::where('estado', 'Pendiente')->count();
+    }
+
 
     public static function form(Form $form): Form
     {

@@ -136,6 +136,7 @@ class EditPedidos extends EditRecord
                             $cotizacion = new \App\Models\Cotizacion();
                             $cotizacion->pedido_id = $record->id;
                             $cotizacion->tercero_id = $record->tercero_id;
+                            $cotizacion->estado = 'Enviada';
                             $cotizacion->save();
 
                             $cotizacion_id = $cotizacion->id;
@@ -653,6 +654,7 @@ class EditPedidos extends EditRecord
                             $cotizacion = new \App\Models\Cotizacion();
                             $cotizacion->pedido_id = $record->id;
                             $cotizacion->tercero_id = $record->tercero_id;
+                            $cotizacion->estado = 'Enviada';
                             $cotizacion->save();
 
                             $cotizacion_id = $cotizacion->id;
@@ -782,6 +784,7 @@ class EditPedidos extends EditRecord
 
                             $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
                             $cotizacion->estado = 'Aprobada';
+                            $cotizacion->save();
                             // Obtener el texto de la dirección seleccionada
                             $direccion = Direccion::find($data['direccion']);
 
@@ -851,6 +854,7 @@ class EditPedidos extends EditRecord
                             // Cambiar el estado de la cotización a 'Rechazada'
                             $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
                             $cotizacion->estado = 'Rechazada';
+                            $cotizacion->save();
 
                             // Notificar al usuario
                             Notification::make()

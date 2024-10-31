@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 class CotizacionResource extends Resource
 {
     protected static ?string $model = Cotizacion::class;
@@ -22,6 +23,11 @@ class CotizacionResource extends Resource
     protected static ?string $label = 'Cotizaciones';
     protected static ?string $navigationIcon = 'ri-currency-fill';
     protected static ?int $navigationSort = 1;
+
+    public static  function getNavigationBadge(): ?string
+    {
+        return Cotizacion::where('estado', 'Enviada')->count();
+    }
 
 
 
@@ -49,7 +55,14 @@ class CotizacionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('estado')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn($record) => match ($record->estado) {
+                        'Pendiente' => 'warning',
+                        'Aprobada' => 'success',
+                        'Rechazada' => 'danger',
+                        default => 'primary',
+                    }),
             ])
             ->filters([
                 //
