@@ -75,31 +75,26 @@
 
 <div class="empresa">
     <div class="logo">
-        <img src="{{ public_path('images/logo.png') }}" alt="Logo" width="60px" height="60px">
+        <img src="{{ public_path('storage/' . $empresaActiva->logo) }}" alt="Logo" width="60px" height="60px">
     </div>
     <div class="empresa-datos">
         <div class="empresa-header">
-            <h1>
-                @foreach ($empresas as $empresa)
-                @endforeach
-                {{ $empresa->nombre }}
-            </h1>
-            <h4>
-                NIT {{ $empresa->nit }}
-            </h4>
+            <h1>{{ $empresaActiva->nombre }}</h1>
+            <h4>NIT {{ $empresaActiva->nit }}</h4>
         </div>
         <div class="empresa-body">
-            <small>{{ $empresa->direccion }}</small><br>
-            <small>TELÉFONO: {{ $empresa->telefono }} - {{ $empresa->celular }}</small><br>
-            <small>{{ $empresa->email }}</small><br>
+            <small>{{ $empresaActiva->direccion }}</small><br>
+            <small>TELÉFONO: {{ $empresaActiva->telefono }} - {{ $empresaActiva->celular }}</small><br>
+            <small>{{ $empresaActiva->email }}</small><br>
             @php
-                $pais = App\Models\Country::find($empresa->country_id);
-                $ciudad = App\Models\City::find($empresa->city_id);
+                $pais = App\Models\Country::find($empresaActiva->country_id);
+                $ciudad = App\Models\City::find($empresaActiva->city_id);
             @endphp
             <small>{{ $ciudad->name }}, {{ $pais->name }}</small>
         </div>
     </div>
 </div>
+
 
 <h1 class="cotizacion">Orden de Compra <span class="cot_id text-red">OC{{ $id }}</span></h1>
 <table>

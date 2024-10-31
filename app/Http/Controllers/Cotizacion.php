@@ -48,6 +48,7 @@ class Cotizacion extends Controller
         $vendedor_id = $pedido->user_id;
         $vendedor = User::where('id', $vendedor_id)->first();
         $ciudad_cliente = City::where('id', $cliente->city_id)->first();
+        $empresaActiva = Empresa::where('estado', true)->first();
 
         // Generación del PDF solo si hay referencias activas
         $pdf = PDF::loadView('pdf.cotizacion', [
@@ -63,6 +64,7 @@ class Cotizacion extends Controller
             'pedidoReferencia' => $pedidoReferencia,
             'mostrarReferencia' => $mostrarReferencia,
             'ciudad_cliente' => $ciudad_cliente->name,
+            'empresaActiva' => $empresaActiva,
         ]);
 
         $fileName = 'COT' . $cotizacion->id . '.pdf';

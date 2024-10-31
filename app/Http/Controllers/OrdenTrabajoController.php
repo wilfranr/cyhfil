@@ -14,8 +14,9 @@ class OrdenTrabajoController extends Controller
 {
     $empresas = Empresa::all();
     $ordenTrabajo = OrdenTrabajo::with(['tercero', 'transportadora', 'direccion.city', 'direccion.state'])->where('id', $id)->first();
+    $empresaActiva = Empresa::where('estado', true)->first();
 
-    $pdf = PDF::loadView('pdf.ordenTrabajo', compact('ordenTrabajo', 'empresas'))->setPaper('a5', 'landscape');  
+    $pdf = PDF::loadView('pdf.ordenTrabajo', compact('ordenTrabajo', 'empresas', 'empresaActiva'))->setPaper('a5', 'landscape');  
 
     $filename = 'Guia-' . $ordenTrabajo->tercero->numero_documento . '-' . now()->format('Y-m-d') . '.pdf';
 

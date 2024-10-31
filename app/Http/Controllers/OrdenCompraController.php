@@ -17,6 +17,7 @@ class OrdenCompraController extends Controller
         $ciudad_proveedor = City::where('id', $proveedor->city_id)->first();
         $articuloId = $ordenCompra->referencia->articulo_id;
         $item = Articulo::where('id', $articuloId)->first()->definicion;
+        $empresaActiva = Empresa::where('estado', true)->first();
 
         $pdf = PDF::loadView('pdf.ordenCompra', [
             'id' => $id,
@@ -25,6 +26,7 @@ class OrdenCompraController extends Controller
             'proveedor' => $proveedor,  
             'ciudad_proveedor' => $ciudad_proveedor,
             'item' => $item,
+            'empresaActiva' => $empresaActiva
         ]);
         $fileName = 'OC' . $ordenCompra->id . '.pdf';
 
