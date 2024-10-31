@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Empresa;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -25,9 +26,12 @@ class LogisticaPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $empresaActiva = Empresa::where('estado', true)->first();
         return $panel
             ->id('logistica')
             ->path('logistica')
+            ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
             ->login()
             ->colors([
                 'primary' => Color::Teal,

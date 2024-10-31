@@ -18,6 +18,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Resources\TercerosResource\RelationManagers;
+use App\Models\Empresa;
 use Filament\Navigation\MenuItem;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
@@ -27,12 +28,15 @@ class VentasPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $empresaActiva = Empresa::where('estado', true)->first();
+
         return $panel
-            ->brandName('Venta de Repuestos')
-            ->brandLogo(asset('images/logo.png'))
+
             ->id('ventas')
             ->path('ventas')
             ->login()
+            ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Violet,
                 'secondary' => Color::Pink,

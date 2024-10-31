@@ -17,17 +17,18 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Shanerbaner82\PanelRoles\PanelRoles;
 use App\Filament\Widgets\OrdersPerMonthChart;
-
-
+use App\Models\Empresa;
 
 class DashboardPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
 
+        $empresaActiva = Empresa::where('estado', true)->first();
+
         return $panel
-            ->brandName('Venta de Repuestos')
-            ->brandLogo(asset('images/logo.png'))
+            ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
             ->login()

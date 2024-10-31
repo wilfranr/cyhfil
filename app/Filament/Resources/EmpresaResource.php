@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\Empresa;
 use App\Models\State;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -33,7 +34,7 @@ class EmpresaResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nombre')
                     ->required()
-                    ->unique()
+                    ->unique('empresas', 'nombre', ignoreRecord: true)
                     ->maxLength(300),
                 Forms\Components\TextInput::make('siglas')
                     ->maxLength(10)
@@ -50,14 +51,14 @@ class EmpresaResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
                     ->email()
-                    ->unique()
+                    ->unique('empresas', 'email', ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('logo')
                     ->image()
                     ->imageEditor(),
                 Forms\Components\TextInput::make('nit')
-                    ->unique()
+                    ->unique('empresas', 'nit', ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('representante')
@@ -92,6 +93,8 @@ class EmpresaResource extends Resource
                     ->searchable()
                     ->live()
                     ->preload(),
+                
+                
             ]);
     }
 
@@ -102,27 +105,38 @@ class EmpresaResource extends Resource
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('siglas')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('direccion')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefono')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('celular')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('logo')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\ImageColumn::make('logo')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('nit')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('representante')
                     ->searchable(),
+                Tables\Columns\BooleanColumn::make('estado')
+                    ->label('Estado')
+                    ->toggleable()
+                    ->alignEnd(),
                 Tables\Columns\TextColumn::make('country_id')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('city_id')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

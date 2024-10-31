@@ -5,6 +5,8 @@ namespace App\Filament\Resources\EmpresaResource\Pages;
 use App\Filament\Resources\EmpresaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Models\Empresa;
+use Filament\Notifications\Notification;
 
 class EditEmpresa extends EditRecord
 {
@@ -13,7 +15,22 @@ class EditEmpresa extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('Activar')
+                ->label('Activar Empresa')
+                ->action(fn () => $this->record->update(['estado' => true]))
+                ->color('success')
+                ->icon('heroicon-o-check')
+                ->requiresConfirmation()
+                ->modalHeading('¿Está seguro de activar esta empresa?')
+                ->modalDescription('Activar esta empresa desactivará todas las demás empresas. ¿Desea continuar?')
+                ->hidden(fn () => $this->record->estado), // Oculta el botón si ya está activo
             Actions\DeleteAction::make(),
         ];
+    }
+
+    
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

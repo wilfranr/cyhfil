@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Empresa;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -26,11 +27,12 @@ class PartesPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $empresaActiva = Empresa::where('estado', true)->first();
         return $panel
             ->id('partes')
             ->path('partes')
-            ->brandName('Venta de Repuestos')
-            ->brandLogo(asset('images/logo.png'))
+            ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
             ->login()
             ->colors([
                 'primary' => Color::Lime,
