@@ -21,11 +21,6 @@ class OrdenTrabajoResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-truck';
     protected static ?int $navigationSort = 3;
 
-    public static function canCreate(): bool
-    {
-        // Puedes condicionar esto según el rol del usuario o cualquier otra lógica
-        return false;
-    }
 
     public static  function getNavigationBadge(): ?string
     {
@@ -232,7 +227,6 @@ class OrdenTrabajoResource extends Resource
     {
         return [
             'index' => Pages\ListOrdenTrabajos::route('/'),
-            'create' => Pages\CreateOrdenTrabajo::route('/create'),
             'edit' => Pages\EditOrdenTrabajo::route('/{record}/edit'),
             'view' => Pages\ViewOrdenTrabajo::route('/{record}/view'),
 

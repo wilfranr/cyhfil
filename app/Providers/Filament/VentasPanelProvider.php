@@ -36,7 +36,8 @@ class VentasPanelProvider extends PanelProvider
             ->path('ventas')
             ->login()
             ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
-            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_dark) : asset('images/logo.png'))
+            ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Violet,
                 'secondary' => Color::Pink,

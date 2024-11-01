@@ -13,7 +13,7 @@ class OrdenCompraPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_orden_compra');
+        return $user->can('view_any_orden::compra');
     }
 
     /**
@@ -21,7 +21,7 @@ class OrdenCompraPolicy
      */
     public function view(User $user, OrdenCompra $ordenCompra): bool
     {
-        return $user->can('view_orden_compra');
+        return $user->can('view_orden::compra');
     }
 
     /**

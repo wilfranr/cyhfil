@@ -13,7 +13,7 @@ class OrdenTrabajoPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_orden_trabajo');
+        return $user->can('view_any_orden::trabajo');
     }
 
     /**
@@ -21,7 +21,7 @@ class OrdenTrabajoPolicy
      */
     public function view(User $user, OrdenTrabajo $ordenTrabajo): bool
     {
-        return $user->can('view_orden_trabajo');
+        return $user->can('view_orden::trabajo');
     }
 
     /**
@@ -29,7 +29,7 @@ class OrdenTrabajoPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_orden_trabajo');
+        return $user->can('create_orden::trabajo');
     }
 
     /**
@@ -37,7 +37,7 @@ class OrdenTrabajoPolicy
      */
     public function update(User $user, OrdenTrabajo $ordenTrabajo): bool
     {
-        return $user->can('update_orden_trabajo');
+        return $user->can('update_orden::trabajo');
     }
 
     /**
@@ -45,7 +45,7 @@ class OrdenTrabajoPolicy
      */
     public function delete(User $user, OrdenTrabajo $ordenTrabajo): bool
     {
-        return $user->can('delete_orden_trabajo');
+        return $user->can('delete_orden::trabajo');
     }
 
     /**
@@ -53,7 +53,7 @@ class OrdenTrabajoPolicy
      */
     public function restore(User $user, OrdenTrabajo $ordenTrabajo): bool
     {
-        return $user->can('restore_orden_trabajo');
+        return $user->can('restore_orden::trabajo');
     }
 
     /**
@@ -61,6 +61,6 @@ class OrdenTrabajoPolicy
      */
     public function forceDelete(User $user, OrdenTrabajo $ordenTrabajo): bool
     {
-        return $user->can('force_delete_orden_trabajo');
+        return $user->can('force_delete_orden::trabajo');
     }
 }

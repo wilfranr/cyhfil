@@ -24,19 +24,16 @@ class TerceroResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    // protected static ?string $recordTitleAttribute = 'nombre';
-    // public static function getPermissionPrefixes(): array
-    // {
-    //     return [
-    //         'view',
-    //         'view_any',
-    //         'create',
-    //         'update',
-    //         'delete',
-    //         'delete_any',
-    //     ];
-    // }
-    
+    protected static ?string $recordTitleAttribute = 'nombre';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'nombre',
+        ];
+    }
+
+
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
@@ -57,7 +54,7 @@ class TerceroResource extends Resource
                     Wizard\Step::make('Información general')->icon('heroicon-o-information-circle')
                         ->schema([
                             TextInput::make('nombre')
-                                ->required()->dehydrateStateUsing(fn (string $state): string => strtoupper($state))
+                                ->required()->dehydrateStateUsing(fn(string $state): string => strtoupper($state))
                                 ->label('Nombre'),
 
                             Select::make('tipo')
@@ -69,13 +66,7 @@ class TerceroResource extends Resource
                                     'Proveedor' => 'Proveedor',
                                     'Ambos' => 'Ambos',
                                 ]),
-                            Select::make('tipo_documento')
-                                ->live()
-                                ->options([
-                                    'cc' => 'Cédula de Ciudadanía',
-                                    'ce' => 'Cédula de Extranjería',
-                                    'nit' => 'NIT',
-                                ])
+                            TextInput::make('tipo_documento')
                                 ->label('Tipo de Documento'),
                             TextInput::make('numero_documento')
                                 ->label('Número de Documento')
@@ -89,7 +80,7 @@ class TerceroResource extends Resource
                                 ->unique('terceros', 'email', ignoreRecord: true), // Validación única
                             TextInput::make('dv')->nullable()
                                 ->label('Dígito Verificador')
-                                ->visible(fn (Get $get) => $get('tipo_documento') === 'nit'),
+                                ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
                             Select::make('forma_pago')
                                 ->nullable()
                                 ->label('Forma de Pago')
@@ -152,10 +143,10 @@ class TerceroResource extends Resource
                                 ->multiple()
                                 ->preload()
                                 ->live()
-                                ->visible(fn (Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
+                                ->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                 ->searchable(),
 
-                            Section::make('Marcas y Ssistemas')
+                            Section::make('Marcas y Sistemas')
                                 ->schema([
                                     Select::make('marca_id')
                                         ->relationship('marcas', 'nombre')
@@ -171,7 +162,7 @@ class TerceroResource extends Resource
                                         ->preload()
                                         ->live()
                                         ->searchable(),
-                                ])->columns(2)->visible(fn (Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
+                                ])->columns(2)->visible(fn(Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
 
 
 
@@ -193,7 +184,7 @@ class TerceroResource extends Resource
                                     $set('city_id', null);
                                 }),
                             Forms\Components\Select::make('state_id')
-                                ->options(fn (Get $get): Collection => State::query()
+                                ->options(fn(Get $get): Collection => State::query()
                                     ->where('country_id', $get('country_id'))
                                     ->pluck('name', 'id'))
                                 ->label('Departamento')
@@ -204,7 +195,7 @@ class TerceroResource extends Resource
                                     $set('city_id', null);
                                 }),
                             Forms\Components\Select::make('city_id')
-                                ->options(fn (Get $get): Collection => City::query()
+                                ->options(fn(Get $get): Collection => City::query()
                                     ->where('state_id', $get('state_id'))
                                     ->pluck('name', 'id'))
                                 ->label('Ciudad')
@@ -256,7 +247,7 @@ class TerceroResource extends Resource
                     ->searchable()
                     ->badge()
                     ->color(
-                        fn (string $state): string => match ($state) {
+                        fn(string $state): string => match ($state) {
 
                             'Cliente' => 'primary',
                             'Proveedor' => 'info',
@@ -283,9 +274,10 @@ class TerceroResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('telefono')
                     ->label('Teléfono')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->searchable()
-                    ->sortable(),
+                    ->url(fn($record) => "https://wa.me/57{$record->telefono}")
+                    ->openUrlInNewTab()
+                    ->icon('ri-whatsapp-line')
+                    ->color('success'),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Correo Electrónico')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -352,6 +344,7 @@ class TerceroResource extends Resource
             'index' => Pages\ListTerceros::route('/'),
             'create' => Pages\CreateTercero::route('/create'),
             'edit' => Pages\EditTercero::route('/{record}/edit'),
+            'view' => Pages\ViewTercero::route('/{record}/view'),
         ];
     }
 }

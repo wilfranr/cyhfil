@@ -82,7 +82,7 @@
 <body>
     <div class="empresa">
         <div class="logo">
-            <img src="{{ public_path('storage/' . $empresaActiva->logo) }}" alt="Logo" width="60px" height="60px">
+            <img src="{{ public_path('storage/' . $empresaActiva->logo_dark) }}" alt="Logo" width="160px" height="20px">
         </div>
         <div class="empresa-datos">
             <div class="empresa-header">

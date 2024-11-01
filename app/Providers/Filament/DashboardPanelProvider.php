@@ -28,7 +28,8 @@ class DashboardPanelProvider extends PanelProvider
 
         return $panel
             ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
-            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_dark) : asset('images/logo.png'))
+            ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
             ->login()

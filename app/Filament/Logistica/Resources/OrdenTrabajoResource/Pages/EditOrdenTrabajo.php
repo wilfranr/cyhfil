@@ -298,7 +298,7 @@ class EditOrdenTrabajo extends EditRecord
                     ->color('')
                     ->url(function (array $data) {
                         $record = $this->getRecord();
-                        return TerceroResource::getUrl('edit', ['record' => $record->tercero_id]);
+                        return TerceroResource::getUrl('view', ['record' => $record->tercero_id]);
                     }, shouldOpenInNewTab: true),
             ];
         } else if ($this->getRecord()->estado == 'Completado') {
@@ -310,7 +310,7 @@ class EditOrdenTrabajo extends EditRecord
                     ->color('')
                     ->url(function (array $data) {
                         $record = $this->getRecord();
-                        return TerceroResource::getUrl('edit', ['record' => $record->tercero_id]);
+                        return TerceroResource::getUrl('view', ['record' => $record->tercero_id]);
                     }, shouldOpenInNewTab: true),
             ];
         }

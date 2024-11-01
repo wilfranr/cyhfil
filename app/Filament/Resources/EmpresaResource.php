@@ -54,7 +54,12 @@ class EmpresaResource extends Resource
                     ->unique('empresas', 'email', ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('logo')
+                Forms\Components\FileUpload::make('logo_light')
+                    ->label('Logo modo claro')
+                    ->image()
+                    ->imageEditor(),
+                Forms\Components\FileUpload::make('logo_dark')
+                    ->label('Logo modo oscuro')
                     ->image()
                     ->imageEditor(),
                 Forms\Components\TextInput::make('nit')
@@ -64,7 +69,7 @@ class EmpresaResource extends Resource
                 Forms\Components\TextInput::make('representante')
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\Select::make('country_id')
+                Forms\Components\Select::make('country_id')
                     ->relationship(name: 'country', titleAttribute: 'name')
                     ->label('País')
                     ->searchable()
@@ -86,15 +91,15 @@ class EmpresaResource extends Resource
                 //         $set('city_id', null);
                 //     }),
                 Forms\Components\Select::make('city_id')
-                    ->options(fn (Get $get): Collection => City::query()
+                    ->options(fn(Get $get): Collection => City::query()
                         ->where('country_id', $get('country_id'))
                         ->pluck('name', 'id'))
                     ->label('Ciudad')
                     ->searchable()
                     ->live()
                     ->preload(),
-                
-                
+
+
             ]);
     }
 
@@ -119,7 +124,11 @@ class EmpresaResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\ImageColumn::make('logo')
+                Tables\Columns\ImageColumn::make('logo_light')
+                    ->label('Logo Light')
+                    ->circular(),
+                Tables\Columns\ImageColumn::make('logo_dark')
+                    ->label('Logo Dark')
                     ->circular(),
                 Tables\Columns\TextColumn::make('nit')
                     ->searchable(),

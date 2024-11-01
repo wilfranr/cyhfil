@@ -30,8 +30,8 @@ class LogisticaPanelProvider extends PanelProvider
         return $panel
             ->id('logistica')
             ->path('logistica')
-            ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
-            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo) : asset('images/logo.png'))
+            ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_dark) : asset('images/logo.png'))
+            ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
             ->login()
             ->colors([
                 'primary' => Color::Teal,
@@ -40,9 +40,9 @@ class LogisticaPanelProvider extends PanelProvider
             // ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverResources(in: app_path('Filament/Logistica/Resources'), for: 'App\\Filament\\Logistica\\Resources')
             ->discoverPages(in: app_path('Filament/Logistica/Pages'), for: 'App\\Filament\\Logistica\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
+            // ->pages([
+            //     Pages\Dashboard::class,
+            // ])
             ->discoverWidgets(in: app_path('Filament/Logistica/Widgets'), for: 'App\\Filament\\Logistica\\Widgets')
             ->widgets([
                 \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),

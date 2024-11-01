@@ -10,10 +10,5 @@ class ListOrdenTrabajos extends ListRecords
 {
     protected static string $resource = OrdenTrabajoResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+    
 }
