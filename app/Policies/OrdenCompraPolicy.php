@@ -29,7 +29,7 @@ class OrdenCompraPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_orden_compra');
+        return $user->can('create_orden::compra');
     }
 
     /**
@@ -37,7 +37,7 @@ class OrdenCompraPolicy
      */
     public function update(User $user, OrdenCompra $ordenCompra): bool
     {
-        return $user->can('update_orden_compra');
+        return $user->can('update_orden::compra');
     }
 
     /**
@@ -45,7 +45,7 @@ class OrdenCompraPolicy
      */
     public function delete(User $user, OrdenCompra $ordenCompra): bool
     {
-        return $user->can('delete_orden_compra');
+        return $user->can('delete_orden::compra');
     }
 
     /**
@@ -53,7 +53,7 @@ class OrdenCompraPolicy
      */
     public function restore(User $user, OrdenCompra $ordenCompra): bool
     {
-        return $user->can('restore_orden_compra');
+        return $user->can('restore_orden::compra');
     }
 
     /**
@@ -61,6 +61,6 @@ class OrdenCompraPolicy
      */
     public function forceDelete(User $user, OrdenCompra $ordenCompra): bool
     {
-        return $user->can('force_delete_orden_compra');
+        return $user->can('force_delete_orden::compra');
     }
 }
