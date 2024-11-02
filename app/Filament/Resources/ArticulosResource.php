@@ -21,7 +21,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action;
-
+use Filament\Forms\Components\Textarea;
 
 class ArticulosResource extends Resource
 {
@@ -90,8 +90,10 @@ class ArticulosResource extends Resource
                                     ->preload()
                                     ->live()
                                     ->required(),
-                                FileUpload::make('fotoMedida')
-                                    ->label('Foto de la medida'),
+                                FileUpload::make('foto_medida')
+                                    ->label('Foto de la medida')
+                                    ->image()
+                                    ->imageEditor(),
 
                                 TextInput::make('descripcionEspecifica')
                                     ->label('Decripción específica')
@@ -99,7 +101,7 @@ class ArticulosResource extends Resource
                                 TextInput::make('peso')
                                     ->label('Peso (gr)')
                                     ->placeholder('Peso del artículo en gramos'),
-                                TextInput::make('comentarios')
+                                Textarea::make('comentarios')
                                     ->label('Comentarios')
                                     ->placeholder('Comentarios del artículo'),
                                 FileUpload::make('fotoDescriptiva')

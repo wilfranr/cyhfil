@@ -55,11 +55,11 @@ class EmpresaResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('logo_light')
-                    ->label('Logo modo claro')
+                    ->label('Logo para modo oscuro')
                     ->image()
                     ->imageEditor(),
                 Forms\Components\FileUpload::make('logo_dark')
-                    ->label('Logo modo oscuro')
+                    ->label('Logo para modo claro')
                     ->image()
                     ->imageEditor(),
                 Forms\Components\TextInput::make('nit')
