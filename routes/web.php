@@ -39,6 +39,11 @@ Route::get('/', function () {
     }
 });
 
+Route::get('/login', function () {
+    return redirect('/');
+});
+
+
 
 Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cotizacion');
 
