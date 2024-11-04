@@ -8,39 +8,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-
 Route::get('/', function () {
-    if (Auth::user() == null) {
-        return redirect('/home');
-    } else {
-        $rol = Auth::user()->roles->first()->name;
-        if ($rol == 'Vendedor') {
-            return redirect('/ventas');
-        } elseif ($rol == 'Administrador') {
-            return redirect('/admin');
-        } elseif ($rol == 'Analista') {
-            return redirect('/partes');
-        } elseif ($rol == 'Logistica') {
-            return redirect('/logistica');
-        } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
-            return redirect('/admin');
-        }
+    if (!Auth::check()) {
+        return redirect('/home/login');  // Redirige al login de Filament
     }
-});
-
-Route::get('/login', function () {
-    return redirect('/');
+    
+    $rol = Auth::user()->roles->first()->name;
+    switch ($rol) {
+        case 'Vendedor':
+            return redirect('/ventas');
+        case 'Administrador':
+        case 'super-admin':
+            return redirect('/admin');
+        case 'Analista':
+            return redirect('/partes');
+        case 'Logistica':
+            return redirect('/logistica');
+        default:
+            return redirect('/home');
+    }
 });
 
 
