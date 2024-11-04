@@ -23,7 +23,7 @@ class EditEmpresa extends EditRecord
                 ->requiresConfirmation()
                 ->modalHeading('¿Está seguro de activar esta empresa?')
                 ->modalDescription('Activar esta empresa desactivará todas las demás empresas. ¿Desea continuar?')
-                ->hidden(fn () => $this->record->estado), // Oculta el botón si ya está activo
+                ->hidden(fn () => (bool) $this->record->estado),
             Actions\DeleteAction::make(),
         ];
     }
