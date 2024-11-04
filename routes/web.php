@@ -45,8 +45,11 @@ Route::get('/auth-status', function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::get('/chat/messages', [ChatController::class, 'fetchMessages']);
+    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
+    Route::get('/auth-status', function () {
+        return response()->json(['isAuthenticated' => Auth::check()]);
+    });
 });
 
 Route::post('/broadcasting/auth', function () {
