@@ -1,91 +1,43 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const loadChatMessages = () => {
-    fetch('/chat/messages')
+  // Primero verificamos la autenticación
+  checkAuthAndInitialize();
+
+  function checkAuthAndInitialize() {
+    fetch('/auth-status')
       .then(response => {
         if (!response.ok) {
-          if (response.status === 401) {
-            // Redirigir al login si no está autenticado
-            window.location.href = '/login';
-            return;
-          }
-          throw new Error('Network response was not ok');
+          throw new Error('Error en la verificación de autenticación');
         }
         return response.json();
       })
-      .then(messages => {
-        if (!messages) return;
+      .then(data => {
+        console.log('Estado de autenticación:', data);
         
-        let chatContent = document.getElementById('chatContent');
-        if (!chatContent) return;
-
-        // Define los colores según los roles
-        const roleColors = {
-          'super_admin': '#FFBF00',  // Ámbar
-          'panel_user': '#00AEEF',   // Azul claro
-          'Vendedor': '#9f86c0',     // Violeta
-          'Analista': '#A3E635',     // Lima
-          'Administrador': '#FFBF00', // Ámbar
-          'Logistica': '#14B8A6',    // Teal
-        };
-
-        // Limpiar el contenido existente
-        chatContent.innerHTML = '';
-
-        // Mostrar los mensajes en el chat
-        messages.forEach(message => {
-          const roleColor = roleColors[message.role] || '#000000';
-          const messageElement = document.createElement('p');
-          messageElement.style.color = roleColor;
-          messageElement.innerHTML = `
-            <strong>${message.sender}:</strong> ${message.message} 
-            <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span>
-          `;
-          chatContent.appendChild(messageElement);
-        });
-
-        // Desplazarse al final del chat
-        chatContent.scrollTop = chatContent.scrollHeight;
+        if (data.isAuthenticated === true) {
+          // Si está autenticado, iniciamos el chat
+          console.log('Usuario autenticado, inicializando chat...');
+          initializeChat();
+          loadChatMessages();
+        } else {
+          console.log('Usuario no autenticado, redirigiendo...');
+          window.location.href = '/login';
+        }
       })
       .catch(error => {
-        console.error('Error al cargar los mensajes:', error);
-        // Mostrar mensaje de error al usuario
-        const errorMessage = document.createElement('p');
-        errorMessage.style.color = 'red';
-        errorMessage.textContent = 'Error al cargar los mensajes. Por favor, intente nuevamente.';
-        document.getElementById('chatContent').appendChild(errorMessage);
+        console.error('Error en la verificación de autenticación:', error);
+        // Opcional: Mostrar mensaje de error al usuario
+        alert('Error al verificar la autenticación. Por favor, recarga la página.');
       });
-  };
-
-  // Verificar autenticación antes de inicializar el chat
-  fetch('/auth-status')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (!data.isAuthenticated) {
-        window.location.href = '/login';
-        return;
-      }
-      
-      // Inicializar el chat solo si el usuario está autenticado
-      initializeChat();
-      loadChatMessages();
-    })
-    .catch(error => {
-      console.error('Error al verificar la autenticación:', error);
-      window.location.href = '/login';
-    });
+  }
 
   function initializeChat() {
+    // Verificar que Pusher y Echo estén disponibles
     if (typeof Pusher === 'undefined' || typeof Echo === 'undefined') {
       console.error('Pusher o Echo no están definidos.');
       return;
     }
 
-    // Configurar Echo y Pusher
+    // Configurar Echo
     window.Echo = new Echo({
       broadcaster: 'pusher',
       key: '54e2d06004a1969229bf',
@@ -93,11 +45,74 @@ document.addEventListener("DOMContentLoaded", function () {
       forceTLS: true
     });
 
-    // Crear interfaz del chat
+    // Crear la interfaz del chat
     createChatInterface();
 
-    // Configurar websockets
+    // Configurar los websockets
     setupWebsockets();
+  }
+
+  function loadChatMessages() {
+    fetch('/chat/messages')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al cargar los mensajes');
+        }
+        return response.json();
+      })
+      .then(messages => {
+        if (!messages) return;
+        
+        const chatContent = document.getElementById('chatContent');
+        if (!chatContent) {
+          console.error('No se encontró el elemento chatContent');
+          return;
+        }
+
+        // Limpiar mensajes existentes
+        chatContent.innerHTML = '';
+
+        // Renderizar los mensajes
+        renderMessages(messages, chatContent);
+      })
+      .catch(error => {
+        console.error('Error al cargar los mensajes:', error);
+        showErrorMessage('Error al cargar los mensajes.');
+      });
+  }
+
+  function renderMessages(messages, container) {
+    const roleColors = {
+      'super_admin': '#FFBF00',
+      'panel_user': '#00AEEF',
+      'Vendedor': '#9f86c0',
+      'Analista': '#A3E635',
+      'Administrador': '#FFBF00',
+      'Logistica': '#14B8A6',
+    };
+
+    messages.forEach(message => {
+      const roleColor = roleColors[message.role] || '#000000';
+      const messageElement = document.createElement('p');
+      messageElement.style.color = roleColor;
+      messageElement.innerHTML = `
+        <strong>${message.sender}:</strong> ${message.message} 
+        <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span>
+      `;
+      container.appendChild(messageElement);
+    });
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function showErrorMessage(message) {
+    const chatContent = document.getElementById('chatContent');
+    if (chatContent) {
+      const errorElement = document.createElement('p');
+      errorElement.style.color = 'red';
+      errorElement.textContent = message;
+      chatContent.appendChild(errorElement);
+    }
   }
 
   function createChatInterface() {
@@ -180,27 +195,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Función global para enviar mensajes
 window.sendMessage = function() {
-  let input = document.getElementById('messageInput');
-  let message = input.value.trim();
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
   
-  if (message === '') return;
+  if (!message) return;
   
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  if (!csrfToken) {
+    console.error('No se encontró el token CSRF');
+    return;
+  }
+
   input.value = '';
 
   fetch('/chat/send', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      'X-CSRF-TOKEN': csrfToken
     },
-    body: JSON.stringify({ message: message })
+    body: JSON.stringify({ message })
   })
     .then(response => {
       if (!response.ok) {
-        if (response.status === 401) {
-          window.location.href = '/login';
-          return;
-        }
         throw new Error('Error al enviar el mensaje');
       }
       return response.json();
@@ -210,10 +227,8 @@ window.sendMessage = function() {
     })
     .catch(error => {
       console.error('Error:', error);
-      // Mostrar mensaje de error al usuario
-      const errorMessage = document.createElement('p');
-      errorMessage.style.color = 'red';
-      errorMessage.textContent = 'Error al enviar el mensaje. Por favor, intente nuevamente.';
-      document.getElementById('chatContent').appendChild(errorMessage);
+      showErrorMessage('Error al enviar el mensaje. Por favor, intente nuevamente.');
+      // Restaurar el mensaje en el input en caso de error
+      input.value = message;
     });
 };
