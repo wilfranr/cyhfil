@@ -26,6 +26,10 @@ class Empresa extends Model
         'siglas',
     ];
 
+    protected $casts = [
+        'estado' => 'boolean',
+    ];
+
     // Relación con el modelo Country
     public function country()
     {
