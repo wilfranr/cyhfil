@@ -124,18 +124,27 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   // Realiza una solicitud AJAX para verificar si el usuario está autenticado
   fetch('/auth-status')
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error('Error en la solicitud');
+      return response.json();
+    })
     .then(data => {
       if (!data.isAuthenticated) {
         console.log('El usuario no está autenticado');
+        // Redirige al usuario a la página de inicio de sesión si no está autenticado
+        window.location.href = '/home/login';
         return;
       }
 
-      // Lógica para manejar el chat, suscripciones y envío de mensajes...
+      // Aquí continúa la lógica de manejo del chat si el usuario está autenticado
+      console.log("Usuario autenticado, cargando chat...");
     })
     .catch(error => {
       console.error('Error al verificar la autenticación:', error);
+      // También redirige al login en caso de error en la solicitud
+      window.location.href = '/home/login';
     });
+
 });
 
 // Función para enviar un mensaje
