@@ -44,7 +44,7 @@ Route::get('/pdf/generateOrdenCompra/{id}', [OrdenCompraController::class, 'gene
 Route::get('/ordenTrabajo/{id}/pdf', [OrdenTrabajoController::class, 'generarPDF'])->name('ordenTrabajo.pdf');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/chat/messages', [ChatController::class, 'fetchMessages']);
+    // Route::get('/chat/messages', [ChatController::class, 'fetchMessages']);
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::get('/auth-status', function () {
         return response()->json(['isAuthenticated' => Auth::check()]);
