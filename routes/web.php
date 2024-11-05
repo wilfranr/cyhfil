@@ -10,10 +10,13 @@ use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     if (!Auth::check()) {
-        return redirect('/home/login');  // Cambia esto si la ruta de login es otra
+        return redirect('/home/login');  // Redirige al login de Filament
     }
     
-    $rol = Auth::user()->roles->first()->name ?? 'default';
+    // Debug para ver el rol del usuario
+    dd(Auth::user()->roles->first()->name);
+
+    $rol = Auth::user()->roles->first()->name;
     switch ($rol) {
         case 'Vendedor':
             return redirect('/ventas');
@@ -32,6 +35,7 @@ Route::get('/', function () {
 
 
 
+
 Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cotizacion');
 
 //ruta orden de compra
@@ -44,7 +48,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::get('/auth-status', function () {
         return response()->json(['isAuthenticated' => Auth::check()]);
-    });
+    })->name('auth.status');
+    
 });
 
 Route::post('/broadcasting/auth', function () {
@@ -52,7 +57,3 @@ Route::post('/broadcasting/auth', function () {
 });
 
 
-Route::get('/test-event', function () {
-    event(new \App\Events\TestEvent('Mensaje de prueba'));
-    return "Evento de prueba enviado";
-});
