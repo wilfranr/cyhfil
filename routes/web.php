@@ -10,10 +10,10 @@ use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     if (!Auth::check()) {
-        return redirect('/home/login');  // Redirige al login de Filament
+        return redirect('/home/login');  // Cambia esto si la ruta de login es otra
     }
     
-    $rol = Auth::user()->roles->first()->name;
+    $rol = Auth::user()->roles->first()->name ?? 'default';
     switch ($rol) {
         case 'Vendedor':
             return redirect('/ventas');
@@ -31,18 +31,13 @@ Route::get('/', function () {
 
 
 
+
 Route::get('/pdf/generate/{id}', [Cotizacion::class, 'generate'])->name('pdf.cotizacion');
 
 //ruta orden de compra
 Route::get('/pdf/generateOrdenCompra/{id}', [OrdenCompraController::class, 'generate'])->name('pdf.ordenCompra');
 
 Route::get('/ordenTrabajo/{id}/pdf', [OrdenTrabajoController::class, 'generarPDF'])->name('ordenTrabajo.pdf');
-
-Route::get('/auth-status', function () {
-    return response()->json(['isAuthenticated' => Auth::check()]);
-});
-
-
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/chat/messages', [ChatController::class, 'fetchMessages']);
