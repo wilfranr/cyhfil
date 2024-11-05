@@ -13,9 +13,6 @@ Route::get('/', function () {
         return redirect('/home/login');  // Redirige al login de Filament
     }
     
-    // Debug para ver el rol del usuario
-    dd(Auth::user()->roles->first()->name);
-
     $rol = Auth::user()->roles->first()->name;
     switch ($rol) {
         case 'Vendedor':
