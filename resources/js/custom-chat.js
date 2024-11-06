@@ -1,32 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Cargar los mensajes del chat al cargar la página
-  fetch('/chat/messages')
-    .then(response => response.json())
+  // Cargar los mensajes del chat al cargar la página siempre y cuando no contenga login
+
+  fetch('/chat/messages', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    credentials: 'include' // Incluye cookies para autenticación
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('Error en la autenticación o en la carga de mensajes');
+      return response.json();
+    })
     .then(messages => {
-      let chatContent = document.getElementById('chatContent');
+      const chatContent = document.getElementById('chatContent');
 
       // Define los colores según los roles
       const roleColors = {
-        'super_admin': '#FFBF00',  // Ámbar
-        'panel_user': '#00AEEF',   // Azul claro
-        'Vendedor': '#9f86c0',     // Violeta
-        'Analista': '#A3E635',     // Lima
-        'Administrador': '#FFBF00',// Ámbar
-        'Logistica': '#14B8A6',    // Teal
+        'super_admin': '#FFBF00',
+        'panel_user': '#00AEEF',
+        'Vendedor': '#9f86c0',
+        'Analista': '#A3E635',
+        'Administrador': '#FFBF00',
+        'Logistica': '#14B8A6'
       };
 
       // Mostrar los mensajes en el chat
       messages.forEach(message => {
-        const roleColor = roleColors[message.role] || '#000000'; // Por defecto color negro si el rol no está definido
+        const roleColor = roleColors[message.role] || '#000000';
 
         chatContent.innerHTML += `
-      <p style="color: ${roleColor};">
-        <strong>${message.sender}:</strong> ${message.message} 
-        <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span>
-      </p>`;
+            <p style="color: ${roleColor};">
+                <strong>${message.sender}:</strong> ${message.message} 
+                <span style="color: gray; font-size: 0.85em;">(${message.created_at})</span>
+            </p>`;
       });
-
-      // Desplazarse automáticamente al final del chat para ver los mensajes más recientes
       chatContent.scrollTop = chatContent.scrollHeight;
     })
     .catch(error => {
@@ -72,7 +81,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       chatContent.scrollTop = chatContent.scrollHeight;
     });
-
+    const chatToggleButton1 = document.getElementById('chatToggleButton');
+    
+    // Oculta el botón si la URL contiene la palabra "login"
+    if (window.location.href.includes("login")) {
+        chatToggleButton1.style.display = "none";
+    }
   // Lógica de chat// Crear el botón flotante para abrir/cerrar el chat en la esquina inferior derecha
   let chatToggleButton = document.createElement('div');
   chatToggleButton.id = 'chatToggleButton';
@@ -87,19 +101,11 @@ document.addEventListener("DOMContentLoaded", function () {
   let chatSidebar = document.createElement('div');
   chatSidebar.id = 'chatSidebar';
   chatSidebar.innerHTML = `
-        <h3>Chat empresa</h3>
-        <div id="chatContent" style="flex-grow: 1; overflow-y: auto;">
-            <!-- Mensajes del chat y logs -->
-            <p class="logistica">Logística: XXXX</p>
-            <p class="contabilidad">Contabilidad: XXXX</p>
-            <p class="gerencia">Gerencia: XXXX</p>
-            <p class="logistica">Logística: Ha cargado Guía de despacho #XXXXX de OT000XXX</p>
-        </div>
-        <div id="chatInputContainer" style="display: flex; padding-top: 10px;">
-            <input type="text" id="messageInput" placeholder="Escribe un mensaje..." style="flex-grow: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-            <button onclick="sendMessage()">Enviar</button>
-        </div>
+        <div id="chatContent"></div>
+        <input type="text" id="messageInput" placeholder="Escribe un mensaje..." style="color: gray;"/>
+        <button onclick="sendMessage()">Enviar</button>
       `;
+
   document.body.appendChild(chatSidebar);
 
   // Obtener el contenedor principal correctamente
@@ -151,4 +157,5 @@ function sendMessage() {
         console.error('Error al enviar el mensaje:', error);
       });
   }
+
 }
