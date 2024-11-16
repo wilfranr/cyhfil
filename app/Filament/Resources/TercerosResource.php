@@ -108,11 +108,12 @@ class TercerosResource extends Resource
                                 ->createOptionForm(function () {
                                     return [
                                         Select::make('tipo')
-                                            ->relationship('listas', 'nombre')
-                                            ->where('tipo', 'Tipo de Máquina') // Filtramos por "Tipo de Máquina"
+                                            ->relationship('listas', 'nombre', fn($query) => $query->where('tipo', 'Tipo de Máquina')) // Usamos query() para filtrar
                                             ->label('Tipo')
                                             ->searchable()
-                                            ->required(),
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
 
                                         Select::make('marca_id')
                                             ->relationship('marcas', 'nombre')
