@@ -96,24 +96,20 @@ class TercerosResource extends Resource
                             TextInput::make('email_factura_electronica')->nullable()->label('Correo Factura Electrónica'),
                             TextInput::make('sitio_web')->nullable()->label('Sitio Web'),
                             Select::make('maquina_id')
-                                ->relationship('maquinas', 'serie')
+                                ->label('Máquina')
+                                ->relationship('maquinas', 'modelo')
+                                ->options(function ($get) {
+                                    // Obtenemos las máquinas relacionadas con el tercero
+                                    return \App\Models\Maquina::all()->mapWithKeys(function ($maquina) {
+                                        $tipo = \App\Models\Lista::find($maquina->tipo)->nombre ?? 'Sin tipo'; // Obtiene el nombre del tipo
+                                        return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"]; // Concatenamos tipo, modelo y serie
+                                    });
+                                })
                                 ->createOptionForm(function () {
                                     return [
                                         Select::make('tipo')
-                                            ->options([
-                                                'excavadora' => 'Excavadora',
-                                                'retroexcavadora' => 'Retroexcavadora',
-                                                'bulldozer' => 'Bulldozer',
-                                                'grua' => 'Grua',
-                                                'montacargas' => 'Montacargas',
-                                                'compactador' => 'Compactador',
-                                                'motoniveladora' => 'Motoniveladora',
-                                                'rodillo' => 'Rodillo',
-                                                'tractor' => 'Tractor',
-                                                'camion' => 'Camion',
-                                                'volqueta' => 'Volqueta',
-                                                'otro' => 'Otro',
-                                            ])
+                                            ->relationship('listas', 'nombre')
+                                            ->where('tipo', 'Tipo de Máquina') // Filtramos por "Tipo de Máquina"
                                             ->label('Tipo')
                                             ->searchable()
                                             ->required(),
@@ -141,15 +137,15 @@ class TercerosResource extends Resource
                                             ->label('Foto'),
 
                                         Forms\Components\FileUpload::make('fotoId')
-                                            ->label('FotoId')
+                                            ->label('FotoId'),
                                     ];
                                 })
-                                ->label('Máquina')
                                 ->multiple()
                                 ->preload()
                                 ->live()
                                 ->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                 ->searchable(),
+
 
                             Section::make('Marcas y Sistemas')
                                 ->schema([
@@ -246,6 +242,10 @@ class TercerosResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tipo')
                     ->label('Tipo')
                     ->sortable()
