@@ -30,13 +30,18 @@ class MarcaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nombre';
 
+    protected static ?string $label = 'Fabricante';
+    protected static ?string $pluralLabel = 'Fabricantes';
+    protected static ?string $navigationLabel = 'Fabricantes';
+
+
 
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Información de la Marca')
+                Section::make('Información del Fabricante')
                     ->columns(1)
                     ->schema([
                         TextInput::make('nombre')

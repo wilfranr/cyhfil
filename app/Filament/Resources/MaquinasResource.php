@@ -87,7 +87,7 @@ class MaquinasResource extends Resource
 
                 Select::make('marca_id')
                     ->relationship('marcas', 'nombre')
-                    ->label('Marca')
+                    ->label('Fabricante')
                     ->preload()
                     ->live()
                     ->searchable()
@@ -96,7 +96,7 @@ class MaquinasResource extends Resource
                             TextInput::make('nombre')
                                 ->label('Nombre')
                                 ->required()
-                                ->placeholder('Nombre de la marca'),
+                                ->placeholder('Nombre del fabricante'),
                             FileUpload::make('foto')
                                 ->label('Foto')
                                 ->image()
@@ -147,7 +147,7 @@ class MaquinasResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('marcas.nombre')
-                    ->label('Marca')
+                    ->label('Fabricante')
                     ->searchable()
                     ->sortable(),
 

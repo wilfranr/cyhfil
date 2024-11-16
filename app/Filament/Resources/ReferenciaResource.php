@@ -139,7 +139,7 @@ class ReferenciaResource extends Resource
                     ->searchable(),
                     
                 Forms\Components\Select::make('marca_id')
-                    ->label('Marca')
+                    ->label('Fabricante')
                     ->options(
                         \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
                     )
@@ -147,7 +147,7 @@ class ReferenciaResource extends Resource
                         return [
                             TextInput::make('nombre')
                                 ->label('Nombre')
-                                ->placeholder('Nombre de la marca'),
+                                ->placeholder('Nombre del fabricante'),
                             FileUpload::make('logo')
                                 ->label('Logo')
                                 ->image()
@@ -178,6 +178,7 @@ class ReferenciaResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('marca.nombre')
+                    ->label('Fabricante')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

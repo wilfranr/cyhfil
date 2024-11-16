@@ -325,7 +325,7 @@ class PedidosResource extends Resource
                                     }),
 
                                 Select::make('maquina_id')
-                                    ->label('Máquina')
+                                    ->label('Máquinas')
                                     ->options(function ($get) {
                                         // Obtenemos el 'tercero_id' seleccionado en el formulario
                                         $terceroId = $get('tercero_id');
@@ -357,7 +357,7 @@ class PedidosResource extends Resource
                                             })
                                             ->required(),
                                         Select::make('marca_id')
-                                            ->label('Marca')
+                                            ->label('Fabricante')
                                             ->options(function () {
                                                 return Marca::pluck('nombre', 'id');
                                             })
@@ -424,7 +424,7 @@ class PedidosResource extends Resource
                                                         \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
                                                     ),
                                                 Select::make('marca_id')
-                                                    ->label('Marca')
+                                                    ->label('Fabricante')
                                                     ->options(
                                                         \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
                                                     ),
@@ -442,7 +442,7 @@ class PedidosResource extends Resource
                                                     ->live()
                                                     ->searchable(),
                                                 Select::make('marca_id')
-                                                    ->label('Marca')
+                                                    ->label('Fabricante')
                                                     ->options(
                                                         \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
                                                     )
@@ -528,7 +528,7 @@ class PedidosResource extends Resource
                                                 return Sistema::create($data)->id;
                                             }),
                                         Select::make('marca_id')
-                                            ->label('Marca')
+                                            ->label('Fabricante')
                                             ->options(
                                                 Marca::query()->pluck('nombre', 'id')->toArray()
                                             )
@@ -640,7 +640,7 @@ class PedidosResource extends Resource
                                                             ->options(
                                                                 Marca::query()->pluck('nombre', 'id')->toArray()
                                                             )
-                                                            ->label('Marca')
+                                                            ->label('Fabricante')
                                                             ->searchable(),
                                                         Select::make('Entrega')
                                                             ->options([
