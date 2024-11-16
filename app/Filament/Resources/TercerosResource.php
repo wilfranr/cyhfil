@@ -117,22 +117,19 @@ class TercerosResource extends Resource
 
                                         Select::make('marca_id')
                                             ->relationship('marcas', 'nombre')
-                                            ->label('Marca')
+                                            ->label('Fabricante')
                                             ->preload()
                                             ->live()
                                             ->searchable(),
 
                                         Forms\Components\TextInput::make('modelo')
-                                            ->label('Modelo')
-                                            ->required(),
+                                            ->label('Modelo'),
 
                                         Forms\Components\TextInput::make('serie')
-                                            ->label('Serie')
-                                            ->required(),
+                                            ->label('Serie'),
 
                                         Forms\Components\TextInput::make('arreglo')
-                                            ->label('Arreglo')
-                                            ->required(),
+                                            ->label('Arreglo'),
 
                                         Forms\Components\FileUpload::make('foto')
                                             ->label('Foto'),
@@ -152,7 +149,7 @@ class TercerosResource extends Resource
                                 ->schema([
                                     Select::make('marca_id')
                                         ->relationship('marcas', 'nombre')
-                                        ->label('Marca')
+                                        ->label('Fabricante')
                                         ->multiple()
                                         ->preload()
                                         ->live()

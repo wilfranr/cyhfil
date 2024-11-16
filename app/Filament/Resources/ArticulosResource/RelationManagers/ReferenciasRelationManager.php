@@ -29,7 +29,7 @@ class ReferenciasRelationManager extends RelationManager
                     ->label('Selccionar referencia existente')
                     ->options(Referencia::query()->pluck('referencia', 'id')),
                 Select::make('marca_id')
-                    ->label('Marca')
+                    ->label('Fabricante')
                     ->options(fn () => \App\Models\Marca::pluck('nombre', 'id'))
                     ->required(),
             ]);
@@ -41,7 +41,7 @@ class ReferenciasRelationManager extends RelationManager
             ->recordTitleAttribute('referencia')
             ->columns([
                 Tables\Columns\TextColumn::make('referencia')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('marca.nombre')->label('Marca')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('marca.nombre')->label('Fabricante')->sortable()->searchable(),
                 
             ])
             ->filters([

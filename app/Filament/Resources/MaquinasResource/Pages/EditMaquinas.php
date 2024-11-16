@@ -24,44 +24,4 @@ class EditMaquinas extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    // protected function getTabs(): array
-    // {
-    //     return [
-    //         'Information' => [
-    //             Select::make('tipo')
-    //                 ->options([
-    //                     'excavadora' => 'Excavadora',
-    //                     'retroexcavadora' => 'Retroexcavadora',
-    //                     'bulldozer' => 'Bulldozer',
-    //                     'grua' => 'Grua',
-    //                     'montacargas' => 'Montacargas',
-    //                     'compactador' => 'Compactador',
-    //                     'motoniveladora' => 'Motoniveladora',
-    //                     'rodillo' => 'Rodillo',
-    //                     'tractor' => 'Tractor',
-    //                     'camion' => 'Camion',
-    //                     'volqueta' => 'Volqueta',
-    //                     'otro' => 'Otro',
-    //                 ])
-    //                 ->label('Tipo')
-    //                 ->searchable()
-    //                 ->required(),
-
-    //             Select::make('marca_id')
-    //                 ->relationship('marcas', 'nombre')
-    //                 ->label('Marca')
-    //                 ->preload()
-    //                 ->live()
-    //                 ->searchable(),
-
-    //             TextInput::make('modelo')
-    //                 ->label('Modelo')
-    //                 ->required(),
-
-    //             TextInput::make('serie')
-    //                 ->label('Serie')
-    //                 ->required(),
-    //         ],
-    //     ];
-    // }
 }

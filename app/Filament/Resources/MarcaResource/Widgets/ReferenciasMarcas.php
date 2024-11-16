@@ -18,12 +18,5 @@ class ReferenciasMarcas extends Widget
 {
     // use InteractsWithPageTable;
     public ?Model $record = null;
-
-    // protected function getTablePage(): string
-    // {
-    //     return ListMarcas::class;
-    // }
-    
-
     
 }

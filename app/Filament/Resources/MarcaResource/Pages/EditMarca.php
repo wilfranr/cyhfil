@@ -19,11 +19,5 @@ class EditMarca extends EditRecord
     }
 
 
-    // protected function getFooterWidgets(): array
-    // {
-    //     return [
-            
-    //         \App\Filament\Resources\MarcaResource\Widgets\ReferenciasMarcas::make(),
-    //     ];
-    // }
+
 }

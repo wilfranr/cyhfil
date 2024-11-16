@@ -24,7 +24,7 @@ class MaquinasRelationManager extends RelationManager
                     ->maxLength(255),
                 Select::make('marca_id')
                     ->relationship('marcas', 'nombre')
-                    ->label('Marca')
+                    ->label('Fabricante')
                     ->preload()
                     ->live()
                     ->searchable(),
@@ -55,10 +55,6 @@ class MaquinasRelationManager extends RelationManager
             ->recordTitleAttribute('tipo')
             ->columns([
                 Tables\Columns\TextColumn::make('tipo'),
-                // Tables\Columns\TextColumn::make('marca_id')
-                //     ->value(function ($record) {
-                //         return $record->marca->nombre;
-                //     }),
                 Tables\Columns\TextColumn::make('modelo'),
                 Tables\Columns\TextColumn::make('serie'),
                 Tables\Columns\TextColumn::make('arreglo'),

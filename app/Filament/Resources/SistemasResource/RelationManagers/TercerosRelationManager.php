@@ -126,11 +126,11 @@ class TercerosRelationManager extends RelationManager
                             ->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                             ->searchable(),
 
-                        Section::make('Marcas y Sistemas')
+                        Section::make('Fabricantes y Sistemas')
                             ->schema([
                                 Select::make('marca_id')
                                     ->relationship('marcas', 'nombre')
-                                    ->label('Marcas')
+                                    ->label('Fabricantes')
                                     ->multiple()
                                     ->preload()
                                     ->live()

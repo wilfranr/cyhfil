@@ -36,12 +36,6 @@ class Maquina extends Model
     }
 
 
-    // public function getMarcaNombreAttribute()
-    // {
-    //     $marca = $this->marcas->first();
-    //     return $marca ? $marca->nombre : 'N/A';
-    // }
-
     public function pedidos()
     {
         return $this->hasMany(Pedido::class);

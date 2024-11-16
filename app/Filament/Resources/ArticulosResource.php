@@ -133,19 +133,12 @@ class ArticulosResource extends Resource
                                                     TextInput::make('referencia')
                                                         ->label('Referencia')
                                                         ->placeholder('Referencia del artículo'),
-                                                    // Select::make('marca_id')
-                                                    //     ->options(
-                                                    //         \App\Models\Marca::pluck('nombre', 'id')
-
-                                                    //     )
-                                                    //     ->searchable()
-                                                    //     ->label('Marca'),
+                                                    
                                                 ];
                                             })
                                             ->createOptionUsing(function ($data) {
                                                 $referencia = Referencia::create([
                                                     'referencia' => $data['referencia'],
-                                                    // 'marca_id' => $data['marca_id'],
                                                 ]);
 
                                                 return $referencia->id;

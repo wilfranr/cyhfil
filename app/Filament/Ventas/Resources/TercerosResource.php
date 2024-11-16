@@ -132,7 +132,7 @@ class TercerosResource extends Resource
 
                                         Select::make('marca_id')
                                             ->relationship('marcas', 'nombre')
-                                            ->label('Marca')
+                                            ->label('Fabricante')
                                             ->preload()
                                             ->live()
                                             ->searchable(),
@@ -163,11 +163,11 @@ class TercerosResource extends Resource
                                 ->visible(fn (Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                 ->searchable(),
 
-                            Section::make('Marcas y Ssistemas')
+                            Section::make('Fabricantes y Ssistemas')
                                 ->schema([
                                     Select::make('marca_id')
                                         ->relationship('marcas', 'nombre')
-                                        ->label('Marca')
+                                        ->label('Fabricante')
                                         ->multiple()
                                         ->preload()
                                         ->live()

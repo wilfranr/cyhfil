@@ -115,7 +115,7 @@ class TerceroResource extends Resource
 
                                         Select::make('marca_id')
                                             ->relationship('marcas', 'nombre')
-                                            ->label('Marca')
+                                            ->label('Fabricante')
                                             ->preload()
                                             ->live()
                                             ->searchable(),

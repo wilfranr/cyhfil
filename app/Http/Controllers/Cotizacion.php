@@ -7,16 +7,12 @@ use App\Models\Cotizacion as ModelsCotizacion;
 use App\Models\Empresa;
 use App\Models\Lista;
 use App\Models\Maquina;
-use App\Models\Marca;
 use App\Models\Pedido;
 use App\Models\PedidoReferencia;
 use App\Models\PedidoReferenciaProveedor;
-use App\Models\Referencia;
 use App\Models\Tercero;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
-
-use Illuminate\Http\Request;
 
 class Cotizacion extends Controller
 {

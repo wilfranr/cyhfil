@@ -102,7 +102,7 @@ class TercerosRelationManager extends RelationManager
 
                                     Select::make('marca_id')
                                         ->relationship('marcas', 'nombre')
-                                        ->label('Marca')
+                                        ->label('Fabricante')
                                         ->preload()
                                         ->live()
                                         ->searchable(),
