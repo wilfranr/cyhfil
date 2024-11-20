@@ -277,10 +277,34 @@ class TercerosResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('telefono')
                     ->label('Teléfono')
-                    ->url(fn($record) => "https://wa.me/57{$record->telefono}")
+                    ->getStateUsing(function ($record) {
+                        // Buscar el contacto principal asociado al tercero
+                        $contactoPrincipal = $record->contactos()->where('principal', true)->first();
+
+                        if ($contactoPrincipal) {
+                            // Si hay un contacto principal, mostrar su teléfono
+                            return $contactoPrincipal->telefono;
+                        }
+
+                        // Si no hay contacto principal, mostrar "Sin Contacto"
+                        return 'Sin Contacto';
+                    })
+                    ->url(function ($record) {
+                        // Buscar el contacto principal asociado al tercero
+                        $contactoPrincipal = $record->contactos()->where('principal', true)->first();
+
+                        if ($contactoPrincipal) {
+                            // Retornar la URL de WhatsApp con el teléfono del contacto principal
+                            return "https://wa.me/57{$contactoPrincipal->telefono}";
+                        }
+
+                        // No generar URL si no hay contacto principal
+                        return null;
+                    })
                     ->openUrlInNewTab()
                     ->icon('ri-whatsapp-line')
                     ->color('success'),
+
                 Tables\Columns\TextColumn::make('email')
                     ->label('Correo Electrónico')
                     ->toggleable(isToggledHiddenByDefault: false)
