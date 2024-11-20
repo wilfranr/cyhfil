@@ -66,7 +66,13 @@ class TerceroResource extends Resource
                                     'Proveedor' => 'Proveedor',
                                     'Ambos' => 'Ambos',
                                 ]),
-                            TextInput::make('tipo_documento')
+                            Select::make('tipo_documento')
+                                ->live()
+                                ->options([
+                                    'cc' => 'Cédula de Ciudadanía',
+                                    'ce' => 'Cédula de Extranjería',
+                                    'nit' => 'NIT',
+                                ])
                                 ->label('Tipo de Documento'),
                             TextInput::make('numero_documento')
                                 ->label('Número de Documento')
@@ -91,27 +97,24 @@ class TerceroResource extends Resource
                             TextInput::make('email_factura_electronica')->nullable()->label('Correo Factura Electrónica'),
                             TextInput::make('sitio_web')->nullable()->label('Sitio Web'),
                             Select::make('maquina_id')
-                                ->relationship('maquinas', 'serie')
+                                ->label('Máquina')
+                                ->relationship('maquinas', 'modelo')
+                                ->options(function ($get) {
+                                    // Obtenemos las máquinas relacionadas con el tercero
+                                    return \App\Models\Maquina::all()->mapWithKeys(function ($maquina) {
+                                        $tipo = \App\Models\Lista::find($maquina->tipo)->nombre ?? 'Sin tipo'; // Obtiene el nombre del tipo
+                                        return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"]; // Concatenamos tipo, modelo y serie
+                                    });
+                                })
                                 ->createOptionForm(function () {
                                     return [
                                         Select::make('tipo')
-                                            ->options([
-                                                'excavadora' => 'Excavadora',
-                                                'retroexcavadora' => 'Retroexcavadora',
-                                                'bulldozer' => 'Bulldozer',
-                                                'grua' => 'Grua',
-                                                'montacargas' => 'Montacargas',
-                                                'compactador' => 'Compactador',
-                                                'motoniveladora' => 'Motoniveladora',
-                                                'rodillo' => 'Rodillo',
-                                                'tractor' => 'Tractor',
-                                                'camion' => 'Camion',
-                                                'volqueta' => 'Volqueta',
-                                                'otro' => 'Otro',
-                                            ])
+                                            ->relationship('listas', 'nombre', fn($query) => $query->where('tipo', 'Tipo de Máquina')) // Usamos query() para filtrar
                                             ->label('Tipo')
                                             ->searchable()
-                                            ->required(),
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
 
                                         Select::make('marca_id')
                                             ->relationship('marcas', 'nombre')
@@ -121,36 +124,33 @@ class TerceroResource extends Resource
                                             ->searchable(),
 
                                         Forms\Components\TextInput::make('modelo')
-                                            ->label('Modelo')
-                                            ->required(),
+                                            ->label('Modelo'),
 
                                         Forms\Components\TextInput::make('serie')
-                                            ->label('Serie')
-                                            ->required(),
+                                            ->label('Serie'),
 
                                         Forms\Components\TextInput::make('arreglo')
-                                            ->label('Arreglo')
-                                            ->required(),
+                                            ->label('Arreglo'),
 
                                         Forms\Components\FileUpload::make('foto')
                                             ->label('Foto'),
 
                                         Forms\Components\FileUpload::make('fotoId')
-                                            ->label('FotoId')
+                                            ->label('FotoId'),
                                     ];
                                 })
-                                ->label('Máquina')
                                 ->multiple()
                                 ->preload()
                                 ->live()
                                 ->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                 ->searchable(),
 
+
                             Section::make('Marcas y Sistemas')
                                 ->schema([
                                     Select::make('marca_id')
                                         ->relationship('marcas', 'nombre')
-                                        ->label('Marca')
+                                        ->label('Fabricante')
                                         ->multiple()
                                         ->preload()
                                         ->live()
@@ -241,6 +241,10 @@ class TerceroResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tipo')
                     ->label('Tipo')
                     ->sortable()
@@ -257,6 +261,7 @@ class TerceroResource extends Resource
                 Tables\Columns\TextColumn::make('nombre')
                     ->label('Nombre')
                     ->searchable()
+                    ->wrap()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tipo_documento')
                     ->label('Tipo Doc')
@@ -274,10 +279,34 @@ class TerceroResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('telefono')
                     ->label('Teléfono')
-                    ->url(fn($record) => "https://wa.me/57{$record->telefono}")
+                    ->getStateUsing(function ($record) {
+                        // Buscar el contacto principal asociado al tercero
+                        $contactoPrincipal = $record->contactos()->where('principal', true)->first();
+
+                        if ($contactoPrincipal) {
+                            // Si hay un contacto principal, mostrar su teléfono
+                            return $contactoPrincipal->telefono;
+                        }
+
+                        // Si no hay contacto principal, mostrar "Sin Contacto"
+                        return 'Sin Contacto';
+                    })
+                    ->url(function ($record) {
+                        // Buscar el contacto principal asociado al tercero
+                        $contactoPrincipal = $record->contactos()->where('principal', true)->first();
+
+                        if ($contactoPrincipal) {
+                            // Retornar la URL de WhatsApp con el teléfono del contacto principal
+                            return "https://wa.me/57{$contactoPrincipal->telefono}";
+                        }
+
+                        // No generar URL si no hay contacto principal
+                        return null;
+                    })
                     ->openUrlInNewTab()
                     ->icon('ri-whatsapp-line')
                     ->color('success'),
+
                 Tables\Columns\TextColumn::make('email')
                     ->label('Correo Electrónico')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -342,9 +371,7 @@ class TerceroResource extends Resource
     {
         return [
             'index' => Pages\ListTerceros::route('/'),
-            'create' => Pages\CreateTercero::route('/create'),
-            'edit' => Pages\EditTercero::route('/{record}/edit'),
-            'view' => Pages\ViewTercero::route('/{record}/view'),
+            'edit' => Pages\EditTerceros::route('/{record}/edit'),
         ];
     }
 }

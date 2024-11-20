@@ -260,6 +260,7 @@ class TercerosResource extends Resource
                 Tables\Columns\TextColumn::make('nombre')
                     ->label('Nombre')
                     ->searchable()
+                    ->wrap()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tipo_documento')
                     ->label('Tipo Doc')
