@@ -76,17 +76,17 @@ class Tercero extends Model
     }
 
 
-    public function marcas(): BelongsToMany
+    public function fabricantes(): BelongsToMany
     {
-        return $this->belongsToMany(Marca::class, 'tercero_marcas', 'tercero_id', 'marca_id');
+        return $this->belongsToMany(Fabricante::class, 'tercero_fabricantes', 'tercero_id', 'fabricante_id');
     }
 
-    public function getProveedoresPorMarca($marcaId)
-    {
-        return $this->whereHasMany('marcas', function ($query) use ($marcaId) {
-                $query->where('marca_id', $marcaId);
-            })
-            ->select('nombre', 'id')
-            ->pluck('nombre', 'id');
-    }
+    // public function getProveedoresPorMarca($marcaId)
+    // {
+    //     return $this->whereHasMany('marcas', function ($query) use ($marcaId) {
+    //             $query->where('marca_id', $marcaId);
+    //         })
+    //         ->select('nombre', 'id')
+    //         ->pluck('nombre', 'id');
+    // }
 }

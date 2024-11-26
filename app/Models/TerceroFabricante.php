@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TerceroMarca extends Model
+class TerceroFabricante extends Model
 {
     use HasFactory;
 
-    protected $table = 'tercero_marcas';
+    protected $table = 'tercero_fabricantes';
 
     protected $fillable = [
         'tercero_id',
-        'marca_id',
+        'fabricante_id',
     ];
 
     public function tercero(): BelongsTo
@@ -24,6 +24,6 @@ class TerceroMarca extends Model
 
     public function marca(): BelongsTo
     {
-        return $this->belongsTo(Marca::class, 'marca_id');
+        return $this->belongsTo(Fabricante::class, 'fabricante_id');
     }
 }

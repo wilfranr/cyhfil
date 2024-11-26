@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Marca extends Model
+class Fabricante extends Model
 {
     use HasFactory;
+    protected $table = 'fabricantes';
 
     protected $fillable = [
 
@@ -20,18 +21,18 @@ class Marca extends Model
 
 
 
-    public function referencias(): HasMany
-    {
-        return $this->hasMany(Referencia::class, 'marca_id');
-    }
+    // public function referencias(): HasMany
+    // {
+    //     return $this->hasMany(Referencia::class, 'marca_id');
+    // }
 
     public function maquinas(): HasMany
     {
-        return $this->hasMany(Maquina::class, 'marca_id');
+        return $this->hasMany(Maquina::class, 'fabricante_id');
     }
 
     public function terceros(): BelongsToMany
     {
-        return $this->belongsToMany(Tercero::class, 'tercero_marcas', 'marca_id', 'tercero_id');
+        return $this->belongsToMany(Tercero::class, 'tercero_fabricantes', 'fabricante_id', 'tercero_id');
     }
 }

@@ -2,11 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MarcaResource\Pages;
-use App\Filament\Resources\MarcaResource\RelationManagers;
-use App\Models\Lista;
-use App\Models\Marca;
-use Filament\Forms;
+use App\Filament\Resources\FabricanteResource\Pages;
+use App\Filament\Resources\FabricanteResource\RelationManagers;
+use App\Models\Fabricante;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
@@ -20,9 +18,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class MarcaResource extends Resource
+class FabricanteResource extends Resource
 {
-    protected static ?string $model = Marca::class;
+    protected static ?string $model = Fabricante::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bookmark-square';
 
@@ -106,9 +104,9 @@ class MarcaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMarcas::route('/'),
-            'create' => Pages\CreateMarca::route('/create'),
-            'edit' => Pages\EditMarca::route('/{record}/edit'),
+            'index' => Pages\ListFabricantes::route('/'),
+            'create' => Pages\Createfabricante::route('/create'),
+            'edit' => Pages\EditFabricante::route('/{record}/edit'),
         ];
     }
 }

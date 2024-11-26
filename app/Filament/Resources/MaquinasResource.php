@@ -6,7 +6,6 @@ use App\Filament\Resources\MaquinasResource\Pages;
 use App\Filament\Resources\MaquinasResource\Pages\EditMaquinas;
 use App\Filament\Resources\MaquinasResource\RelationManagers;
 use App\Models\Maquina;
-use App\Models\Marca;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -46,7 +45,7 @@ class MaquinasResource extends Resource
     {
         return [
             'Tipo' => $tipo = Lista::query()->where('id', $record->tipo)->pluck('nombre')->first(),
-            'Marca' => $record->marcas->nombre,
+            // 'Marca' => $record->marcas->nombre,
             'Modelo' => $record->modelo,
             'Serie' => $record->serie,
             'Arreglo' => $record->arreglo,

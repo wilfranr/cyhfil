@@ -201,7 +201,7 @@ class ArticulosResource extends Resource
                                                         ->placeholder('Referencia del artículo'),
                                                     Select::make('marca_id')
                                                         ->options(
-                                                            \App\Models\Marca::pluck('nombre', 'id')
+                                                            \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                         )
                                                         ->searchable()
                                                         ->label('Marca'),

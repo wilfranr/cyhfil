@@ -14,15 +14,15 @@ class CreateListas extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
-    protected function afterSave(): void
-    {
-        $data = $this->record->toArray();
+    // protected function afterSave(): void
+    // {
+    //     $data = $this->record->toArray();
 
-        // Si el tipo es 'Fabricante', crear la entrada en la tabla 'marcas'
-        if ($data['tipo'] === 'Fabricante') {
-            Marca::create([
-                'nombre' => $data['nombre'],
-            ]);
-        }
-    }
+    //     // Si el tipo es 'Fabricante', crear la entrada en la tabla 'marcas'
+    //     // if ($data['tipo'] === 'Fabricante') {
+    //     //     Marca::create([
+    //     //         'nombre' => $data['nombre'],
+    //     //     ]);
+    //     // }
+    // }
 }

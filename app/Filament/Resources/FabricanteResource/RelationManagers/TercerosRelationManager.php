@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\MarcaResource\RelationManagers;
+namespace App\Filament\Resources\FabricanteResource\RelationManagers;
 
 use App\Models\City;
 use App\Models\State;

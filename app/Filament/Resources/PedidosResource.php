@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PedidosResource\Pages;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Fabricante, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista};
 use App\Notifications\PedidoCreadoNotification;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Forms\{Form, Get, Set};
@@ -359,7 +359,7 @@ class PedidosResource extends Resource
                                         Select::make('marca_id')
                                             ->label('Fabricante')
                                             ->options(function () {
-                                                return Marca::pluck('nombre', 'id');
+                                                return Fabricante::pluck('nombre', 'id');
                                             })
                                             ->required()
                                             ->searchable()
@@ -426,7 +426,7 @@ class PedidosResource extends Resource
                                                 Select::make('marca_id')
                                                     ->label('Fabricante')
                                                     ->options(
-                                                        \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                     ),
                                             ])
                                             ->editOptionForm([
@@ -444,7 +444,7 @@ class PedidosResource extends Resource
                                                 Select::make('marca_id')
                                                     ->label('Fabricante')
                                                     ->options(
-                                                        \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                                                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                     )
                                                     ->live()
                                                     ->searchable()
@@ -460,7 +460,7 @@ class PedidosResource extends Resource
                                                     $set('marca_id', null);
                                                 } else {
                                                     $articulo = Articulo::find($referencia->articulo_id);
-                                                    $marca = Marca::find($referencia->marca_id);
+                                                    $marca = Lista::find($referencia->marca_id);
                                                     if (!$articulo) {
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_id', null);
@@ -482,7 +482,7 @@ class PedidosResource extends Resource
                                                     $set('peso', null);
                                                 } else {
                                                     $articulo = Articulo::find($referencia->articulo_id);
-                                                    $marca = Marca::find($referencia->marca_id);
+                                                    $marca = Lista::find($referencia->marca_id);
                                                     if (!$articulo) {
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_id', null);
@@ -528,23 +528,23 @@ class PedidosResource extends Resource
                                                 return Sistema::create($data)->id;
                                             }),
                                         Select::make('marca_id')
-                                            ->label('Fabricante')
+                                            ->label('Marca')
                                             ->options(
-                                                Marca::query()->pluck('nombre', 'id')->toArray()
+                                                \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                             )
                                             ->searchable()
-                                            ->live()
-                                            ->createOptionForm([
-                                                TextInput::make('nombre')
-                                                    ->label('Nombre')
-                                                    ->unique('marcas', 'nombre', ignoreRecord: true)
-                                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
-                                                    ->required(),
-                                                FileUpload::make('logo')
-                                                    ->label('Logo')
-                                                    ->image()
-                                                    ->imageEditor(),
-                                            ]),
+                                            ->live(),
+                                            // ->createOptionForm([
+                                            //     TextInput::make('nombre')
+                                            //         ->label('Nombre')
+                                            //         ->unique('marcas', 'nombre', ignoreRecord: true)
+                                            //         ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                            //         ->required(),
+                                            //     FileUpload::make('logo')
+                                            //         ->label('Logo')
+                                            //         ->image()
+                                            //         ->imageEditor(),
+                                            // ]),
                                         TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required(),
                                         TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
@@ -638,7 +638,7 @@ class PedidosResource extends Resource
                                                             ->readOnly(),
                                                         Select::make('marca_id')
                                                             ->options(
-                                                                Marca::query()->pluck('nombre', 'id')->toArray()
+                                                                Fabricante::query()->pluck('nombre', 'id')->toArray()
                                                             )
                                                             ->label('Fabricante')
                                                             ->searchable(),

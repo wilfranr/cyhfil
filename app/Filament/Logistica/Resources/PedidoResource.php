@@ -5,7 +5,7 @@ namespace App\Filament\Logistica\Resources;
 use App\Filament\Logistica\Resources\PedidoResource\Pages;
 use App\Filament\Logistica\Resources\PedidoResource\RelationManagers;
 use Filament\Resources\Resource;
-use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Marca, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Referencia, Sistema, TRM, PedidoReferenciaProveedor};
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
 use Filament\Tables\{Table, Grouping\Group, Filters\Filter};

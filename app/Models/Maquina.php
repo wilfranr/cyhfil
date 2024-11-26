@@ -15,7 +15,7 @@ class Maquina extends Model
     protected $fillable = [
         'tipo', // 'tipo' is a foreign key to the 'listas' table
         'modelo',
-        'marca_id',
+        'fabricante_id',
         'serie',
         'arreglo',
         'foto',
@@ -41,10 +41,10 @@ class Maquina extends Model
         return $this->hasMany(Pedido::class);
     }
 
-    public function marcas(): BelongsTo
+    public function fabricantes(): BelongsTo
     {
         // Reference to the marcas table
-        return $this->belongsTo(Marca::class, 'marca_id');
+        return $this->belongsTo(Fabricante::class, 'fabricante_id');
     }
 
     

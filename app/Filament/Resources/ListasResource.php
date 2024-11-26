@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ListasResource\Pages;
 use App\Filament\Resources\ListasResource\RelationManagers;
 use App\Models\Lista;
-use App\Models\Marca;
 use Faker\Core\File;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -40,7 +39,7 @@ class ListasResource extends Resource
                     ->label('Tipo')
                     ->live()
                     ->options([
-                        'Fabricante' => 'Fabricante',
+                        'Marca' => 'Marca',
                         'Tipo de Máquina' => 'Tipo de máquina',
                         'Definición de artículo' => 'Definición de artículo',
                         'Unidad de medida' => 'Unidad de medida',
@@ -96,7 +95,7 @@ class ListasResource extends Resource
             ->filters([
                 SelectFilter::make('tipo')
                     ->options([
-                        'Fabricante' => 'Fabricante',
+                        'Marcas' => 'Marcas',
                         'Tipo de Máquina' => 'Tipo de máquina',
                         'definición de artículo' => 'Definición de artículo',
                         'unidad de medida' => 'Unidad de medida',

@@ -6,7 +6,6 @@ use App\Filament\Resources\ReferenciaResource\Pages;
 use App\Filament\Resources\ReferenciaResource\RelationManagers;
 use App\Models\Articulo;
 use App\Models\Lista;
-use App\Models\Marca;
 use App\Models\Referencia;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action as ActionsAction;
@@ -37,7 +36,7 @@ class ReferenciaResource extends Resource
         return [
            
             'Artículo' =>  $articulo = Articulo::query()->where('id', $record->articulo_id)->pluck('definicion')->first(),
-            'Marca' => $marca = Marca::query()->where('id', $record->marca_id)->pluck('nombre')->first(),
+            'Marca' => $marca = Lista::query()->where('id', $record->marca_id)->pluck('nombre')->first(),
         ];
     }
 
@@ -139,25 +138,26 @@ class ReferenciaResource extends Resource
                     ->searchable(),
                     
                 Forms\Components\Select::make('marca_id')
-                    ->label('Fabricante')
+                    ->label('Marca')
                     ->options(
-                        \App\Models\Marca::all()->pluck('nombre', 'id')->toArray()
+                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                     )
                     ->createOptionForm(function () {
                         return [
                             TextInput::make('nombre')
                                 ->label('Nombre')
+                                ->required()
                                 ->placeholder('Nombre del fabricante'),
-                            FileUpload::make('logo')
-                                ->label('Logo')
+                            FileUpload::make('foto')
+                                ->label('Foto')
                                 ->image()
-                                ->imageEditor(),
                         ];
                     })
                     ->createOptionUsing(function ($data) {
-                        $marca = Marca::create([
+                        $marca = Lista::create([
+                            'tipo' => 'Marca',
                             'nombre' => ucwords($data['nombre']),
-                            'logo' => $data['logo'] ?? null,
+                            'foto' => $data['foto'] ?? null,
                         ]);
 
                         return $marca->id;

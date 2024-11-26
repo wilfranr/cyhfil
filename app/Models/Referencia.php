@@ -20,10 +20,10 @@ class Referencia extends Model
         return $this->belongsTo(Articulo::class);
     }
 
-    public function marca()
-    {
-        return $this->belongsTo(Marca::class, 'marca_id');
-    }
+    // public function marca()
+    // {
+    //     return $this->belongsTo(Marca::class, 'marca_id');
+    // }
 
     public function pedidos()
     {
