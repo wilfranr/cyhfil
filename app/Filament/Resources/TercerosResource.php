@@ -72,19 +72,22 @@ class TercerosResource extends Resource
                                     'ce' => 'Cédula de Extranjería',
                                     'nit' => 'NIT',
                                 ])
-                                ->label('Tipo de Documento'),
+                                ->label('Tipo de Documento')
+                                ->required(),
                             TextInput::make('numero_documento')
                                 ->label('Número de Documento')
                                 ->required()
-                                ->numeric()
+                                ->integer()
+                                ->minValue(1000)
                                 ->unique('terceros', 'numero_documento', ignoreRecord: true), // Validación única
                             TextInput::make('telefono')
                                 ->label('Teléfono')
-                                ->required(),
+                                ->required()
+                                ->tel(),
                             TextInput::make('email')
                                 ->email()
                                 ->label('Correo Electrónico')
-                                ->unique('terceros', 'email', ignoreRecord: true), // Validación única
+                                ->unique('terceros', 'email', ignoreRecord: true)->suffixIcon('ri-mail-line'),
                             TextInput::make('dv')->nullable()
                                 ->label('Dígito Verificador')
                                 ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
@@ -95,8 +98,8 @@ class TercerosResource extends Resource
                                     'contado' => 'Contado',
                                     'credito' => 'Crédito',
                                 ]),
-                            TextInput::make('email_factura_electronica')->nullable()->label('Correo Factura Electrónica'),
-                            TextInput::make('sitio_web')->nullable()->label('Sitio Web'),
+                            TextInput::make('email_factura_electronica')->nullable()->label('Correo Factura Electrónica')->suffixIcon('ri-mail-line')->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos'),
+                            TextInput::make('sitio_web')->nullable()->label('Sitio Web')->prefix('https://')->suffixIcon('heroicon-m-globe-alt')->url(),
                             Select::make('maquina_id')
                                 ->label('Máquina')
                                 ->relationship('maquinas', 'modelo')
@@ -157,19 +160,35 @@ class TercerosResource extends Resource
                                         ->live()
                                         ->searchable()
                                         ->options(function () {
-                                            // Agregamos una opción "Seleccionar todos" al principio
+                                            // Obtenemos los fabricantes como un array [id => nombre]
+                                            $fabricantes = \App\Models\Fabricante::pluck('nombre', 'id')->toArray();
+                                        
+                                            // Agregamos la opción 'Seleccionar todos' al inicio
                                             $options = ['all' => 'Seleccionar todos'];
-                                            $fabricantes = \App\Models\Fabricante::pluck('nombre', 'id')->toArray(); // Opciones de la relación
-                                            return array_merge($options, $fabricantes);
+                                        
+                                            // Mantenemos las claves de los IDs intactas
+                                            return $options + $fabricantes;
                                         })
                                         ->afterStateUpdated(function ($state, $set) {
                                             if (in_array('all', $state)) {
-                                                // Si selecciona "Seleccionar todos", seleccionamos todas las opciones
+                                                // Obtener todos los IDs válidos de los fabricantes
                                                 $allFabricantes = \App\Models\Fabricante::pluck('id')->toArray();
-                                                $set('fabricante_id', $allFabricantes); // Establecemos todas las opciones seleccionadas
+                                        
+                                                // Establecer todos los IDs como seleccionados
+                                                $set('fabricante_id', $allFabricantes);
+                                            } else {
+                                                // Filtrar 'all' del estado
+                                                $state = array_filter($state, fn($value) => $value !== 'all');
+                                        
+                                                // Asegúrate de que los valores del estado sean los IDs correctos
+                                                $set('fabricante_id', array_values($state));
                                             }
                                         }),
-                                    Select::make('sistema_id')
+                                        
+                                        
+                                        
+                                        
+                                        Select::make('sistema_id')
                                         ->relationship('sistemas', 'nombre') // Relación con 'sistemas' y el campo 'nombre'
                                         ->label('Sistema')
                                         ->multiple()
@@ -178,17 +197,26 @@ class TercerosResource extends Resource
                                         ->searchable()
                                         ->options(function () {
                                             // Agregamos la opción "Seleccionar todos" al inicio
-                                            $options = ['all' => 'Seleccionar todos'];
                                             $sistemas = \App\Models\Sistema::pluck('nombre', 'id')->toArray(); // Obtenemos las opciones de la relación
-                                            return array_merge($options, $sistemas);
+                                    
+                                            // Preservamos las claves para que los IDs de sistemas no se vean afectados
+                                            return ['all' => 'Seleccionar todos'] + $sistemas;
                                         })
                                         ->afterStateUpdated(function ($state, $set) {
                                             if (in_array('all', $state)) {
-                                                // Si selecciona "Seleccionar todos", seleccionamos todas las opciones
+                                                // Si selecciona "Seleccionar todos", seleccionamos todos los IDs válidos de los sistemas
                                                 $allSistemas = \App\Models\Sistema::pluck('id')->toArray();
+                                    
+                                                // Filtrar valores inválidos y asegurarnos de que sean IDs válidos
+                                                $allSistemas = array_filter($allSistemas, fn($id) => $id > 0);
                                                 $set('sistema_id', $allSistemas); // Establecemos todas las opciones seleccionadas
+                                            } else {
+                                                // Filtramos "all" del estado y aseguramos que los valores sean consistentes
+                                                $state = array_filter($state, fn($value) => $value !== 'all');
+                                                $set('sistema_id', array_values($state));
                                             }
-                                        }),
+                                        })
+                                    
                                 ])->columns(2)->visible(fn(Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
 
 

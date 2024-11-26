@@ -20,6 +20,7 @@ class Pedido extends Model
         'comentario',
         'contacto_id',
         'maquina_id',
+        'fabricante_id',
         'estado',
         'motivo_rechazo',
     ];

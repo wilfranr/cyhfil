@@ -26,9 +26,7 @@ class PedidosResource extends Resource
     public static  function getNavigationBadge(): ?string
     {
         $user = Auth::user();
-        // dd($user);
         $rol = $user->roles->first()->name;
-        // dd($rol);
         if ($rol == 'Logistica') {
             return Pedido::query()->where('estado', 'Aprobado')->count();
         } else {
@@ -163,16 +161,17 @@ class PedidosResource extends Resource
                         return true; // Si no hay usuario, se oculta por defecto
                     })->hiddenOn('create'),
 
-                Section::make()
+                Section::make('Información de máquina')
                     ->schema([
                         Placeholder::make('maquina')
                             ->content(
                                 fn(Pedido $record): string => $record->maquina
-                                    ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie}"
+                                    ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie} - {$record->maquina->fabricantes->nombre}"
                                     : 'Sin máquina asociada'
                             )
                             ->hiddenOn('create')
                             ->label('Máquina')
+
                     ])->hiddenOn('create'),
 
                 Wizard::make(
@@ -337,9 +336,10 @@ class PedidosResource extends Resource
                                             })
                                                 ->get()
                                                 ->mapWithKeys(function ($maquina) {
-                                                    // Concatenamos tipo, modelo, y serie
+                                                    // Concatenamos tipo, modelo y serie
                                                     $tipo = Lista::find($maquina->tipo)->nombre;  // Obtenemos el nombre del tipo de máquina desde la relación
-                                                    return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"];
+                                                    $fabricanteNombre = Fabricante::find($maquina->fabricante_id)->nombre;
+                                                    return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie} - {$fabricanteNombre}"];
                                                 });
                                         }
 
@@ -355,8 +355,10 @@ class PedidosResource extends Resource
                                                 return Lista::where('tipo', 'Tipo de Máquina')
                                                     ->pluck('nombre', 'id');
                                             })
-                                            ->required(),
-                                        Select::make('marca_id')
+                                            ->required()
+                                            ->searchable()
+                                            ->preload(),
+                                        Select::make('fabricante_id')
                                             ->label('Fabricante')
                                             ->options(function () {
                                                 return Fabricante::pluck('nombre', 'id');
@@ -383,7 +385,7 @@ class PedidosResource extends Resource
                                         // Creamos la máquina con los datos proporcionados
                                         $maquina = Maquina::create([
                                             'tipo' => $data['tipo'],  // Guardamos el tipo de máquina como una relación
-                                            'marca_id' => $data['marca_id'],  // Guardamos la marca seleccionada
+                                            'fabricante_id' => $data['fabricante_id'],  // Guardamos la marca seleccionada
                                             'modelo' => $data['modelo'],
                                             'serie' => $data['serie'],
                                             'arreglo' => $data['arreglo'],
@@ -397,9 +399,19 @@ class PedidosResource extends Resource
 
                                         return $maquina->id;
                                     })
+                                    ->afterStateUpdated(function ($state, $set) {
+                                        if ($state) {
+                                            // Obtenemos la máquina seleccionada
+                                            $maquina = Maquina::find($state);
 
+                                            if ($maquina) {
+                                                // Actualizamos el fabricante_id en el formulario principal
+                                                $set('fabricante_id', $maquina->fabricante_id);
+                                            }
+                                        }
+                                    })->visible(fn(Get $get) => $get('tercero_id') !== null),
 
-
+                                Hidden::make('fabricante_id'),
                             ])->hiddenOn('edit'),
 
                         // Referencias
@@ -442,7 +454,7 @@ class PedidosResource extends Resource
                                                     ->live()
                                                     ->searchable(),
                                                 Select::make('marca_id')
-                                                    ->label('Fabricante')
+                                                    ->label('Marca')
                                                     ->options(
                                                         \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                     )
@@ -500,7 +512,7 @@ class PedidosResource extends Resource
                                             ->live()
                                             ->searchable()
                                             ->preload('referencia')
-                                            ->placeholder('Ninguno'),
+                                            ->placeholder('Sin referencia'),
                                         Hidden::make('articulo_id')->disabled(),
                                         TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
                                         TextInput::make('peso')->label('Peso')->disabled(),
@@ -534,18 +546,8 @@ class PedidosResource extends Resource
                                             )
                                             ->searchable()
                                             ->live(),
-                                            // ->createOptionForm([
-                                            //     TextInput::make('nombre')
-                                            //         ->label('Nombre')
-                                            //         ->unique('marcas', 'nombre', ignoreRecord: true)
-                                            //         ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
-                                            //         ->required(),
-                                            //     FileUpload::make('logo')
-                                            //         ->label('Logo')
-                                            //         ->image()
-                                            //         ->imageEditor(),
-                                            // ]),
-                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required(),
+
+                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
                                         TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
                                         Toggle::make('mostrar_referencia')
@@ -586,22 +588,27 @@ class PedidosResource extends Resource
                                                     ->schema([
 
                                                         Select::make('proveedor_id')
-                                                            ->options(function (Get $get, $set) {
-                                                                $marcaId = $get('../../marca_id'); // Use relative path to access parent repeater fields
-                                                                $sistemaId = $get('../../sistema_id');
-                                                                $cantidad = $get('../../cantidad');
-
-                                                                $terceros = Tercero::query()
-                                                                    ->whereHas('marcas', function ($query) use ($marcaId) {
-                                                                        $query->where('marca_id', $marcaId);
-                                                                    })
-                                                                    ->whereHas('sistemas', function ($query) use ($sistemaId) {
-                                                                        $query->where('sistema_id', $sistemaId);
-                                                                    })
-                                                                    ->pluck('nombre', 'id');
-
-                                                                return $terceros;
-                                                            })
+                                                        ->options(function (Get $get) {
+                                                            // Obtén los valores necesarios desde el formulario
+                                                            $sistemaId = $get('../../sistema_id');
+                                                            $cantidad = $get('../../cantidad');
+                                                            $fabricanteId = $get('../../../../fabricante_id'); // Obtén directamente el valor del formulario
+                                                            // dd($fabricanteId);
+                                                    
+                                                            if (!$fabricanteId || !$sistemaId) {
+                                                                return []; // Devuelve un array vacío si falta algún valor
+                                                            }
+                                                    
+                                                            // Consulta para obtener los proveedores según los filtros
+                                                            return Tercero::query()
+                                                                ->whereHas('fabricantes', function ($query) use ($fabricanteId) {
+                                                                    $query->where('fabricante_id', $fabricanteId);
+                                                                })
+                                                                ->whereHas('sistemas', function ($query) use ($sistemaId) {
+                                                                    $query->where('sistema_id', $sistemaId);
+                                                                })
+                                                                ->pluck('nombre', 'id');
+                                                        })
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $proveedor = Tercero::find($get('proveedor_id'));
                                                                 if (!$proveedor) {
@@ -623,7 +630,6 @@ class PedidosResource extends Resource
                                                                 $set('utilidad', $proveedor->utilidad);
                                                                 $set('valor_total', $proveedor->valor_total);
                                                                 $set('cantidad', $get('cantidad'));
-
                                                             })
                                                             ->live()
                                                             ->reactive()
@@ -709,7 +715,7 @@ class PedidosResource extends Resource
 
                                                     ->extraAttributes(function (Get $get) {
                                                         return [
-                                                            'marca_id' => $get('../../marca_id'), // Use relative path to access parent repeater fields
+                                                            'fabricante_id' => $get('fabricante_id'), // Use relative path to access parent repeater fields
                                                             'sistema_id' => $get('../../sistema_id'),
                                                         ];
                                                     })

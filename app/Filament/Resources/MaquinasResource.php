@@ -146,7 +146,7 @@ class MaquinasResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('marcas.nombre')
+                Tables\Columns\TextColumn::make('fabricantes.nombre')
                     ->label('Fabricante')
                     ->searchable()
                     ->sortable(),
