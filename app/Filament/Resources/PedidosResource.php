@@ -348,6 +348,7 @@ class PedidosResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->live()
+                                    ->required()
                                     ->createOptionForm([
                                         Select::make('tipo')
                                             ->label('Tipo de Máquina')

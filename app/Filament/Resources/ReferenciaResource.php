@@ -172,15 +172,20 @@ class ReferenciaResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('referencia')
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('referencia')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('articulo.descripcionEspecifica')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('marca.nombre')
-                    ->label('Fabricante')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Marca')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

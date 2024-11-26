@@ -21,9 +21,10 @@ class Referencia extends Model
     }
 
     public function marca()
-{
-    return $this->belongsTo(Lista::class, 'lista_id'); // Define correctamente la relación
-}
+    {
+        return $this->belongsTo(Lista::class, 'marca_id');
+    }
+
 
 
     public function pedidos()
