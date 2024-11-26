@@ -44,7 +44,7 @@ class FabricanteResource extends Resource
                     ->schema([
                         TextInput::make('nombre')
                             ->label('Nombre')
-                            ->unique('marcas', 'nombre', ignoreRecord: true)
+                            ->unique('fabricantes', 'nombre', ignoreRecord: true)
                             ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
                             ->required(),
                         FileUpload::make('logo')

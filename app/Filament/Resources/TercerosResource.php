@@ -76,9 +76,11 @@ class TercerosResource extends Resource
                             TextInput::make('numero_documento')
                                 ->label('Número de Documento')
                                 ->required()
+                                ->numeric()
                                 ->unique('terceros', 'numero_documento', ignoreRecord: true), // Validación única
                             TextInput::make('telefono')
-                                ->label('Teléfono'),
+                                ->label('Teléfono')
+                                ->required(),
                             TextInput::make('email')
                                 ->email()
                                 ->label('Correo Electrónico')
@@ -115,8 +117,8 @@ class TercerosResource extends Resource
                                             ->live()
                                             ->preload(),
 
-                                        Select::make('marca_id')
-                                            ->relationship('marcas', 'nombre')
+                                        Select::make('fabricante_id')
+                                            ->relationship('fabricantes', 'nombre')
                                             ->label('Fabricante')
                                             ->preload()
                                             ->live()
@@ -164,10 +166,10 @@ class TercerosResource extends Resource
                                             if (in_array('all', $state)) {
                                                 // Si selecciona "Seleccionar todos", seleccionamos todas las opciones
                                                 $allFabricantes = \App\Models\Fabricante::pluck('id')->toArray();
-                                                $set('marca_id', $allFabricantes); // Establecemos todas las opciones seleccionadas
+                                                $set('fabricante_id', $allFabricantes); // Establecemos todas las opciones seleccionadas
                                             }
                                         }),
-                                        Select::make('sistema_id')
+                                    Select::make('sistema_id')
                                         ->relationship('sistemas', 'nombre') // Relación con 'sistemas' y el campo 'nombre'
                                         ->label('Sistema')
                                         ->multiple()

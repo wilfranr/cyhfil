@@ -22,7 +22,7 @@ class TerceroFabricante extends Model
         return $this->belongsTo(Tercero::class, 'tercero_id');
     }
 
-    public function marca(): BelongsTo
+    public function fabricante(): BelongsTo
     {
         return $this->belongsTo(Fabricante::class, 'fabricante_id');
     }
