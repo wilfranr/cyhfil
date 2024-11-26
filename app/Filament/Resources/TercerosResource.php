@@ -145,22 +145,48 @@ class TercerosResource extends Resource
                                 ->searchable(),
 
 
-                            Section::make('Marcas y Sistemas')
+                            Section::make('Fabricantes y Sistemas')
                                 ->schema([
-                                    Select::make('marca_id')
-                                        ->relationship('marcas', 'nombre')
-                                        ->label('Fabricante')
+                                    Select::make('fabricante_id')
+                                        ->relationship('fabricantes', 'nombre') // Relación con 'fabricantes' y el campo 'nombre'
+                                        ->label('Fabricantes')
                                         ->multiple()
                                         ->preload()
                                         ->live()
-                                        ->searchable(),
-                                    Select::make('sistema_id')
-                                        ->relationship('sistemas', 'nombre')
+                                        ->searchable()
+                                        ->options(function () {
+                                            // Agregamos una opción "Seleccionar todos" al principio
+                                            $options = ['all' => 'Seleccionar todos'];
+                                            $fabricantes = \App\Models\Fabricante::pluck('nombre', 'id')->toArray(); // Opciones de la relación
+                                            return array_merge($options, $fabricantes);
+                                        })
+                                        ->afterStateUpdated(function ($state, $set) {
+                                            if (in_array('all', $state)) {
+                                                // Si selecciona "Seleccionar todos", seleccionamos todas las opciones
+                                                $allFabricantes = \App\Models\Fabricante::pluck('id')->toArray();
+                                                $set('marca_id', $allFabricantes); // Establecemos todas las opciones seleccionadas
+                                            }
+                                        }),
+                                        Select::make('sistema_id')
+                                        ->relationship('sistemas', 'nombre') // Relación con 'sistemas' y el campo 'nombre'
                                         ->label('Sistema')
                                         ->multiple()
                                         ->preload()
                                         ->live()
-                                        ->searchable(),
+                                        ->searchable()
+                                        ->options(function () {
+                                            // Agregamos la opción "Seleccionar todos" al inicio
+                                            $options = ['all' => 'Seleccionar todos'];
+                                            $sistemas = \App\Models\Sistema::pluck('nombre', 'id')->toArray(); // Obtenemos las opciones de la relación
+                                            return array_merge($options, $sistemas);
+                                        })
+                                        ->afterStateUpdated(function ($state, $set) {
+                                            if (in_array('all', $state)) {
+                                                // Si selecciona "Seleccionar todos", seleccionamos todas las opciones
+                                                $allSistemas = \App\Models\Sistema::pluck('id')->toArray();
+                                                $set('sistema_id', $allSistemas); // Establecemos todas las opciones seleccionadas
+                                            }
+                                        }),
                                 ])->columns(2)->visible(fn(Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
 
 

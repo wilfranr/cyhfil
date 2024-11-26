@@ -23,8 +23,8 @@ class ListListas extends ListRecords
     {
         return [
             'Todos' => Tab::make(),
-            'Fabricantes' => Tab::make()->query(function (Builder $query) {
-                $query->where('tipo', 'Fabricante');
+            'Marcas' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Marca');
             }),
             'Tipos de Máquina' => Tab::make()->query(function (Builder $query) {
                 $query->where('tipo', 'Tipo de Máquina');
