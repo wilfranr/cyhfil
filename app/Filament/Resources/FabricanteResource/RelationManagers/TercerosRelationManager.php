@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FabricanteResource\RelationManagers;
 
+use App\Filament\Resources\TercerosResource;
 use App\Models\City;
 use App\Models\State;
 use Filament\Forms;
@@ -25,7 +26,7 @@ use Illuminate\Support\Collection;
 class TercerosRelationManager extends RelationManager
 {
     protected static string $relationship = 'terceros';
-    protected static ?string $title = 'Proveedores asociados a esta marca';
+    protected static ?string $title = 'Proveedores asociados a este fabricante';
 
     public function form(Form $form): Form
     {
@@ -222,15 +223,9 @@ class TercerosRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('tercero_id')
             ->columns([
-                Tables\Columns\TextColumn::make('tercero_id')->label('ID'),
-                Tables\Columns\TextColumn::make('nombre')->label('Nombre'),
-                Tables\Columns\TextColumn::make('email')->label('Email'),
-                Tables\Columns\TextColumn::make('telefono')
-                    ->label('Teléfono')
-                    ->url(fn($record) => "https://wa.me/57{$record->telefono}")
-                    ->openUrlInNewTab()
-                    ->icon('ri-whatsapp-line')
-                    ->color('success'),
+                Tables\Columns\TextColumn::make('nombre')
+                ->url(fn ($record) => TercerosResource::getUrl('edit', ['record' => $record]))  // Utilizamos TercerosResource para obtener la URL de edición
+                ->openUrlInNewTab(),
 
             ])
             ->filters([
@@ -240,13 +235,21 @@ class TercerosRelationManager extends RelationManager
                 // Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index',
+            'create',
+            'edit',
+            'view',
+        ];
     }
 }

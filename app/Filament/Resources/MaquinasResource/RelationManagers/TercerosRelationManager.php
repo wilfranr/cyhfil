@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class TercerosRelationManager extends RelationManager
 {
     protected static string $relationship = 'terceros';
+    protected static ?string $title = 'Clientes propietarios de esta máquina';
 
     public function form(Form $form): Form
     {
@@ -33,7 +34,7 @@ class TercerosRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('nombre')
                 ->url(fn ($record) => TercerosResource::getUrl('edit', ['record' => $record]))  // Utilizamos TercerosResource para obtener la URL de edición
-                ->openUrlInNewTab(),  // Si prefieres que se abra en la misma pestaña, puedes eliminar este método
+                ->openUrlInNewTab(),
             ])
             ->filters([
                 //

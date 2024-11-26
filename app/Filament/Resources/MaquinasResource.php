@@ -37,7 +37,7 @@ class MaquinasResource extends Resource
             'modelo',
             'serie',
             'arreglo',
-            'marcas.nombre',
+            'fabricantes.nombre',
         ];
     }
 
@@ -45,7 +45,7 @@ class MaquinasResource extends Resource
     {
         return [
             'Tipo' => $tipo = Lista::query()->where('id', $record->tipo)->pluck('nombre')->first(),
-            // 'Marca' => $record->marcas->nombre,
+            'Fabricante' => $record->fabricantes->nombre,
             'Modelo' => $record->modelo,
             'Serie' => $record->serie,
             'Arreglo' => $record->arreglo,
@@ -64,15 +64,16 @@ class MaquinasResource extends Resource
                             TextInput::make('tipo')
                                 ->default('Tipo de Máquina')
                                 ->readonly()
-                                ->required(),
+                                ->required()
+                                ->hidden(),
                             TextInput::make('nombre')
                                 ->label('Nombre')
                                 ->required()
-                                ->placeholder('Nombre de la lista'),
+                                ->placeholder('Ingrese el nombre del tipo de máquina'),
                             MarkdownEditor::make('definicion')
-                                ->label('Definición')
+                                ->label('Descripción')
                                 ->required()
-                                ->placeholder('Definición de la lista'),
+                                ->placeholder('Proporcione una descripción del tipo de máquina'),
                             FileUpload::make('foto')
                                 ->label('Foto')
                                 ->image()
@@ -84,8 +85,8 @@ class MaquinasResource extends Resource
                     ->searchable()
                     ->required(),
 
-                Select::make('marca_id')
-                    ->relationship('marcas', 'nombre')
+                Select::make('fabricante_id')
+                    ->relationship('fabricantes', 'nombre')
                     ->label('Fabricante')
                     ->preload()
                     ->live()
