@@ -545,12 +545,7 @@ class PedidosResource extends Resource
                                                 Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                             )
                                             ->preload()
-                                            ->searchable()
-                                            ->afterStateUpdated(function ($state, $set) {
-                                                if (is_array($state)) {
-                                                    $set('marca_id', array_filter($state, fn($value) => $value !== 'all')); // Evitar problemas con 'Seleccionar todos'
-                                                }
-                                            }),
+                                            ->searchable(),
 
 
 
