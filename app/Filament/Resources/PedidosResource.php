@@ -542,10 +542,18 @@ class PedidosResource extends Resource
                                         Select::make('marca_id')
                                             ->label('Marca')
                                             ->options(
-                                                \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
+                                                Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                             )
+                                            ->preload()
                                             ->searchable()
-                                            ->live(),
+                                            ->afterStateUpdated(function ($state, $set) {
+                                                if (is_array($state)) {
+                                                    $set('marca_id', array_filter($state, fn($value) => $value !== 'all')); // Evitar problemas con 'Seleccionar todos'
+                                                }
+                                            }),
+
+
+
 
                                         TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
                                         TextInput::make('comentario')->label('Comentario'),
@@ -588,27 +596,27 @@ class PedidosResource extends Resource
                                                     ->schema([
 
                                                         Select::make('proveedor_id')
-                                                        ->options(function (Get $get) {
-                                                            // Obtén los valores necesarios desde el formulario
-                                                            $sistemaId = $get('../../sistema_id');
-                                                            $cantidad = $get('../../cantidad');
-                                                            $fabricanteId = $get('../../../../fabricante_id'); // Obtén directamente el valor del formulario
-                                                            // dd($fabricanteId);
-                                                    
-                                                            if (!$fabricanteId || !$sistemaId) {
-                                                                return []; // Devuelve un array vacío si falta algún valor
-                                                            }
-                                                    
-                                                            // Consulta para obtener los proveedores según los filtros
-                                                            return Tercero::query()
-                                                                ->whereHas('fabricantes', function ($query) use ($fabricanteId) {
-                                                                    $query->where('fabricante_id', $fabricanteId);
-                                                                })
-                                                                ->whereHas('sistemas', function ($query) use ($sistemaId) {
-                                                                    $query->where('sistema_id', $sistemaId);
-                                                                })
-                                                                ->pluck('nombre', 'id');
-                                                        })
+                                                            ->options(function (Get $get) {
+                                                                // Obtén los valores necesarios desde el formulario
+                                                                $sistemaId = $get('../../sistema_id');
+                                                                $cantidad = $get('../../cantidad');
+                                                                $fabricanteId = $get('../../../../fabricante_id'); // Obtén directamente el valor del formulario
+                                                                // dd($fabricanteId);
+
+                                                                if (!$fabricanteId || !$sistemaId) {
+                                                                    return []; // Devuelve un array vacío si falta algún valor
+                                                                }
+
+                                                                // Consulta para obtener los proveedores según los filtros
+                                                                return Tercero::query()
+                                                                    ->whereHas('fabricantes', function ($query) use ($fabricanteId) {
+                                                                        $query->where('fabricante_id', $fabricanteId);
+                                                                    })
+                                                                    ->whereHas('sistemas', function ($query) use ($sistemaId) {
+                                                                        $query->where('sistema_id', $sistemaId);
+                                                                    })
+                                                                    ->pluck('nombre', 'id');
+                                                            })
                                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                                 $proveedor = Tercero::find($get('proveedor_id'));
                                                                 if (!$proveedor) {
