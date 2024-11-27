@@ -44,5 +44,16 @@ class Direccion extends Model
     {
         return $this->belongsTo(State::class, 'state_id');
     }
+    protected static function booted()
+    {
+        static::saving(function ($direccion) {
+            if ($direccion->principal) {
+                // Si este direccion está marcado como principal, desmarca los demás
+                $direccion->tercero->direcciones()
+                    ->where('id', '!=', $direccion->id)
+                    ->update(['principal' => false]);
+            }
+        });
+    }
     
 }

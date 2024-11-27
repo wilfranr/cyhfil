@@ -83,7 +83,8 @@ class TercerosResource extends Resource
                             TextInput::make('telefono')
                                 ->label('Teléfono')
                                 ->required()
-                                ->tel(),
+                                ->tel()
+                                ->suffixIcon('ri-phone-line'),
                             TextInput::make('email')
                                 ->email()
                                 ->label('Correo Electrónico')

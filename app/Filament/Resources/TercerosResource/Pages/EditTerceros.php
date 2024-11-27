@@ -39,9 +39,10 @@ class EditTerceros extends EditRecord
                     $contactoPrincipal = $record->contactos()->where('principal', true)->first();
 
                     if ($contactoPrincipal) {
-                        // Si hay un contacto principal, usamos su número de teléfono
+                        // Si hay un contacto principal, usamos su número de teléfono e indicativo
+                        $indicativo = $contactoPrincipal->indicativo;
                         $telefono = $contactoPrincipal->telefono;
-                        return "https://wa.me/$telefono";
+                        return "https://wa.me/{$indicativo}{$telefono}";
                     } else {
                         // Si no hay contacto principal ni teléfono del tercero, mostramos "Sin Contacto"
                         return "javascript:void(0);"; // Evita redirigir a un enlace inexistente

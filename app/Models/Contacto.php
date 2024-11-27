@@ -14,6 +14,8 @@ class Contacto extends Model
         'nombre',
         'cargo',
         'telefono',
+        'indicativo',
+        'country_id',
         'email',
         'principal',
     ];
@@ -22,6 +24,12 @@ class Contacto extends Model
     {
         return $this->belongsTo(Tercero::class, 'tercero_id');
     }
+
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class);
+    }
+
 
     protected static function booted()
     {

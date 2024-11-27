@@ -57,7 +57,16 @@ class DireccionesRelationManager extends RelationManager
                     ->searchable()
                     ->live()
                     ->preload(),
-                Forms\Components\Toggle::make('principal'),
+                    Forms\Components\Toggle::make('principal')
+                    ->label('Principal')
+                    ->default(false)
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $get, $set) {
+                        if ($state) {
+                            // Si este contacto está marcado como principal, desmarca los demás
+                            $this->getRelationship()->where('id', '!=', $get('id'))->update(['principal' => false]);
+                        }
+                    }),
             ]);
     }
 
@@ -72,7 +81,8 @@ class DireccionesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('state.name')->label('Departamento'),
                 Tables\Columns\TextColumn::make('city.name')->label('Ciudad'),
 
-                Tables\Columns\BooleanColumn::make('principal'),
+                Tables\Columns\IconColumn::make('principal')
+                ->boolean(),
             ])
             ->filters([
                 //

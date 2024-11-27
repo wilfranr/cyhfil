@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\TercerosResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,15 +24,42 @@ class ContactosRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('cargo')
-                    ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('country_id')
+                    ->label('País')
+                    ->options(
+                        \App\Models\Country::pluck('name', 'id')->toArray()
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $set) {
+                        if ($state) {
+                            $country = \App\Models\Country::find($state);
+
+                            if ($country) {
+                                $set('indicativo', $country->phonecode);
+                            }
+                        }
+                    })
+                    ->default('48'),
+
+                Forms\Components\Hidden::make('indicativo')
+                    ->label('Indicativo')
+                    ->required()
+                    ->default('57'),
+
                 Forms\Components\TextInput::make('telefono')
                     ->required()
-                    ->maxLength(255),
+                    ->tel()
+                    ->maxLength(255)
+                    ->placeholder('Ingrese el teléfono sin indicativo')
+                    ->suffixIcon('ri-phone-line'),
                 Forms\Components\TextInput::make('email')
-                    ->required()
                     ->email()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('Ingrese el correo electrónico')
+                    ->suffixIcon('ri-mail-line'),
                 Forms\Components\Toggle::make('principal')
                     ->label('Principal')
                     ->default(false)
