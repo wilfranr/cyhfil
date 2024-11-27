@@ -52,7 +52,7 @@ class ReferenciaResource extends Resource
                     ->unique('referencias', 'referencia', ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\Select::make('articulo')
+                Forms\Components\Select::make('articulo')
                     ->label('Artículo')
                     ->placeholder('Seleccione un artículo relacionado')
                     ->options(function () {
@@ -88,7 +88,7 @@ class ReferenciaResource extends Resource
                         // Configura el estado inicial para mostrar la concatenación en edición
                         $articuloId = $get('articulo_id'); // Obtener el ID del artículo relacionado
                         $referencia = \App\Models\Referencia::where('articulo_id', $articuloId)->with('articulo')->first();
-                        
+
                         if ($referencia) {
                             $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
                             $set('articulo', $referencia->id); // Selecciona la referencia correspondiente
@@ -98,8 +98,8 @@ class ReferenciaResource extends Resource
                     ->preload()
                     ->live(),
                 Forms\Components\Hidden::make('articulo_id')->required(),
-                
-                
+
+
 
 
                 // Forms\Components\Select::make('articulo_id')
@@ -230,9 +230,12 @@ class ReferenciaResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('articulo.descripcionEspecifica')
-                    ->numeric()
+                    ->label('Artículo')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn($record) => \App\Filament\Resources\ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]))
+                    ->openUrlInNewTab(),
+
                 Tables\Columns\TextColumn::make('marca.nombre')
                     ->label('Marca')
                     ->sortable()
