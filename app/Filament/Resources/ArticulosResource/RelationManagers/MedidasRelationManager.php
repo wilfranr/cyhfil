@@ -28,11 +28,40 @@ class MedidasRelationManager extends RelationManager
                 
                 Select::make('unidad')
                     ->options(Lista::where('tipo', 'Unidad de medida')->pluck('nombre', 'nombre'))
+                    ->createOptionForm(function () {
+                        return [
+                        
+                            Forms\Components\TextInput::make('nombre')
+                                ->required(),
+                            Forms\Components\TextInput::make('definicion')->label('Definición'),
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $lista= Lista::create([
+                            'nombre' => $data['nombre'],
+                            'tipo' => 'Unidad de medida',
+                        ]);
+                        return $lista->nombre;
+                    })
                     ->required(),
                 Forms\Components\TextInput::make('valor'),
                 //desde listas
                 Select::make('tipo')
                     ->options(Lista::where('tipo', 'Tipo de medida')->pluck('nombre', 'nombre'))
+                    ->createOptionForm(function () {
+                        return [
+                            Forms\Components\TextInput::make('nombre')
+                                ->required(),
+                            Forms\Components\TextInput::make('definicion')->label('Definición'),
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $lista= Lista::create([
+                            'nombre' => $data['nombre'],
+                            'tipo' => 'Tipo de medida',
+                        ]);
+                        return $lista->nombre;
+                    })
                     ->searchable()
                     ->required(),
             ])->columns(2)

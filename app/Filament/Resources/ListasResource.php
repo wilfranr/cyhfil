@@ -60,11 +60,11 @@ class ListasResource extends Resource
                     ->label('Foto')
                     ->image()
                     ->imageEditor(),
-                FileUpload::make('fotoMedida')
-                    ->label('Foto de la medida')
-                    ->image()
-                    ->imageEditor()
-                    ->visible(fn (Get $get) => $get('tipo') === 'Definición de artículo'),
+                // FileUpload::make('fotoMedida')
+                //     ->label('Foto de la medida')
+                //     ->image()
+                //     ->imageEditor()
+                //     ->visible(fn (Get $get) => $get('tipo') === 'Definición de artículo'),
                 
                 
                     ]);
