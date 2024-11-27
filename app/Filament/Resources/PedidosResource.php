@@ -437,7 +437,7 @@ class PedidosResource extends Resource
                                                         \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
                                                     ),
                                                 Select::make('marca_id')
-                                                    ->label('Fabricante')
+                                                    ->label('Marca')
                                                     ->options(
                                                         \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                     ),
