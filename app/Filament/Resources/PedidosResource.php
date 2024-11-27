@@ -34,20 +34,20 @@ class PedidosResource extends Resource
         }
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        $user = Auth::user();
-        // dd($user);
-        $rol = $user->roles->first()->name;
-        // dd($rol);
-        if ($rol == 'Analista') {
-            return parent::getEloquentQuery()->where('estado', 'Nuevo');
-        } elseif ($rol == 'Logistica') {
-            return parent::getEloquentQuery()->where('estado', 'Aprobado');
-        } else {
-            return parent::getEloquentQuery();
-        }
-    }
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     $user = Auth::user();
+    //     // dd($user);
+    //     $rol = $user->roles->first()->name;
+    //     // dd($rol);
+    //     if ($rol == 'Analista') {
+    //         return parent::getEloquentQuery()->where('estado', 'Nuevo');
+    //     } elseif ($rol == 'Logistica') {
+    //         return parent::getEloquentQuery()->where('estado', 'Aprobado');
+    //     } else {
+    //         return parent::getEloquentQuery();
+    //     }
+    // }
 
 
 
@@ -782,7 +782,7 @@ class PedidosResource extends Resource
                                                                 }
 
                                                                 // Retornamos la ruta para editar el proveedor
-                                                                return "https://wa.me/57$proveedor->telefono";
+                                                                return "https://wa.me/$proveedor->telefono";
                                                             }, shouldOpenInNewTab: true)
                                                     ])
                                                     ->hiddenOn('create')

@@ -277,7 +277,7 @@ class EditPedidos extends EditRecord
 
                 $telefono = $contacto ? $contacto->telefono : $record->tercero->telefono;
 
-                return "https://wa.me/57$telefono";
+                return "https://wa.me/$telefono";
             }, shouldOpenInNewTab: true);
     }
 

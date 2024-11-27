@@ -352,7 +352,7 @@ class TercerosResource extends Resource
 
                         if ($contactoPrincipal) {
                             // Retornar la URL de WhatsApp con el teléfono del contacto principal
-                            return "https://wa.me/57{$contactoPrincipal->telefono}";
+                            return "https://wa.me/{$contactoPrincipal->telefono}";
                         }
 
                         // No generar URL si no hay contacto principal

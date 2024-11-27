@@ -221,7 +221,7 @@ class TercerosRelationManager extends RelationManager
             Tables\Columns\TextColumn::make('email')->label('Email'),
             Tables\Columns\TextColumn::make('telefono')
                 ->label('Teléfono')
-                ->url(fn($record) => "https://wa.me/57{$record->telefono}")
+                ->url(fn($record) => "https://wa.me/{$record->telefono}")
                 ->openUrlInNewTab()
                 ->icon('ri-whatsapp-line')
                 ->color('success'),
