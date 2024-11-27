@@ -22,4 +22,16 @@ class Contacto extends Model
     {
         return $this->belongsTo(Tercero::class, 'tercero_id');
     }
+
+    protected static function booted()
+    {
+        static::saving(function ($contacto) {
+            if ($contacto->principal) {
+                // Si este contacto está marcado como principal, desmarca los demás
+                $contacto->tercero->contactos()
+                    ->where('id', '!=', $contacto->id)
+                    ->update(['principal' => false]);
+            }
+        });
+    }
 }
