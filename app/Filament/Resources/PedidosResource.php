@@ -468,6 +468,7 @@ class PedidosResource extends Resource
                                                 $referencia = Referencia::find($get('referencia_id'));
                                                 if (!$referencia) {
                                                     $set('articulo_definicion', null);
+                                                    $set('articulo_descripcionEspecifica', null);
                                                     $set('articulo_id', null);
                                                     $set('peso', null);
                                                     $set('marca_id', null);
@@ -481,6 +482,7 @@ class PedidosResource extends Resource
                                                         return;
                                                     }
                                                     $set('articulo_definicion', $articulo->definicion);
+                                                    $set('articulo_descripcionEspecifica', $articulo->descripcionEspecifica);
                                                     $set('articulo_id', $articulo->id);
                                                     $set('peso', $articulo->peso);
                                                     $set('marca_id', $marca->id);
@@ -491,6 +493,7 @@ class PedidosResource extends Resource
 
                                                 if (!$referencia) {
                                                     $set('articulo_definicion', null);
+                                                    $set('articulo_descripcionEspecifica', null);
                                                     $set('articulo_id', null);
                                                     $set('peso', null);
                                                 } else {
@@ -498,11 +501,13 @@ class PedidosResource extends Resource
                                                     $marca = Lista::find($referencia->marca_id);
                                                     if (!$articulo) {
                                                         $set('articulo_definicion', null);
+                                                        $set('articulo_descripcionEspecifica', null);
                                                         $set('articulo_id', null);
                                                         $set('peso', null);
                                                         return;
                                                     }
                                                     $set('articulo_definicion', $articulo->definicion);
+                                                    $set('articulo_descripcionEspecifica', $articulo->descripcionEspecifica);
                                                     $set('articulo_id', $articulo->id);
                                                     $set('peso', $articulo->peso);
                                                     // $set('marca_id', $marca->id);
@@ -516,7 +521,9 @@ class PedidosResource extends Resource
                                             ->placeholder('Sin referencia'),
                                         Hidden::make('articulo_id')->disabled(),
                                         TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
-                                        TextInput::make('peso')->label('Peso')->disabled(),
+                                        TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled(),
+                                        
+                                        TextInput::make('peso')->label('Peso (gr)')->disabled(),
                                         Select::make('sistema_id')
                                             ->label('Sistema')
                                             ->searchable()
