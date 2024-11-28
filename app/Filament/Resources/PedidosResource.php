@@ -429,18 +429,83 @@ class PedidosResource extends Resource
                                             ->options(Referencia::query()->pluck('referencia', 'id'))
                                             ->createOptionForm([
                                                 TextInput::make('referencia')
+                                                    ->label('Referencia')
+                                                    ->unique('referencias', 'referencia', ignoreRecord: true)
                                                     ->required()
                                                     ->maxLength(255),
-                                                Select::make('articulo_id')
-                                                    ->label('Articulo')
-                                                    ->options(
-                                                        \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                                                    ),
-                                                Select::make('marca_id')
-                                                    ->label('Marca')
-                                                    ->options(
-                                                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
-                                                    ),
+                                                Select::make('articulo')
+                                                    ->label('Artículo')
+                                                    ->placeholder('Seleccione un artículo relacionado')
+                                                    ->options(function () {
+                                                        // Obtener todas las referencias con sus artículos relacionados
+                                                        return \App\Models\Referencia::with('articulo')
+                                                            ->get()
+                                                            ->mapWithKeys(function ($referencia) {
+                                                                // Mostrar la referencia y el artículo relacionado
+                                                                $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
+                                                                return [$referencia->id => "{$referencia->referencia} - {$articuloDefinicion}"];
+                                                            });
+                                                    })
+                                                    ->getOptionLabelUsing(function ($value) {
+                                                        // Mostrar correctamente la concatenación en edición
+                                                        $referencia = \App\Models\Referencia::with('articulo')->find($value);
+                                                        if ($referencia) {
+                                                            $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
+                                                            return "{$referencia->referencia} - {$articuloDefinicion}";
+                                                        }
+                                                        return $value; // Retorna el valor si no se encuentra
+                                                    })
+                                                    ->reactive() // Detecta cambios en tiempo real
+                                                    ->afterStateUpdated(function ($state, $set) {
+                                                        if ($state) {
+                                                            // Asocia automáticamente el artículo relacionado con la referencia seleccionada
+                                                            $referencia = \App\Models\Referencia::find($state);
+                                                            if ($referencia) {
+                                                                $set('articulo_id', $referencia->articulo_id);
+                                                            }
+                                                        }
+                                                    })
+                                                    ->afterStateHydrated(function ($state, $set, $get) {
+                                                        // Configura el estado inicial para mostrar la concatenación en edición
+                                                        $articuloId = $get('articulo_id'); // Obtener el ID del artículo relacionado
+                                                        $referencia = \App\Models\Referencia::where('articulo_id', $articuloId)->with('articulo')->first();
+
+                                                        if ($referencia) {
+                                                            $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
+                                                            $set('articulo', $referencia->id); // Selecciona la referencia correspondiente
+                                                        }
+                                                    })
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->live(),
+                                                    Hidden::make('articulo_id')->required(),
+
+                                                    Select::make('marca_id')
+                                                        ->label('Marca')
+                                                        ->options(
+                                                            \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
+                                                        )
+                                                        ->createOptionForm(function () {
+                                                            return [
+                                                                TextInput::make('nombre')
+                                                                    ->label('Nombre')
+                                                                    ->required()
+                                                                    ->placeholder('Nombre del fabricante'),
+                                                                FileUpload::make('foto')
+                                                                    ->label('Foto')
+                                                                    ->image()
+                                                            ];
+                                                        })
+                                                        ->createOptionUsing(function ($data) {
+                                                            $marca = Lista::create([
+                                                                'tipo' => 'Marca',
+                                                                'nombre' => ucwords($data['nombre']),
+                                                                'foto' => $data['foto'] ?? null,
+                                                            ]);
+                                    
+                                                            return $marca->id;
+                                                        })
+                                                        ->searchable()
                                             ])
                                             ->editOptionForm([
                                                 TextInput::make('referencia')
@@ -522,7 +587,7 @@ class PedidosResource extends Resource
                                         Hidden::make('articulo_id')->disabled(),
                                         TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
                                         TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled(),
-                                        
+
                                         TextInput::make('peso')->label('Peso (gr)')->disabled(),
                                         Select::make('sistema_id')
                                             ->label('Sistema')
