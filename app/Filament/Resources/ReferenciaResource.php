@@ -99,95 +99,6 @@ class ReferenciaResource extends Resource
                     ->live(),
                 Forms\Components\Hidden::make('articulo_id')->required(),
 
-
-
-
-                // Forms\Components\Select::make('articulo_id')
-                //     ->label('Articulo')
-                //     ->placeholder('Seleccione un artículo o cree uno nuevo')
-                //     ->options(
-                //         \App\Models\Articulo::all()->pluck('descripcionEspecifica', 'id')->toArray()
-                //     )
-                //     ->createOptionForm(
-                //         function () {
-                //             return [
-                //                 Select::make('definicion')
-                //                     ->label('Definición')
-                //                     ->options(
-                //                         Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')
-                //                     )
-                //                     ->createOptionForm(function () {
-                //                         return [
-                //                             TextInput::make('definicion')
-                //                                 ->default('Definición de artículo')
-                //                                 ->readonly()
-                //                                 ->required(),
-                //                             TextInput::make('nombre')
-                //                                 ->label('Nombre')
-                //                                 ->placeholder('Nombre de la definición'),
-                //                             TextInput::make('definicion')
-                //                                 ->label('Definición')
-                //                                 ->placeholder('Definición del artículo'),
-                //                             FileUpload::make('foto')
-                //                                 ->label('Foto')
-                //                                 ->image()
-                //                                 ->imageEditor(),
-
-                //                         ];
-                //                     })
-                //                     ->createOptionUsing(function ($data) {
-                //                         // Define la lógica para crear una nueva opción
-                //                         // Aquí, creamos un nuevo registro en la tabla 'lista'
-                //                         $lista = Lista::create([
-                //                             'tipo' => 'Definición de artículo',
-                //                             'nombre' => ucwords($data['nombre']),
-                //                             'definicion' => $data['definicion'] ?? null,
-                //                             'foto' => $data['foto'] ?? null,
-                //                         ]);
-
-                //                         // Devuelve el ID de la nueva opción creada
-                //                         return $lista->id;
-                //                     })
-
-                //                     ->searchable()
-                //                     ->preload()
-                //                     ->live()
-                //                     ->required(),
-                //                 TextInput::make('descripcionEspecifica')
-                //                     ->label('Decripción específica')
-                //                     ->placeholder('Descripción específica del artículo'),
-                //                 TextInput::make('peso')
-                //                     ->label('Peso')
-                //                     ->placeholder('Peso del artículo'),
-                //                 TextInput::make('comentarios')
-                //                     ->label('Comentarios')
-                //                     ->placeholder('Comentarios del artículo'),
-                //                 FileUpload::make('fotoDescriptiva')
-                //                     ->label('Foto descriptiva')
-                //                     ->image()
-                //                     ->imageEditor(),
-                //                 FileUpload::make('fotoMedidas')
-                //                     ->label('Foto de Medidas')
-                //                     ->image()
-                //                     ->imageEditor(),
-                //             ];
-                //         }
-
-                //     )
-                //     ->createOptionUsing(function ($data) {
-                //         $articulo = Articulo::create([
-                //             'definicion' => ucwords($data['definicion']),
-                //             'descripcionEspecifica' => $data['descripcionEspecifica'] ?? null,
-                //             'peso' => $data['peso'] ?? null,
-                //             'comentarios' => $data['comentarios'] ?? null,
-                //             'fotoDescriptiva' => $data['fotoDescriptiva'] ?? null,
-                //             'fotoMedidas' => $data['fotoMedidas'] ?? null,
-                //         ]);
-
-                //         return $articulo->id;
-                //     })
-                //     ->searchable(),
-
                 Forms\Components\Select::make('marca_id')
                     ->label('Marca')
                     ->options(
@@ -232,9 +143,9 @@ class ReferenciaResource extends Resource
                 Tables\Columns\TextColumn::make('articulo.descripcionEspecifica')
                     ->label('Artículo')
                     ->sortable()
-                    ->searchable()
-                    ->url(fn($record) => \App\Filament\Resources\ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]))
-                    ->openUrlInNewTab(),
+                    ->searchable(),
+                    //->url(fn($record) => \App\Filament\Resources\ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]))
+                    //->openUrlInNewTab(),
 
                 Tables\Columns\TextColumn::make('marca.nombre')
                     ->label('Marca')
