@@ -63,10 +63,6 @@ class PedidosResource extends Resource
 
         return $form
             ->schema([
-                //guardar id de usuario logueado
-                Components\Hidden::make('user_id')->default($user),
-
-
                 Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
@@ -90,16 +86,17 @@ class PedidosResource extends Resource
 
 
                         Placeholder::make('motivo_rechazo')
-                            ->content(fn(Pedido $record): string => $record->motivo_rechazo)
+                            ->content(fn(Pedido $record): string => $record->motivo_rechazo??'')
                             ->hiddenOn('create')
                             ->label('Motivo de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                         Placeholder::make('comentarios_rechazo')
-                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo)
+                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo??'')
                             ->hiddenOn('create')
                             ->label('Comentario de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                     ])->collapsed()->hiddenOn('create'),
+                    
                 Section::make('Información de cliente')
                     ->columns(4)
                     ->schema([
@@ -157,14 +154,15 @@ class PedidosResource extends Resource
                             ->label('Cargo de contacto'),
                     ])
                     ->collapsed()
+                    ->hiddenOn('create')
                     ->hidden(function () {
                         $user = Auth::user();
                         if ($user !== null) {
                             $rol = $user->roles->first()->name;
-                            return $rol == 'Analista'; // Se oculta para todos los roles que no sean "Analista"
+                            return $rol == 'Analista';
                         }
-                        return true; // Si no hay usuario, se oculta por defecto
-                    })->hiddenOn('create'),
+                        return true;
+                    }),
 
                 Section::make('Información de máquina')
                     ->schema([
