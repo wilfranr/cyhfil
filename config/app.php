@@ -173,6 +173,8 @@ return [
         App\Providers\Filament\PartesPanelProvider::class,
         App\Providers\Filament\LogisticaPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\FilamentServiceProvider::class,
+
         // Barryvdh\DomPDF\ServiceProvider::class,
     ])->toArray(),
 
