@@ -51,7 +51,7 @@ class DashboardPanelProvider extends PanelProvider
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
-                    ->url('\ventas\trm-settings'),
+                    ->url('\admin\trm-settings'),
             ])
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

@@ -52,7 +52,7 @@ class HomePanelProvider extends PanelProvider
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
-                    ->url('\dashboard\trm-settings'),
+                    ->url('\home\trm-settings'),
             ])
             ->discoverResources(in: app_path('Filament/Home/Resources'), for: 'App\\Filament\\Home\\Resources')
             ->discoverPages(in: app_path('Filament/Home/Pages'), for: 'App\\Filament\\Home\\Pages')

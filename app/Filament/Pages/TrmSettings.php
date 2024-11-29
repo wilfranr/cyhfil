@@ -44,15 +44,20 @@ class TrmSettings extends Page implements Forms\Contracts\HasForms
             ['trm' => $this->trm]
         );
 
-        // Resetear el formulario después de guardar
+        //Resetear el formulario después de guardar
         $this->form->fill([
             'trm' => $this->getTrm(),
-        ]);        
+        ]);
     }
 
     protected function getTrm()
     {
-        return DB::table('t_r_m_s')->value('trm') ?? 0;
+        // Obtén el último registro según el campo de timestamp (por ejemplo, 'created_at') o el ID
+        $latestTrm = DB::table('t_r_m_s')
+            ->latest('created_at') // Puedes cambiar 'created_at' por el campo que identifique el orden
+            ->value('trm');
+
+        // Retorna el valor o 0 si no hay registros
+        return $latestTrm ?? 0;
     }
 }
-
