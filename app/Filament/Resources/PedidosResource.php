@@ -23,6 +23,7 @@ class PedidosResource extends Resource
 
     protected static ?int $navigationSort = 0;
 
+    //Funcion para enviar notificacion de pedido creado
     public static  function getNavigationBadge(): ?string
     {
         $user = Auth::user();
@@ -34,20 +35,24 @@ class PedidosResource extends Resource
         }
     }
 
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     $user = Auth::user();
-    //     // dd($user);
-    //     $rol = $user->roles->first()->name;
-    //     // dd($rol);
-    //     if ($rol == 'Analista') {
-    //         return parent::getEloquentQuery()->where('estado', 'Nuevo');
-    //     } elseif ($rol == 'Logistica') {
-    //         return parent::getEloquentQuery()->where('estado', 'Aprobado');
-    //     } else {
-    //         return parent::getEloquentQuery();
-    //     }
-    // }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Analista') {
+            return parent::getEloquentQuery()->where('estado', 'Nuevo');
+        } elseif ($rol == 'Logistica') {
+            return parent::getEloquentQuery()->where('estado', 'Aprobado');
+        } elseif($rol == 'Vendedor'){
+            return parent::getEloquentQuery()->where('user_id', $user->id);
+        }
+        else {
+            return parent::getEloquentQuery();
+        }
+    }
 
 
 
