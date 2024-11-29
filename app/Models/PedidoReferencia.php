@@ -18,6 +18,7 @@ class PedidoReferencia extends Model
         'referencia_id',
         'sistema_id',
         'marca_id',
+        'definicion',
         'cantidad',
         'comentario',
         'imagen',

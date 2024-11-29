@@ -63,10 +63,10 @@ class PedidosResource extends Resource
 
         return $form
             ->schema([
+                Hidden::make('user_id')->default(auth()->user()->id),
                 Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
-                        Components\Hidden::make('user_id')->default(auth()->user()->id),
                         Placeholder::make('numero_pedido')
                             ->content(fn(Pedido $record): string => $record->id)
                             ->hiddenOn('create')
@@ -590,6 +590,13 @@ class PedidosResource extends Resource
                                         Hidden::make('articulo_id')->disabled(),
                                         TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
                                         TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled(),
+                                        Select::make('definicion')
+                                            ->label('Definición')
+                                            ->options(
+                                                Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')->toArray()
+                                            )
+                                            ->searchable()
+                                            ->preload(),
 
                                         TextInput::make('peso')->label('Peso (gr)')->disabled(),
                                         Select::make('sistema_id')
