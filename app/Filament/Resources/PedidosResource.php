@@ -24,16 +24,16 @@ class PedidosResource extends Resource
     protected static ?int $navigationSort = 0;
 
     //Funcion para enviar notificacion de pedido creado
-    public static  function getNavigationBadge(): ?string
-    {
-        $user = Auth::user();
-        $rol = $user->roles->first()->name;
-        if ($rol == 'Logistica') {
-            return Pedido::query()->where('estado', 'Aprobado')->count();
-        } else {
-            return Pedido::query()->where('estado', 'Nuevo')->count();
-        }
-    }
+    // public static  function getNavigationBadge(): ?string
+    // {
+    //     $user = Auth::user();
+    //     $rol = $user->roles->first()->name;
+    //     if ($rol == 'Logistica') {
+    //         return Pedido::query()->where('estado', 'Aprobado')->count();
+    //     } else {
+    //         return Pedido::query()->where('estado', 'Nuevo')->count();
+    //     }
+    // }
 
 
     public static function getEloquentQuery(): Builder
@@ -96,7 +96,7 @@ class PedidosResource extends Resource
                             ->label('Comentario de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                     ])->collapsed()->hiddenOn('create'),
-                    
+
                 Section::make('Información de cliente')
                     ->columns(4)
                     ->schema([
