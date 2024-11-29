@@ -23,18 +23,16 @@ class PedidosResource extends Resource
 
     protected static ?int $navigationSort = 0;
 
-    //Funcion para enviar notificacion de pedido creado
-    // public static  function getNavigationBadge(): ?string
-    // {
-    //     $user = Auth::user();
-    //     $rol = $user->roles->first()->name;
-    //     if ($rol == 'Logistica') {
-    //         return Pedido::query()->where('estado', 'Aprobado')->count();
-    //     } else {
-    //         return Pedido::query()->where('estado', 'Nuevo')->count();
-    //     }
-    // }
-
+    public static  function getNavigationBadge(): ?string
+    {
+        $user = Auth::user();
+        $rol = $user->roles->first()->name;
+        if ($rol == 'Logistica') {
+            return Pedido::query()->where('estado', 'Aprobado')->count();
+        } else {
+            return Pedido::query()->where('estado', 'Nuevo')->count();
+        }
+    }
 
     // public static function getEloquentQuery(): Builder
     // {
@@ -46,10 +44,7 @@ class PedidosResource extends Resource
     //         return parent::getEloquentQuery()->where('estado', 'Nuevo');
     //     } elseif ($rol == 'Logistica') {
     //         return parent::getEloquentQuery()->where('estado', 'Aprobado');
-    //     } elseif($rol == 'Vendedor'){
-    //         return parent::getEloquentQuery()->where('user_id', $user->id);
-    //     }
-    //     else {
+    //     } else {
     //         return parent::getEloquentQuery();
     //     }
     // }
@@ -63,6 +58,10 @@ class PedidosResource extends Resource
 
         return $form
             ->schema([
+                //guardar id de usuario logueado
+                Components\Hidden::make('user_id')->default($user),
+
+
                 Section::make('Información de pedido')
                     ->columns(4)
                     ->schema([
@@ -86,17 +85,16 @@ class PedidosResource extends Resource
 
 
                         Placeholder::make('motivo_rechazo')
-                            ->content(fn(Pedido $record): string => $record->motivo_rechazo??'')
+                            ->content(fn(Pedido $record): string => $record->motivo_rechazo)
                             ->hiddenOn('create')
                             ->label('Motivo de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                         Placeholder::make('comentarios_rechazo')
-                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo??'')
+                            ->content(fn(Pedido $record): string => $record->comentarios_rechazo)
                             ->hiddenOn('create')
                             ->label('Comentario de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                     ])->collapsed()->hiddenOn('create'),
-
                 Section::make('Información de cliente')
                     ->columns(4)
                     ->schema([
@@ -154,15 +152,14 @@ class PedidosResource extends Resource
                             ->label('Cargo de contacto'),
                     ])
                     ->collapsed()
-                    ->hiddenOn('create')
                     ->hidden(function () {
                         $user = Auth::user();
                         if ($user !== null) {
                             $rol = $user->roles->first()->name;
-                            return $rol == 'Analista';
+                            return $rol == 'Analista'; // Se oculta para todos los roles que no sean "Analista"
                         }
-                        return true;
-                    }),
+                        return true; // Si no hay usuario, se oculta por defecto
+                    })->hiddenOn('create'),
 
                 Section::make('Información de máquina')
                     ->schema([
