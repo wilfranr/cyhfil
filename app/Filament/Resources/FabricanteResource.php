@@ -47,6 +47,12 @@ class FabricanteResource extends Resource
                             ->unique('fabricantes', 'nombre', ignoreRecord: true)
                             ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
                             ->required(),
+                        MarkdownEditor::make('descripcion')
+                            ->label('Descripción')
+                            ->nullable()
+                            ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                            ->required()
+                            ->maxLength(500),
                         FileUpload::make('logo')
                             ->label('Logo')
                             ->image()
@@ -66,6 +72,10 @@ class FabricanteResource extends Resource
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('descripcion')
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\ImageColumn::make('logo')
                     ->searchable()
                     ->sortable(),

@@ -15,6 +15,7 @@ class Fabricante extends Model
     protected $fillable = [
 
         'nombre',
+        'descripcion',
         'logo'
 
     ];
