@@ -24,35 +24,35 @@ class PedidosResource extends Resource
     protected static ?int $navigationSort = 0;
 
     //Funcion para enviar notificacion de pedido creado
-    // public static  function getNavigationBadge(): ?string
-    // {
-    //     $user = Auth::user();
-    //     $rol = $user->roles->first()->name;
-    //     if ($rol == 'Logistica') {
-    //         return Pedido::query()->where('estado', 'Aprobado')->count();
-    //     } else {
-    //         return Pedido::query()->where('estado', 'Nuevo')->count();
-    //     }
-    // }
+    public static  function getNavigationBadge(): ?string
+    {
+        $user = Auth::user();
+        $rol = $user->roles->first()->name;
+        if ($rol == 'Logistica') {
+            return Pedido::query()->where('estado', 'Aprobado')->count();
+        } else {
+            return Pedido::query()->where('estado', 'Nuevo')->count();
+        }
+    }
 
 
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     $user = Auth::user();
-    //     // dd($user);
-    //     $rol = $user->roles->first()->name;
-    //     // dd($rol);
-    //     if ($rol == 'Analista') {
-    //         return parent::getEloquentQuery()->where('estado', 'Nuevo');
-    //     } elseif ($rol == 'Logistica') {
-    //         return parent::getEloquentQuery()->where('estado', 'Aprobado');
-    //     } elseif($rol == 'Vendedor'){
-    //         return parent::getEloquentQuery()->where('user_id', $user->id);
-    //     }
-    //     else {
-    //         return parent::getEloquentQuery();
-    //     }
-    // }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        // dd($user);
+        $rol = $user->roles->first()->name;
+        // dd($rol);
+        if ($rol == 'Analista') {
+            return parent::getEloquentQuery()->where('estado', 'Nuevo');
+        } elseif ($rol == 'Logistica') {
+            return parent::getEloquentQuery()->where('estado', 'Aprobado');
+        } elseif($rol == 'Vendedor'){
+            return parent::getEloquentQuery()->where('user_id', $user->id);
+        }
+        else {
+            return parent::getEloquentQuery();
+        }
+    }
 
 
 
