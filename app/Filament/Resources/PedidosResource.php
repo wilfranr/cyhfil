@@ -46,10 +46,9 @@ class PedidosResource extends Resource
             return parent::getEloquentQuery()->where('estado', 'Nuevo');
         } elseif ($rol == 'Logistica') {
             return parent::getEloquentQuery()->where('estado', 'Aprobado');
-        } elseif($rol == 'Vendedor'){
+        } elseif ($rol == 'Vendedor') {
             return parent::getEloquentQuery()->where('user_id', $user->id);
-        }
-        else {
+        } else {
             return parent::getEloquentQuery();
         }
     }
@@ -427,64 +426,319 @@ class PedidosResource extends Resource
                                     ->schema([
                                         // Textinput::make('referencia'),
                                         Select::make('referencia_id')
-                                            ->relationship(name: 'referencia', titleAttribute: 'referencia')
-                                            ->label('Referencia')
-                                            ->options(Referencia::query()->pluck('referencia', 'id'))
+                                            ->label('Referencia - Artículo')
+                                            ->searchable()
+                                            ->relationship('referencia', 'referencia')
+                                            ->options(
+                                                Referencia::query()
+                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("referencias.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                                                    ->limit(50)
+                                                    ->pluck('full_description', 'referencias.id')
+                                                    ->toArray()
+                                            )
+                                            ->getSearchResultsUsing(function (string $search) {
+                                                return Referencia::query()
+                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("referencias.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                                                    ->where(function ($query) use ($search) {
+                                                        $query->where('referencias.referencia', 'like', "%{$search}%")
+                                                            ->orWhere('articulos.descripcionEspecifica', 'like', "%{$search}%");
+                                                    })
+                                                    ->limit(50)
+                                                    ->pluck('full_description', 'referencias.id')
+                                                    ->toArray();
+                                            })
+                                            ->getOptionLabelUsing(function ($value) {
+                                                return Referencia::query()
+                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                                                    ->where('referencias.id', $value)
+                                                    ->pluck('full_description')
+                                                    ->first();
+                                            })
                                             ->createOptionForm([
                                                 TextInput::make('referencia')
                                                     ->label('Referencia')
                                                     ->unique('referencias', 'referencia', ignoreRecord: true)
                                                     ->required()
                                                     ->maxLength(255),
-                                                Select::make('articulo')
+                                                Select::make('articulo_id')
                                                     ->label('Artículo')
-                                                    ->placeholder('Seleccione un artículo relacionado')
-                                                    ->options(function () {
-                                                        // Obtener todas las referencias con sus artículos relacionados
-                                                        return \App\Models\Referencia::with('articulo')
-                                                            ->get()
-                                                            ->mapWithKeys(function ($referencia) {
-                                                                // Mostrar la referencia y el artículo relacionado
-                                                                $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-                                                                return [$referencia->id => "{$referencia->referencia} - {$articuloDefinicion}"];
-                                                            });
-                                                    })
-                                                    ->getOptionLabelUsing(function ($value) {
-                                                        // Mostrar correctamente la concatenación en edición
-                                                        $referencia = \App\Models\Referencia::with('articulo')->find($value);
-                                                        if ($referencia) {
-                                                            $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-                                                            return "{$referencia->referencia} - {$articuloDefinicion}";
-                                                        }
-                                                        return $value; // Retorna el valor si no se encuentra
-                                                    })
-                                                    ->reactive() // Detecta cambios en tiempo real
-                                                    ->afterStateUpdated(function ($state, $set) {
-                                                        if ($state) {
-                                                            // Asocia automáticamente el artículo relacionado con la referencia seleccionada
-                                                            $referencia = \App\Models\Referencia::find($state);
-                                                            if ($referencia) {
-                                                                $set('articulo_id', $referencia->articulo_id);
-                                                            }
-                                                        }
-                                                    })
-                                                    ->afterStateHydrated(function ($state, $set, $get) {
-                                                        // Configura el estado inicial para mostrar la concatenación en edición
-                                                        $articuloId = $get('articulo_id'); // Obtener el ID del artículo relacionado
-                                                        $referencia = \App\Models\Referencia::where('articulo_id', $articuloId)->with('articulo')->first();
+                                                    ->options(
+                                                        Articulo::query()->pluck('descripcionEspecifica', 'id')
+                                                    )
+                                                    ->createOptionForm(function () {
+                                                        return [
+                                                            Select::make('definicion')
+                                                                ->label('Definición')
+                                                                ->options(
+                                                                    Lista::query()
+                                                                        ->where('tipo', 'Definición de artículo')
+                                                                        ->get()
+                                                                        ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
+                                                                        ->toArray()
+                                                                )
+                                                                ->createOptionForm(function () {
+                                                                    return [
+                                                                        Hidden::make('tipo')
+                                                                            ->default('Definición de artículo')
+                                                                            ->required(),
+                                                                        TextInput::make('nombre')
+                                                                            ->label('Nombre')
+                                                                            ->placeholder('Nombre de la definición'),
+                                                                        TextInput::make('definicion')
+                                                                            ->label('Descripción de definición')
+                                                                            ->placeholder('Definición del artículo'),
+                                                                        FileUpload::make('foto')
+                                                                            ->label('Foto')
+                                                                            ->image()
+                                                                            ->imageEditor(),
+                                                                    ];
+                                                                })
+                                                                ->createOptionUsing(function ($data) {
+                                                                    $definicion = Lista::create([
+                                                                        'tipo' => 'Definición de artículo',
+                                                                        'nombre' => $data['nombre'],
+                                                                        'definicion' => $data['definicion'],
+                                                                    ]);
 
-                                                        if ($referencia) {
-                                                            $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-                                                            $set('articulo', $referencia->id); // Selecciona la referencia correspondiente
-                                                        }
+                                                                    return $definicion->nombre;
+                                                                })
+                                                                ->createOptionAction(function (Action $action) {
+                                                                    $action->modalHeading('Nueva Definición de Artículo'); // Personaliza el encabezado
+                                                                    $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                                                                })
+                                                                ->searchable()
+                                                                ->preload()
+                                                                ->live()
+                                                                ->required(),
+                                                            FileUpload::make('foto_medida')
+                                                                ->label('Foto de la medida')
+                                                                ->image()
+                                                                ->imageEditor(),
+                                                            TextInput::make('descripcionEspecifica')
+                                                                ->label('Decripción específica')
+                                                                ->placeholder('Descripción específica del artículo')
+                                                                ->required(),
+                                                            TextInput::make('peso')
+                                                                ->label('Peso (gr)')
+                                                                ->placeholder('Peso del artículo en gramos')
+                                                                ->numeric(),
+                                                            Textarea::make('comentarios')
+                                                                ->label('Comentarios')
+                                                                ->placeholder('Comentarios del artículo'),
+                                                            FileUpload::make('fotoDescriptiva')
+                                                                ->label('Foto descriptiva')
+                                                                ->image()
+                                                                ->imageEditor()
+                                                                ->openable(),
+                                                                
+                                                        ];
+                                                    })
+                                                    ->createOptionUsing(function ($data) {
+                                                        // Crear el artículo con los datos proporcionados
+                                                        $articulo = Articulo::create($data);
+
+                                                        // Asociar el artículo recién creado con la referencia actual
+                                                        return $articulo->id; // Retornar el ID del nuevo artículo
+                                                    })
+                                                    ->createOptionAction(function (Action $action) {
+                                                        $action->modalHeading('crear Artículo');
+                                                        $action->modalDescription('Crea un nuevo artículo y será asociada a esta referencia automáticamente');
+                                                        $action->modalWidth('lg');
+                                                    })
+                                                    ->searchable(),
+                                                    Select::make('marca_id')
+                                                    ->options(
+                                                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
+                                                    )
+                                                    ->createOptionForm(function () {
+                                                        return [
+                                                            TextInput::make('nombre')
+                                                                ->label('Nombre')
+                                                                ->placeholder('Nombre de la marca'),
+                                                            Hidden::make('tipo')
+                                                                ->default('Marca'),
+                                                            TextArea::make('definicion')
+                                                                ->label('Descripción')
+                                                                ->placeholder('Definición de la marca'),
+                                                            FileUpload::make('foto')
+                                                                ->label('Foto')
+                                                                ->image()
+                                                                ->imageEditor(),
+                                                        ];
+                                                    })
+                                                    ->createOptionUsing(function ($data) {
+                                                        $marca = Lista::create([
+                                                            'nombre' => $data['nombre'],
+                                                            'tipo' => 'Marca',
+                                                        ]);
+            
+                                                        return $marca->id;
+                                                    })
+                                                    ->createOptionAction(function (Action $action) {
+                                                        $action->modalHeading('Crear Marca');
+                                                        $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                                        $action->modalWidth('lg');
                                                     })
                                                     ->searchable()
-                                                    ->preload()
-                                                    ->live(),
-                                                    Hidden::make('articulo_id')->required(),
-
+                                                    ->label('Marca'),
+                                                Textarea::make('comentario')
+                                                    ->label('Comentario')
+                                                    ->maxLength(500),
+                                            ])
+                                            ->createOptionUsing(function (array $data) {
+                                                $referencia = Referencia::create([
+                                                    'referencia' => $data['referencia'],
+                                                    'marca_id' => $data['marca_id'],
+                                                ]);
+                                                $referencia->articulos()->attach($data['articulo_id']); // Relacionar artículo con la referencia
+                                                return $referencia->id; // Retornar el ID de la nueva referencia
+                                            })
+                                            ->editOptionForm(function () {
+                                                return [
+                                                    TextInput::make('referencia')
+                                                        ->label('Referencia')
+                                                        ->unique('referencias', 'referencia', ignoreRecord: true)
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                    Select::make('articulo_id')
+                                                        ->label('Artículo')
+                                                        ->relationship('articulos', 'descripcionEspecifica')
+                                                        ->options(
+                                                            Articulo::query()->pluck('descripcionEspecifica', 'id')
+                                                        )
+                                                        ->createOptionForm(function () {
+                                                            return [
+                                                                Select::make('definicion')
+                                                                    ->label('Definición')
+                                                                    ->options(
+                                                                        Lista::query()
+                                                                            ->where('tipo', 'Definición de artículo')
+                                                                            ->get()
+                                                                            ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
+                                                                            ->toArray()
+                                                                    )
+                                                                    ->createOptionForm(function () {
+                                                                        return [
+                                                                            Hidden::make('tipo')
+                                                                                ->default('Definición de artículo')
+                                                                                ->required(),
+                                                                            TextInput::make('nombre')
+                                                                                ->label('Nombre')
+                                                                                ->placeholder('Nombre de la definición'),
+                                                                            TextInput::make('definicion')
+                                                                                ->label('Descripción de definición')
+                                                                                ->placeholder('Definición del artículo'),
+                                                                            FileUpload::make('foto')
+                                                                                ->label('Foto')
+                                                                                ->image()
+                                                                                ->imageEditor(),
+                                                                        ];
+                                                                    })
+                                                                    ->createOptionUsing(function ($data) {
+                                                                        $definicion = Lista::create([
+                                                                            'tipo' => 'Definición de artículo',
+                                                                            'nombre' => $data['nombre'],
+                                                                            'definicion' => $data['definicion'],
+                                                                        ]);
+                                    
+                                                                        return $definicion->nombre;
+                                                                    })
+                                                                    ->createOptionAction(function (Action $action) {
+                                                                        $action->modalHeading('Nueva Definición de Artículo'); // Personaliza el encabezado
+                                                                        $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                                                                    })
+                                                                    ->searchable()
+                                                                    ->preload()
+                                                                    ->live()
+                                                                    ->required(),
+                                                                FileUpload::make('foto_medida')
+                                                                    ->label('Foto de la medida')
+                                                                    ->image()
+                                                                    ->imageEditor(),
+                                                                TextInput::make('descripcionEspecifica')
+                                                                    ->label('Decripción específica')
+                                                                    ->placeholder('Descripción específica del artículo')
+                                                                    ->required(),
+                                                                TextInput::make('peso')
+                                                                    ->label('Peso (gr)')
+                                                                    ->placeholder('Peso del artículo en gramos')
+                                                                    ->numeric(),
+                                                                Textarea::make('comentarios')
+                                                                    ->label('Comentarios')
+                                                                    ->placeholder('Comentarios del artículo'),
+                                                                FileUpload::make('fotoDescriptiva')
+                                                                    ->label('Foto descriptiva')
+                                                                    ->image()
+                                                                    ->imageEditor()
+                                                                    ->openable(),
+                                                            ];
+                                                        })
+                                                        ->editOptionForm(function () {
+                                                            return [
+                                                                Select::make('definicion')
+                                                                    ->label('Definición')
+                                                                    ->options(
+                                                                        Lista::query()
+                                                                            ->where('tipo', 'Definición de artículo')
+                                                                            ->get()
+                                                                            ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
+                                                                            ->toArray()
+                                                                    )
+                                                                    ->searchable()
+                                                                    ->preload()
+                                                                    ->live()
+                                                                    ->required(),
+                                                                FileUpload::make('foto_medida')
+                                                                    ->label('Foto de la medida')
+                                                                    ->image()
+                                                                    ->imageEditor(),
+                                                                TextInput::make('descripcionEspecifica')
+                                                                    ->label('Decripción específica')
+                                                                    ->placeholder('Descripción específica del artículo')
+                                                                    ->required(),
+                                                                TextInput::make('peso')
+                                                                    ->label('Peso (gr)')
+                                                                    ->placeholder('Peso del artículo en gramos')
+                                                                    ->numeric(),
+                                                                Textarea::make('comentarios')
+                                                                    ->label('Comentarios')
+                                                                    ->placeholder('Comentarios del artículo'),
+                                                                FileUpload::make('fotoDescriptiva')
+                                                                    ->label('Foto descriptiva')
+                                                                    ->image()
+                                                                    ->imageEditor()
+                                                                    ->openable(),
+                                                            ];
+                                                        })
+                                                        ->createOptionUsing(function ($data) {
+                                                            // Crear el artículo con los datos proporcionados
+                                                            $articulo = Articulo::create($data);
+                                    
+                                                            // Asociar el artículo recién creado con la referencia actual
+                                                            return $articulo->id; // Retornar el ID del nuevo artículo
+                                                        })
+                                                        ->createOptionAction(function (Action $action) {
+                                                            $action->modalHeading('crear Artículo'); // Personaliza el encabezado
+                                                            $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                                                        })
+                                                        ->searchable()
+                                                        ->required()->reactive()->live()
+                                                        ->afterStateUpdated(function ($state, Set $set) {
+                                                            // Actualiza el peso cuando se selecciona un nuevo artículo
+                                                            $articulo = \App\Models\Articulo::find($state);
+                                                            if ($articulo) {
+                                                                $set('peso', $articulo->peso);
+                                                            } else {
+                                                                $set('peso', null); // Si no hay artículo seleccionado, limpia el peso
+                                                            }
+                                                        }),
                                                     Select::make('marca_id')
-                                                        ->label('Marca')
                                                         ->options(
                                                             \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                         )
@@ -492,63 +746,67 @@ class PedidosResource extends Resource
                                                             return [
                                                                 TextInput::make('nombre')
                                                                     ->label('Nombre')
-                                                                    ->required()
-                                                                    ->placeholder('Nombre del fabricante'),
+                                                                    ->placeholder('Nombre de la marca'),
+                                                                Hidden::make('tipo')
+                                                                    ->default('Marca'),
+                                                                TextArea::make('definicion')
+                                                                    ->label('Descripción')
+                                                                    ->placeholder('Definición de la marca'),
                                                                 FileUpload::make('foto')
                                                                     ->label('Foto')
                                                                     ->image()
+                                                                    ->imageEditor(),
                                                             ];
                                                         })
                                                         ->createOptionUsing(function ($data) {
                                                             $marca = Lista::create([
+                                                                'nombre' => $data['nombre'],
                                                                 'tipo' => 'Marca',
-                                                                'nombre' => ucwords($data['nombre']),
-                                                                'foto' => $data['foto'] ?? null,
                                                             ]);
-                                    
+                
                                                             return $marca->id;
                                                         })
+                                                        ->createOptionAction(function (Action $action) {
+                                                            $action->modalHeading('Crear Marca');
+                                                            $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                                            $action->modalWidth('lg');
+                                                        })
                                                         ->searchable()
-                                            ])
-                                            ->editOptionForm([
-                                                TextInput::make('referencia')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                Select::make('articulo_id')
-                                                    ->label('Articulo')
-                                                    ->options(
-                                                        \App\Models\Articulo::all()->pluck('definicion', 'id')->toArray()
-                                                    )
-                                                    ->preload()
-                                                    ->live()
-                                                    ->searchable(),
-                                                Select::make('marca_id')
-                                                    ->label('Marca')
-                                                    ->options(
-                                                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
-                                                    )
-                                                    ->live()
-                                                    ->searchable()
-                                                    ->preload(),
-
-                                            ])
+                                                        ->required(),
+                                                    Textarea::make('comentario')
+                                                        ->label('Comentario')
+                                                        ->maxLength(500),
+                                                ];
+                                            })
+                                            ->createOptionAction(function (Action $action) {
+                                                $action->modalHeading('Crear Referencia');
+                                                $action->modalDescription('Crea una nueva referencia y será asociada a este pedido automáticamente');
+                                                $action->modalWidth('lg');
+                                            })
                                             ->afterStateUpdated(function (Set $set, Get $get) {
                                                 $referencia = Referencia::find($get('referencia_id'));
+
                                                 if (!$referencia) {
+                                                    // Si no hay referencia seleccionada, limpiar los campos relacionados
                                                     $set('articulo_definicion', null);
                                                     $set('articulo_descripcionEspecifica', null);
                                                     $set('articulo_id', null);
                                                     $set('peso', null);
                                                     $set('marca_id', null);
                                                 } else {
-                                                    $articulo = Articulo::find($referencia->articulo_id);
+                                                    // Obtener el artículo relacionado desde la tabla pivot
+                                                    $articulo = $referencia->articuloReferencia()->first()?->articulo; // Usar la relación del modelo
                                                     $marca = Lista::find($referencia->marca_id);
+
                                                     if (!$articulo) {
+                                                        // Si no hay un artículo relacionado, limpiar los campos relacionados
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_id', null);
                                                         $set('peso', null);
                                                         return;
                                                     }
+
+                                                    // Configurar los datos del artículo relacionado
                                                     $set('articulo_definicion', $articulo->definicion);
                                                     $set('articulo_descripcionEspecifica', $articulo->descripcionEspecifica);
                                                     $set('articulo_id', $articulo->id);
@@ -560,45 +818,66 @@ class PedidosResource extends Resource
                                                 $referencia = Referencia::find($get('referencia_id'));
 
                                                 if (!$referencia) {
+                                                    // Limpia los valores si no hay referencia
                                                     $set('articulo_definicion', null);
                                                     $set('articulo_descripcionEspecifica', null);
                                                     $set('articulo_id', null);
                                                     $set('peso', null);
                                                 } else {
-                                                    $articulo = Articulo::find($referencia->articulo_id);
-                                                    $marca = Lista::find($referencia->marca_id);
+                                                    // Buscar el artículo asociado desde la tabla pivot
+                                                    $articulo = $referencia->articuloReferencia()->first()?->articulo;
+
                                                     if (!$articulo) {
+                                                        // Limpia los valores si no hay artículo asociado
                                                         $set('articulo_definicion', null);
                                                         $set('articulo_descripcionEspecifica', null);
                                                         $set('articulo_id', null);
                                                         $set('peso', null);
                                                         return;
                                                     }
+
+                                                    // Hidrata los campos con los datos del artículo asociado
                                                     $set('articulo_definicion', $articulo->definicion);
                                                     $set('articulo_descripcionEspecifica', $articulo->descripcionEspecifica);
                                                     $set('articulo_id', $articulo->id);
                                                     $set('peso', $articulo->peso);
-                                                    // $set('marca_id', $marca->id);
-                                                    // $set('marca_seleccionada', $marca->id);
-                                                    $set('referencia_seleccionada', $referencia->id);
                                                 }
                                             })
+
                                             ->live()
-                                            ->searchable()
-                                            ->preload('referencia')
-                                            ->placeholder('Sin referencia'),
+                                            ->placeholder('Seleccione una referencia')->preload(),
+
+                                        // Campos adicionales
                                         Hidden::make('articulo_id')->disabled(),
-                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled(),
-                                        TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled(),
+                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
+                                        TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
                                         Select::make('definicion')
                                             ->label('Definición')
                                             ->options(
                                                 Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')->toArray()
                                             )
                                             ->searchable()
-                                            ->preload(),
+                                            ->preload()
+                                            ->visible(fn(Get $get) => $get('articulo_id') == null),
 
-                                        TextInput::make('peso')->label('Peso (gr)')->disabled(),
+
+                                            TextInput::make('peso')
+                                            ->label('Peso (gr)')
+                                            ->disabled()
+                                            ->visible(fn (Get $get) => $get('articulo_id') !== null) // Visible solo si hay un artículo asociado
+                                            ->afterStateHydrated(function (Set $set, Get $get) {
+                                                // Cargar el peso del artículo al cargar el formulario
+                                                $articuloId = $get('articulo_id');
+                                                if ($articuloId) {
+                                                    $articulo = \App\Models\Articulo::find($articuloId);
+                                                    if ($articulo) {
+                                                        $set('peso', $articulo->peso);
+                                                    }
+                                                }
+                                            })
+                                            ->reactive(), // Reactivo para detectar cambios dinámicos
+                                        
+                                        
                                         Select::make('sistema_id')
                                             ->label('Sistema')
                                             ->searchable()
