@@ -19,17 +19,21 @@ class EditReferencia extends EditRecord
             Action::make('ver_articulo')
                 ->label('Ver Artículo')
                 ->icon('heroicon-s-eye')
-                ->url(function () {
-                    $record = $this->getRecord();
+                ->url(function ($record) {
+                    // Obtener el primer artículo relacionado
+                    $articulo = $record->articulos->first();
 
                     // Verificar que el artículo existe antes de generar la URL
-                    if ($record && $record->articulo_id) {
-                        return ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]);
+                    if ($articulo) {
+                        return ArticulosResource::getUrl('edit', ['record' => $articulo->id]);
                     }
 
-                    // Si no existe el artículo, puedes manejar el caso aquí (redireccionar o mostrar un mensaje)
+                    // Si no existe el artículo, retornar null
                     return null;
-                }, shouldOpenInNewTab: true),
+                }, shouldOpenInNewTab: true)
+                ->tooltip('Ver el artículo relacionado')
+                ->visible(fn ($record) => $record->articulos->isNotEmpty()),
+
         ];
     }
 }

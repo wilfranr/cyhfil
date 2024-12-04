@@ -11,14 +11,23 @@ class Referencia extends Model
 
     protected $fillable = [
         'referencia',
-        'articulo_id',
         'marca_id',
     ];
 
-    public function articulo()
+    public function articuloReferencia()
     {
-        return $this->belongsTo(Articulo::class, 'articulo_id');
+        return $this->hasMany(ArticuloReferencia::class, 'referencia_id');
     }
+
+    public function articulos()
+{
+    return $this->belongsToMany(
+        Articulo::class,
+        'articulos_referencias',
+        'referencia_id',
+        'articulo_id'
+    );
+}
 
 
     public function marca()

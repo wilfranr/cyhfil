@@ -21,6 +21,9 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 
 class ArticulosResource extends Resource
@@ -36,7 +39,7 @@ class ArticulosResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'cruces' => $record->referencias->pluck('referencia')->implode(', '),
+            // 'cruces' => $record->referencias->pluck('referencia')->implode(', '),
             'juegos' => $record->juegos,
         ];
     }
@@ -60,9 +63,8 @@ class ArticulosResource extends Resource
                                     )
                                     ->createOptionForm(function () {
                                         return [
-                                            TextInput::make('tipo')
+                                            Hidden::make('tipo')
                                                 ->default('Definición de artículo')
-                                                ->readonly()
                                                 ->required(),
                                             TextInput::make('nombre')
                                                 ->label('Nombre')
@@ -109,82 +111,77 @@ class ArticulosResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->openable(),
+                                Section::make('Referenicas Cruzadas')
+                                    ->schema([
+                                        Repeater::make('articuloReferencia')->label('')
+                                            ->relationship()
+                                            ->schema([
+                                                Select::make('referencia_id')
+                                                    ->options(
+                                                        Referencia::query()
+                                                            ->whereDoesntHave('ArticuloReferencia') // Excluye las referencias ya asociadas a cualquier artículo
+                                                            ->pluck('referencia', 'id')
+                                                    )
+                                                    ->createOptionForm(function () {
+                                                        return [
+                                                            TextInput::make('referencia')
+                                                                ->label('Referencia')
+                                                                ->placeholder('Referencia del artículo')
+                                                                ->unique('referencias', 'referencia', ignoreRecord: true),
+                                                            Select::make('marca_id')
+                                                                ->options(
+                                                                    \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
+                                                                )
+                                                                ->createOptionForm(function () {
+                                                                    return [
+                                                                        TextInput::make('nombre')
+                                                                            ->label('Nombre')
+                                                                            ->placeholder('Nombre de la marca'),
+                                                                        Hidden::make('tipo')
+                                                                            ->default('Marca'),
+                                                                        TextArea::make('definicion')
+                                                                            ->label('Descripción')
+                                                                            ->placeholder('Definición de la marca'),
+                                                                        FileUpload::make('foto')
+                                                                            ->label('Foto')
+                                                                            ->image()
+                                                                            ->imageEditor(),
+                                                                    ];
+                                                                })
+                                                                ->createOptionUsing(function ($data) {
+                                                                    $marca = Lista::create([
+                                                                        'nombre' => $data['nombre'],
+                                                                        'tipo' => 'Marca',
+                                                                    ]);
+
+                                                                    return $marca->id;
+                                                                })
+                                                                ->searchable()
+                                                                ->label('Marca'),
+                                                            Textarea::make('comentario')
+                                                                ->label('Comentario')
+                                                                ->maxLength(500),
+                                                        ];
+                                                    })
+                                                    ->createOptionUsing(function ($data) {
+                                                        $referencia = Referencia::create([
+                                                            'referencia' => $data['referencia'],
+                                                            'marca_id' => $data['marca_id'],
+                                                        ]);
+
+                                                        return $referencia->id;
+                                                    })
+
+                                                    ->label('Referencia')
+                                                    ->searchable()
+                                                    ->live(onBlur: true)
+                                                    ->required(),
+                                            ])
+                                            ->columns(1)
+                                            ->reorderable()
+                                    ])->visibleOn('create'),
                             ])->columns(2),
 
-
-                        Tabs\Tab::make('Referencias Cruzadas')
-                            ->schema([
-
-                                Repeater::make('referencias')
-                                    ->relationship('referencias')
-                                    ->schema([
-                                        Select::make('referencia')
-                                            ->label('Referencia')
-                                            ->options(
-                                                Referencia::query()
-                                                    ->whereNotNull('referencia') // Filtra registros nulos
-                                                    ->pluck('referencia', 'id')
-                                                    ->toArray()
-
-
-                                            )
-                                            ->createOptionForm(function () {
-                                                return [
-                                                    TextInput::make('referencia')
-                                                        ->label('Referencia')
-                                                        ->placeholder('Referencia del artículo'),
-                                                    
-                                                ];
-                                            })
-                                            ->createOptionUsing(function ($data) {
-                                                $referencia = Referencia::create([
-                                                    'referencia' => $data['referencia'],
-                                                ]);
-
-                                                return $referencia->id;
-                                            })
-                                            ->searchable(),
-
-                                        // Mantén el botón para agregar otras acciones si las necesitas
-                                    ])
-                                    ->columns(3)
-                                    ->itemLabel(function (array $state): ?string {
-                                        // Mostrar el nombre de la referencia como etiqueta
-                                        $referencia = Referencia::find($state['referencia']);
-                                        return $referencia ? $referencia->referencia : null;
-                                    })
-                                    ->collapsed()
-                                    ->extraItemActions([
-                                        Action::make('openreference')  // Asegúrate de usar la clase correcta aquí
-                                            ->tooltip('Abrir referencia')
-                                            ->icon('heroicon-m-arrow-top-right-on-square')
-                                            ->url(function (array $arguments, Repeater $component): ?string {
-                                                // Obtener el estado del ítem actual
-                                                $itemData = $component->getRawItemState($arguments['item']);
-
-                                                // Obtener el ID de la referencia
-                                                $referenciaId = $itemData['referencia'] ?? null;
-
-                                                // Verificar si existe
-                                                if (! $referenciaId) {
-                                                    return null;
-                                                }
-
-                                                // Buscar la referencia
-                                                $referencia = Referencia::find($referenciaId);
-
-                                                // Si no se encuentra, retornar null
-                                                if (! $referencia) {
-                                                    return null;
-                                                }
-
-                                                // Retornar la URL de edición
-                                                return ReferenciaResource::getUrl('edit', ['record' => $referencia->id]);
-                                            }, shouldOpenInNewTab: true)
-                                            ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia'])),
-                                    ])
-
-                            ]),
                         Tabs\Tab::make('Juegos')
                             ->schema([
                                 Repeater::make('articuloJuegos')
@@ -333,7 +330,7 @@ class ArticulosResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // 'referencias' => RelationManagers\ReferenciasRelationManager::class,
+            'referencias' => RelationManagers\ReferenciasRelationManager::class,
             'medidas' => RelationManagers\MedidasRelationManager::class,
 
 

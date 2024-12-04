@@ -20,10 +20,10 @@ class Articulo extends Model
         'foto_medida',
     ];
 
-    public function referencias(): HasMany
-{
-    return $this->hasMany(Referencia::class, 'articulo_id');
-}
+    public function articuloReferencia(): HasMany
+    {
+        return $this->hasMany(ArticuloReferencia::class, 'articulo_id');
+    }
 
 
 
@@ -48,7 +48,13 @@ class Articulo extends Model
     //     return $this->belongsTo(Lista::class, 'tipo')->where('tipo', "Definición de artículo");
     // }
 
-
-
-
+    public function referencias()
+    {
+        return $this->belongsToMany(
+            Referencia::class,
+            'articulos_referencias',
+            'articulo_id',
+            'referencia_id'
+        );
+    }
 }
