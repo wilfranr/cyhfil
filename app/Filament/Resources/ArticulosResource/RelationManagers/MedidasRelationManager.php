@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ArticulosResource\RelationManagers;
 
 use App\Models\Lista;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -43,6 +44,12 @@ class MedidasRelationManager extends RelationManager
                         ]);
                         return $lista->nombre;
                     })
+                    ->createOptionAction(function (Action $action) {
+                        $action->modalHeading('Crear Unidad de Medida');
+                        $action->modalDescription('Crea una nueva unidad de medida que será almacenada en la lista de unidades de medida.');
+                        $action->modalWidth('md');
+                    })
+                    ->searchable()
                     ->required(),
                 Forms\Components\TextInput::make('valor'),
                 //desde listas
@@ -61,6 +68,11 @@ class MedidasRelationManager extends RelationManager
                             'tipo' => 'Tipo de medida',
                         ]);
                         return $lista->nombre;
+                    })
+                    ->createOptionAction(function (Action $action) {
+                        $action->modalHeading('Crear Tipo de Medida');
+                        $action->modalDescription('Crea un nuevo tipo de medida que será almacenada en la lista de tipos de medida.');
+                        $action->modalWidth('md');
                     })
                     ->searchable()
                     ->required(),
