@@ -32,12 +32,12 @@ class ReferenciaResource extends Resource
     protected static ?string $recordTitleAttribute = 'referencia';
 
     public static function getGlobalSearchResultDetails(Model $record): array
-   	{
-       return [
+    {
+        return [
 
-         'Artículo' =>  $articulo = Articulo::query()->where('id', $record->articulo_id)->pluck('definicion')->first(),
-       'Marca' => $marca = Lista::query()->where('id', $record->marca_id)->pluck('nombre')->first(),
-       ];
+            'Artículo' =>  $articulo = Articulo::query()->where('id', $record->articulo_id)->pluck('definicion')->first(),
+            'Marca' => $marca = Lista::query()->where('id', $record->marca_id)->pluck('nombre')->first(),
+        ];
     }
 
 
@@ -53,50 +53,50 @@ class ReferenciaResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('articulo')
-                  ->label('Artículo')
-               ->placeholder('Seleccione un artículo relacionado')
-              ->options(function () {
+                    ->label('Artículo')
+                    ->placeholder('Seleccione un artículo relacionado')
+                    ->options(function () {
                         // Obtener todas las referencias con sus artículos relacionados
-                return \App\Models\Referencia::with('articulo')
-                  ->get()
-                ->mapWithKeys(function ($referencia) {
-                  // Mostrar la referencia y el artículo relacionado
-                $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-             return [$referencia->id => "{$referencia->referencia} - {$articuloDefinicion}"];
-      });
- })
- ->getOptionLabelUsing(function ($value) {
-// Mostrar correctamente la concatenación en edición
-  $referencia = \App\Models\Referencia::with('articulo')->find($value);
- if ($referencia) {
+                        return \App\Models\Referencia::with('articulo')
+                            ->get()
+                            ->mapWithKeys(function ($referencia) {
+                                // Mostrar la referencia y el artículo relacionado
+                                $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
+                                return [$referencia->id => "{$referencia->referencia} - {$articuloDefinicion}"];
+                            });
+                    })
+                    ->getOptionLabelUsing(function ($value) {
+                        // Mostrar correctamente la concatenación en edición
+                        $referencia = \App\Models\Referencia::with('articulo')->find($value);
+                        if ($referencia) {
                             $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-                         return "{$referencia->referencia} - {$articuloDefinicion}";
-                }
-                return $value; // Retorna el valor si no se encuentra
-          })
-       ->reactive() // Detecta cambios en tiempo real
-      ->afterStateUpdated(function ($state, $set) {
-          if ($state) {
-            // Asocia automáticamente el artículo relacionado con la referencia seleccionada
-           $referencia = \App\Models\Referencia::find($state);
-      if ($referencia) {
-         $set('articulo_id', $referencia->articulo_id);
-       }
-    }
- })
-             ->afterStateHydrated(function ($state, $set, $get) {
-                // Configura el estado inicial para mostrar la concatenación en edición
-               $articuloId = $get('articulo_id'); // Obtener el ID del artículo relacionado
-              $referencia = \App\Models\Referencia::where('articulo_id', $articuloId)->with('articulo')->first();
-                 if ($referencia) {
-                        $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
-                      $set('articulo', $referencia->id); // Selecciona la referencia correspondiente
-                 }
-              })
-                 ->searchable()
-                 ->preload()
-               ->live(),
-          Forms\Components\Hidden::make('articulo_id')->required(),
+                            return "{$referencia->referencia} - {$articuloDefinicion}";
+                        }
+                        return $value; // Retorna el valor si no se encuentra
+                    })
+                    ->reactive() // Detecta cambios en tiempo real
+                    ->afterStateUpdated(function ($state, $set) {
+                        if ($state) {
+                            // Asocia automáticamente el artículo relacionado con la referencia seleccionada
+                            $referencia = \App\Models\Referencia::find($state);
+                            if ($referencia) {
+                                $set('articulo_id', $referencia->articulo_id);
+                            }
+                        }
+                    })
+                    ->afterStateHydrated(function ($state, $set, $get) {
+                        // Configura el estado inicial para mostrar la concatenación en edición
+                        $articuloId = $get('articulo_id'); // Obtener el ID del artículo relacionado
+                        $referencia = \App\Models\Referencia::where('articulo_id', $articuloId)->with('articulo')->first();
+                        if ($referencia) {
+                            $articuloDefinicion = $referencia->articulo->definicion ?? 'Sin artículo';
+                            $set('articulo', $referencia->id); // Selecciona la referencia correspondiente
+                        }
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->live(),
+                Forms\Components\Hidden::make('articulo_id'),
 
                 Forms\Components\Select::make('marca_id')
                     ->label('Marca')
@@ -125,7 +125,6 @@ class ReferenciaResource extends Resource
                     })
                     ->searchable()
             ]);
-
     }
 
     public static function table(Table $table): Table
@@ -142,8 +141,8 @@ class ReferenciaResource extends Resource
                     ->label('Artículo')
                     ->sortable()
                     ->searchable(),
-               //     ->url(fn($record) => \App\Filament\Resources\ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]))
-               //     ->openUrlInNewTab(),
+                //     ->url(fn($record) => \App\Filament\Resources\ArticulosResource::getUrl('edit', ['record' => $record->articulo_id]))
+                //     ->openUrlInNewTab(),
 
                 Tables\Columns\TextColumn::make('marca.nombre')
                     ->label('Marca')
@@ -172,7 +171,7 @@ class ReferenciaResource extends Resource
             ]);
     }
 
-public static function getPages(): array
+    public static function getPages(): array
     {
         return [
             'index' => Pages\ListReferencias::route('/'),

@@ -20,10 +20,12 @@ class Articulo extends Model
         'foto_medida',
     ];
 
-    public function referencias()
-    {
-        return $this->hasMany(Referencia::class);
-    }
+    public function referencias(): HasMany
+{
+    return $this->hasMany(Referencia::class, 'articulo_id');
+}
+
+
 
     public function medidas()
     {

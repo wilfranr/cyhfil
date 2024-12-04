@@ -17,13 +17,14 @@ class Referencia extends Model
 
     public function articulo()
     {
-        return $this->belongsTo(Articulo::class);
+        return $this->belongsTo(Articulo::class, 'articulo_id');
     }
 
+
     public function marca()
-{
-    return $this->belongsTo(Lista::class, 'marca_id');
-}
+    {
+        return $this->belongsTo(Lista::class, 'marca_id');
+    }
 
 
 
