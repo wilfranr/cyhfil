@@ -137,6 +137,29 @@ class ReferenciaResource extends Resource
                         $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
                     })
                     ->searchable()
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return Articulo::query()
+                            ->join('articulos_referencias', 'articulos.id', '=', 'articulos_referencias.articulo_id')
+                            ->join('referencias', 'articulos_referencias.referencia_id', '=', 'referencias.id')
+                            ->selectRaw("articulos.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                            ->where(function ($query) use ($search) {
+                                $query->where('articulos.descripcionEspecifica', 'like', "%{$search}%")
+                                      ->orWhere('referencias.referencia', 'like', "%{$search}%");
+                            })
+                            ->limit(50) // Limitar el número de resultados
+                            ->pluck('full_description', 'articulos.id')
+                            ->toArray();
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        // Obtiene la etiqueta cuando ya hay un valor seleccionado
+                        return Articulo::query()
+                            ->join('articulos_referencias', 'articulos.id', '=', 'articulos_referencias.articulo_id')
+                            ->join('referencias', 'articulos_referencias.referencia_id', '=', 'referencias.id')
+                            ->selectRaw("CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                            ->where('articulos.id', $value)
+                            ->pluck('full_description')
+                            ->first();
+                    })
                     ->required(),
 
 

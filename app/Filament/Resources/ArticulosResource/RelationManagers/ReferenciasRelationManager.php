@@ -18,6 +18,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -33,66 +34,7 @@ class ReferenciasRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Select::make('referencia_id')
-                    ->options(
-                        Referencia::query()
-                            ->whereDoesntHave('ArticuloReferencia') // Excluye las referencias ya asociadas a cualquier artículo
-                            ->pluck('referencia', 'id')
-                    )
-                    ->createOptionForm(function () {
-                        return [
-                            TextInput::make('referencia')
-                                ->label('Referencia')
-                                ->placeholder('Referencia del artículo')
-                                ->unique('referencias', 'referencia', ignoreRecord: true),
-                            Select::make('marca_id')
-                                ->options(
-                                    \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
-                                )
-                                ->createOptionForm(function () {
-                                    return [
-                                        TextInput::make('nombre')
-                                            ->label('Nombre')
-                                            ->placeholder('Nombre de la marca'),
-                                        Hidden::make('tipo')
-                                            ->default('Marca'),
-                                        Textarea::make('definicion')
-                                            ->label('Descripción')
-                                            ->placeholder('Definición de la marca'),
-                                        FileUpload::make('foto')
-                                            ->label('Foto')
-                                            ->image()
-                                            ->imageEditor(),
-                                    ];
-                                })
-                                ->createOptionUsing(function ($data) {
-                                    $marca = Lista::create([
-                                        'nombre' => $data['nombre'],
-                                        'tipo' => 'Marca',
-                                    ]);
-
-                                    return $marca->id;
-                                })
-                                ->searchable()
-                                ->label('Marca'),
-                            Textarea::make('comentario')
-                                ->label('Comentario')
-                                ->maxLength(500),
-                        ];
-                    })
-                    ->createOptionUsing(function ($data) {
-                        $referencia = Referencia::create([
-                            'referencia' => $data['referencia'],
-                            'marca_id' => $data['marca_id'],
-                        ]);
-
-                        return $referencia->id;
-                    })
-
-                    ->label('Referencia')
-                    ->searchable()
-                    ->live(onBlur: true)
-                    ->required(),
+                //
             ]);
     }
 
@@ -101,18 +43,21 @@ class ReferenciasRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('referencia.referencia') // Accede al campo de la relación
             ->columns([
-                Tables\Columns\TextColumn::make('referencia.id') // Relación seguida por el campo
-                    ->searchable()
-                    ->label('Id')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('referencia.referencia') // Relación seguida por el campo
-                    ->searchable()
-                    ->label('Referencia')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('referencia.marca.nombre') // Accede a la relación y al campo de la marca
-                    ->label('Marca')
-                    ->sortable()
-                    ->searchable(),
+                Split::make([
+                    // Tables\Columns\TextColumn::make('referencia.id') // Relación seguida por el campo
+                    //     ->searchable()
+                    //     ->label('Id')
+                    //     ->sortable(),
+                    Tables\Columns\TextColumn::make('referencia.referencia') // Relación seguida por el campo
+                        ->searchable()
+                        ->label('Referencia')
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('referencia.marca.nombre') // Accede a la relación y al campo de la marca
+                        ->label('Marca')
+                        ->sortable()
+                        ->searchable(),
+                ]),
+
             ])
             ->filters([
                 //
@@ -177,8 +122,9 @@ class ReferenciasRelationManager extends RelationManager
                                             return $marca->id;
                                         })
                                         ->createOptionAction(function (Action $action) {
-                                            $action->modalHeading('Crear Marca'); // Personaliza el encabezado
-                                            $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                                            $action->modalHeading('Crear Marca');
+                                            $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                            $action->modalWidth('lg');
                                         })
                                         ->searchable()
                                         ->label('Marca'),
@@ -196,20 +142,23 @@ class ReferenciasRelationManager extends RelationManager
                                 return $referencia->id;
                             })
                             ->createOptionAction(function (Action $action) {
-                                $action->modalHeading('Crear Referencia'); // Personaliza el encabezado
-                                $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                                $action->modalHeading('Crear Referencia');
+                                $action->modalDescription('Crea una nueva referencia y será asociada al artículo automáticamente');
+
+                                $action->modalWidth('lg');
                             })
                             ->searchable()
                             ->required(),
                     ])
                     ->modalHeading('Asociar Referencia')
+                    ->modalWidth('xl')
 
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make('Desasociar')
                     ->icon('ri-link-unlink')
+                    ->color('danger')
+                    ->tooltip('Al desasociar, no se eliminará la referencia, solo se desvinculará del artículo')
                     ->action(function (ArticuloReferencia $record) {
                         $record->delete();
 
