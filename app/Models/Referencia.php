@@ -12,6 +12,7 @@ class Referencia extends Model
     protected $fillable = [
         'referencia',
         'marca_id',
+        'comentario',
     ];
 
     public function articuloReferencia()
