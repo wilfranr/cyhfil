@@ -536,7 +536,7 @@ class PedidosResource extends Resource
                                                                 ->image()
                                                                 ->imageEditor()
                                                                 ->openable(),
-                                                                
+
                                                         ];
                                                     })
                                                     ->createOptionUsing(function ($data) {
@@ -552,7 +552,7 @@ class PedidosResource extends Resource
                                                         $action->modalWidth('lg');
                                                     })
                                                     ->searchable(),
-                                                    Select::make('marca_id')
+                                                Select::make('marca_id')
                                                     ->options(
                                                         \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                     )
@@ -577,7 +577,7 @@ class PedidosResource extends Resource
                                                             'nombre' => $data['nombre'],
                                                             'tipo' => 'Marca',
                                                         ]);
-            
+
                                                         return $marca->id;
                                                     })
                                                     ->createOptionAction(function (Action $action) {
@@ -646,7 +646,7 @@ class PedidosResource extends Resource
                                                                             'nombre' => $data['nombre'],
                                                                             'definicion' => $data['definicion'],
                                                                         ]);
-                                    
+
                                                                         return $definicion->nombre;
                                                                     })
                                                                     ->createOptionAction(function (Action $action) {
@@ -719,7 +719,7 @@ class PedidosResource extends Resource
                                                         ->createOptionUsing(function ($data) {
                                                             // Crear el artículo con los datos proporcionados
                                                             $articulo = Articulo::create($data);
-                                    
+
                                                             // Asociar el artículo recién creado con la referencia actual
                                                             return $articulo->id; // Retornar el ID del nuevo artículo
                                                         })
@@ -763,7 +763,7 @@ class PedidosResource extends Resource
                                                                 'nombre' => $data['nombre'],
                                                                 'tipo' => 'Marca',
                                                             ]);
-                
+
                                                             return $marca->id;
                                                         })
                                                         ->createOptionAction(function (Action $action) {
@@ -861,10 +861,10 @@ class PedidosResource extends Resource
                                             ->visible(fn(Get $get) => $get('articulo_id') == null),
 
 
-                                            TextInput::make('peso')
+                                        TextInput::make('peso')
                                             ->label('Peso (gr)')
                                             ->disabled()
-                                            ->visible(fn (Get $get) => $get('articulo_id') !== null) // Visible solo si hay un artículo asociado
+                                            ->visible(fn(Get $get) => $get('articulo_id') !== null) // Visible solo si hay un artículo asociado
                                             ->afterStateHydrated(function (Set $set, Get $get) {
                                                 // Cargar el peso del artículo al cargar el formulario
                                                 $articuloId = $get('articulo_id');
@@ -876,8 +876,8 @@ class PedidosResource extends Resource
                                                 }
                                             })
                                             ->reactive(), // Reactivo para detectar cambios dinámicos
-                                        
-                                        
+
+
                                         Select::make('sistema_id')
                                             ->label('Sistema')
                                             ->searchable()
@@ -1160,33 +1160,35 @@ class PedidosResource extends Resource
                                         return $referencia ? $referencia->referencia : null;
                                     })->collapsed()
                                     ->extraItemActions([
-                                        Action::make('openreference')
-                                            ->tooltip('Abrir referencia')
+                                        Action::make('openarticle')
+                                            ->tooltip('Abrir Artículo')
                                             ->icon('heroicon-m-arrow-top-right-on-square')
                                             ->url(function (array $arguments, Repeater $component): ?string {
-                                                // Usamos $component->getRawItemState() para obtener el estado crudo del ítem
+                                                // Obtenemos el estado del ítem
                                                 $itemData = $component->getRawItemState($arguments['item']);
 
                                                 // Obtenemos el referencia_id del estado
                                                 $referenciaId = $itemData['referencia_id'] ?? null;
 
                                                 // Verificamos si referencia_id existe
-                                                if (! $referenciaId) {
+                                                if (!$referenciaId) {
                                                     return null;
                                                 }
 
-                                                // Buscamos la referencia en la base de datos
+                                                // Buscamos la referencia y el artículo asociado
                                                 $referencia = Referencia::find($referenciaId);
 
-                                                // Verificamos si la referencia fue encontrada
-                                                if (! $referencia) {
-                                                    return null;
+                                                if (!$referencia || !$referencia->articuloReferencia->first()?->articulo) {
+                                                    return null; // Retorna null si no hay artículo asociado
                                                 }
 
-                                                // Retornamos la ruta para editar la referencia
-                                                return ReferenciaResource::getUrl('edit', ['record' => $referencia->id]);
+                                                $articuloId = $referencia->articuloReferencia->first()->articulo->id;
+
+                                                // Retornamos la ruta para editar el artículo
+                                                return ArticulosResource::getUrl('edit', ['record' => $articuloId]);
                                             }, shouldOpenInNewTab: true)
                                             ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
+
                                     ]),
                             ]),
                         Step::make('Referencias_Masivas')
