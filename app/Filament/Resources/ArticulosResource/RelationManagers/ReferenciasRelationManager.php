@@ -43,7 +43,6 @@ class ReferenciasRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('referencia.referencia') // Accede al campo de la relación
             ->columns([
-                Split::make([
                     // Tables\Columns\TextColumn::make('referencia.id') // Relación seguida por el campo
                     //     ->searchable()
                     //     ->label('Id')
@@ -56,7 +55,6 @@ class ReferenciasRelationManager extends RelationManager
                         ->label('Marca')
                         ->sortable()
                         ->searchable(),
-                ]),
 
             ])
             ->filters([

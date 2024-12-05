@@ -8,6 +8,7 @@ use App\Models\Sistema;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,8 +37,10 @@ class SistemasResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->placeholder('Nombre del sistema'),
-                TextInput::make('descripcion')
-                    ->label('Descripción'),
+                MarkdownEditor::make('descripcion')
+                    ->label('Descripción')
+                    ->nullable()
+                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state)),
                 FileUpload::make('imagen')
                     ->label('Imagen')
                     ->image()

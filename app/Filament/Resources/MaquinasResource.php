@@ -15,8 +15,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MaquinasResource\RelationManagers\MarcaRelationManager;
+use App\Models\Fabricante;
 use App\Models\Lista;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
@@ -56,14 +58,13 @@ class MaquinasResource extends Resource
     {
         return $form
             ->schema([
-                
+
                 Select::make('tipo')
                     ->relationship('Listas', 'nombre')
                     ->createOptionForm(function () {
                         return [
-                            TextInput::make('tipo')
+                            Hidden::make('tipo')
                                 ->default('Tipo de Máquina')
-                                ->readonly()
                                 ->required()
                                 ->hidden(),
                             TextInput::make('nombre')
@@ -77,6 +78,38 @@ class MaquinasResource extends Resource
                             FileUpload::make('foto')
                                 ->label('Foto')
                                 ->image()
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $tipo = Lista::create([
+                            'nombre' => $data['nombre'],
+                            'definicion' => $data['definicion'],
+                            'tipo' => 'Tipo de Máquina',
+                        ]);
+
+                        return $tipo->id;
+                    })
+                    ->createOptionAction(function ($action) {
+                        $action->modalHeading('Crear Tipo de Máquina');
+                        $action->modalDescription('Crea un nuevo tipo de máquina y será asociado a la máquina automáticamente');
+                        $action->modalWidth('lg');
+                    })
+                    ->editOptionForm(function ($record) {
+                        return [
+                            Hidden::make('tipo')
+                                ->default('Tipo de Máquina')
+                                ->hidden(),
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Ingrese el nombre del tipo de máquina'),
+                            MarkdownEditor::make('definicion')
+                                ->label('Descripción')
+                                ->required()
+                                ->placeholder('Proporcione una descripción del tipo de máquina'),
+                            FileUpload::make('foto')
+                                ->label('Foto')
+                                ->image(),
                         ];
                     })
                     ->label('Tipo')
@@ -97,10 +130,48 @@ class MaquinasResource extends Resource
                                 ->label('Nombre')
                                 ->required()
                                 ->placeholder('Nombre del fabricante'),
-                            FileUpload::make('foto')
-                                ->label('Foto')
-                                ->image()
+                                MarkdownEditor::make('descripcion')
+                                ->label('Descripción')
+                                ->nullable()
+                                ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                ->required()
+                                ->maxLength(500),
+                                FileUpload::make('logo')
+                                    ->label('Logo')
+                                    ->image(),
                         ];
+                    })
+                    ->editOptionForm(function ($record) {
+                        return [
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Nombre del fabricante'),
+                                MarkdownEditor::make('descripcion')
+                                ->label('Descripción')
+                                ->nullable()
+                                ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                ->required()
+                                ->maxLength(500),
+                                FileUpload::make('logo')
+                                    ->label('Logo')
+                                    ->image(),
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $fabricante = Fabricante::create([
+                            'nombre' => $data['nombre'],
+                            'descripcion' => $data['descripcion'],
+                            'logo' => $data['logo'],
+
+                        ]);
+
+                        return $fabricante->id;
+                    })
+                    ->createOptionAction(function ($action) {
+                        $action->modalHeading('Crear Fabricante');
+                        $action->modalDescription('Crea un nuevo fabricante y será asociado a la máquina automáticamente');
+                        $action->modalWidth('lg');
                     }),
 
                 Forms\Components\TextInput::make('modelo')
@@ -164,9 +235,7 @@ class MaquinasResource extends Resource
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-          
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
             ])

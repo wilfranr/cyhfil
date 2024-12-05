@@ -4,13 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TercerosResource\{Pages, RelationManagers};
 
-use App\Models\{Tercero, City, Country, State, Maquina, Contacto};
+use App\Models\{Tercero, City, Country, State, Maquina, Contacto, Fabricante, Lista};
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Forms\Form;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Section, Repeater, Toggle, Wizard};
+use Filament\Forms\Components\{TextInput, Select, FileUpload, Hidden, MarkdownEditor, Section, Repeater, Toggle, Wizard, TextArea};
 use Illuminate\Support\Collection;
 use Filament\Forms\{Get, Set};
 use Illuminate\Database\Eloquent\Model;
@@ -108,41 +108,169 @@ class TercerosResource extends Resource
                                     // Obtenemos las máquinas relacionadas con el tercero
                                     return \App\Models\Maquina::all()->mapWithKeys(function ($maquina) {
                                         $tipo = \App\Models\Lista::find($maquina->tipo)->nombre ?? 'Sin tipo'; // Obtiene el nombre del tipo
-                                        return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie}"]; // Concatenamos tipo, modelo y serie
+                                        $fabricanteNombre = Fabricante::find($maquina->fabricante_id)->nombre;
+
+                                        return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie} - {$fabricanteNombre}"]; // Concatenamos tipo, modelo y serie
                                     });
                                 })
                                 ->createOptionForm(function () {
                                     return [
                                         Select::make('tipo')
-                                            ->relationship('listas', 'nombre', fn($query) => $query->where('tipo', 'Tipo de Máquina')) // Usamos query() para filtrar
+                                            ->relationship('Listas', 'nombre')
+                                            ->createOptionForm(function () {
+                                                return [
+                                                    Hidden::make('tipo')
+                                                        ->default('Tipo de Máquina')
+                                                        ->required()
+                                                        ->hidden(),
+                                                    TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->required()
+                                                        ->placeholder('Ingrese el nombre del tipo de máquina'),
+                                                    TextArea::make('definicion')
+                                                        ->label('Descripción')
+                                                        ->required()
+                                                        ->placeholder('Proporcione una descripción del tipo de máquina'),
+                                                    FileUpload::make('foto')
+                                                        ->label('Foto')
+                                                        ->image()
+                                                ];
+                                            })
+                                            ->createOptionUsing(function ($data) {
+                                                $tipo = Lista::create([
+                                                    'nombre' => $data['nombre'],
+                                                    'definicion' => $data['definicion'],
+                                                    'tipo' => 'Tipo de Máquina',
+                                                ]);
+
+                                                return $tipo->id;
+                                            })
+                                            ->createOptionAction(function ($action) {
+                                                $action->modalHeading('Crear Tipo de Máquina');
+                                                $action->modalDescription('Crea un nuevo tipo de máquina y será asociado a la máquina automáticamente');
+                                                $action->modalWidth('lg');
+                                            })
+                                            ->editOptionForm(function ($record) {
+                                                return [
+                                                    Hidden::make('tipo')
+                                                        ->default('Tipo de Máquina')
+                                                        ->hidden(),
+                                                    TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->required()
+                                                        ->placeholder('Ingrese el nombre del tipo de máquina'),
+                                                    MarkdownEditor::make('definicion')
+                                                        ->label('Descripción')
+                                                        ->required()
+                                                        ->placeholder('Proporcione una descripción del tipo de máquina'),
+                                                    FileUpload::make('foto')
+                                                        ->label('Foto')
+                                                        ->image(),
+                                                ];
+                                            })
                                             ->label('Tipo')
-                                            ->searchable()
-                                            ->required()
                                             ->live()
-                                            ->preload(),
+                                            ->preload()
+                                            ->searchable()
+                                            ->required(),
 
                                         Select::make('fabricante_id')
                                             ->relationship('fabricantes', 'nombre')
                                             ->label('Fabricante')
                                             ->preload()
                                             ->live()
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->required()
+                                            ->createOptionForm(function () {
+                                                return [
+                                                    TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->required()
+                                                        ->placeholder('Nombre del fabricante'),
+                                                    MarkdownEditor::make('descripcion')
+                                                        ->label('Descripción')
+                                                        ->nullable()
+                                                        ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                                        ->required()
+                                                        ->maxLength(500),
+                                                    FileUpload::make('logo')
+                                                        ->label('Logo')
+                                                        ->image(),
+                                                ];
+                                            })
+                                            ->editOptionForm(function ($record) {
+                                                return [
+                                                    TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->required()
+                                                        ->placeholder('Nombre del fabricante'),
+                                                    MarkdownEditor::make('descripcion')
+                                                        ->label('Descripción')
+                                                        ->nullable()
+                                                        ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                                        ->required()
+                                                        ->maxLength(500),
+                                                    FileUpload::make('logo')
+                                                        ->label('Logo')
+                                                        ->image(),
+                                                ];
+                                            })
+                                            ->createOptionUsing(function ($data) {
+                                                $fabricante = Fabricante::create([
+                                                    'nombre' => $data['nombre'],
+                                                    'descripcion' => $data['descripcion'],
+                                                    'logo' => $data['logo'],
 
-                                        Forms\Components\TextInput::make('modelo')
-                                            ->label('Modelo'),
+                                                ]);
 
-                                        Forms\Components\TextInput::make('serie')
-                                            ->label('Serie'),
+                                                return $fabricante->id;
+                                            })
+                                            ->createOptionAction(function ($action) {
+                                                $action->modalHeading('Crear Fabricante');
+                                                $action->modalDescription('Crea un nuevo fabricante y será asociado a la máquina automáticamente');
+                                                $action->modalWidth('lg');
+                                            }),
 
-                                        Forms\Components\TextInput::make('arreglo')
-                                            ->label('Arreglo'),
+                                        TextInput::make('modelo')
+                                            ->label('Modelo')
+                                            ->required(),
 
-                                        Forms\Components\FileUpload::make('foto')
-                                            ->label('Foto'),
+                                        TextInput::make('serie')
+                                            ->label('Serie')
+                                            ->required(),
 
-                                        Forms\Components\FileUpload::make('fotoId')
-                                            ->label('FotoId'),
+                                        TextInput::make('arreglo')
+                                            ->label('Arreglo')
+                                            ->required(),
+
+                                        FileUpload::make('foto')
+                                            ->label('Foto')
+                                            ->image()
+                                            ->imageEditor(),
+
+                                        FileUpload::make('fotoId')
+                                            ->label('FotoId')
+                                            ->image()
+                                            ->imageEditor(),
                                     ];
+                                })
+                                ->createOptionUsing(function ($data) {
+                                    $maquina = Maquina::create([
+                                        'tipo' => $data['tipo'],
+                                        'fabricante_id' => $data['fabricante_id'],
+                                        'modelo' => $data['modelo'],
+                                        'serie' => $data['serie'],
+                                        'arreglo' => $data['arreglo'],
+                                        'foto' => $data['foto'],
+                                        'fotoId' => $data['fotoId'],
+                                    ]);
+
+                                    return $maquina->id;
+                                })
+                                ->createOptionAction(function ($action) {
+                                    $action->modalHeading('Crear Máquina');
+                                    $action->modalDescription('Crea una nueva máquina y será asociada al tercero automáticamente');
+                                    $action->modalWidth('xl');
                                 })
                                 ->multiple()
                                 ->preload()
@@ -163,10 +291,10 @@ class TercerosResource extends Resource
                                         ->options(function () {
                                             // Obtenemos los fabricantes como un array [id => nombre]
                                             $fabricantes = \App\Models\Fabricante::pluck('nombre', 'id')->toArray();
-                                        
+
                                             // Agregamos la opción 'Seleccionar todos' al inicio
                                             $options = ['all' => 'Seleccionar todos'];
-                                        
+
                                             // Mantenemos las claves de los IDs intactas
                                             return $options + $fabricantes;
                                         })
@@ -174,22 +302,71 @@ class TercerosResource extends Resource
                                             if (in_array('all', $state)) {
                                                 // Obtener todos los IDs válidos de los fabricantes
                                                 $allFabricantes = \App\Models\Fabricante::pluck('id')->toArray();
-                                        
+
                                                 // Establecer todos los IDs como seleccionados
                                                 $set('fabricante_id', $allFabricantes);
                                             } else {
                                                 // Filtrar 'all' del estado
                                                 $state = array_filter($state, fn($value) => $value !== 'all');
-                                        
+
                                                 // Asegúrate de que los valores del estado sean los IDs correctos
                                                 $set('fabricante_id', array_values($state));
                                             }
+                                        })
+                                        ->createOptionForm(function () {
+                                            return [
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->placeholder('Nombre del fabricante'),
+                                                MarkdownEditor::make('descripcion')
+                                                    ->label('Descripción')
+                                                    ->nullable()
+                                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                                    ->required()
+                                                    ->maxLength(500),
+                                                FileUpload::make('logo')
+                                                    ->label('Logo')
+                                                    ->image(),
+                                            ];
+                                        })
+                                        ->editOptionForm(function ($record) {
+                                            return [
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->placeholder('Nombre del fabricante'),
+                                                MarkdownEditor::make('descripcion')
+                                                    ->label('Descripción')
+                                                    ->nullable()
+                                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                                    ->required()
+                                                    ->maxLength(500),
+                                                FileUpload::make('logo')
+                                                    ->label('Logo')
+                                                    ->image(),
+                                            ];
+                                        })
+                                        ->createOptionUsing(function ($data) {
+                                            $fabricante = Fabricante::create([
+                                                'nombre' => $data['nombre'],
+                                                'descripcion' => $data['descripcion'],
+                                                'logo' => $data['logo'],
+
+                                            ]);
+
+                                            return $fabricante->id;
+                                        })
+                                        ->createOptionAction(function ($action) {
+                                            $action->modalHeading('Crear Fabricante');
+                                            $action->modalDescription('Crea un nuevo fabricante y será asociado a la máquina automáticamente');
+                                            $action->modalWidth('lg');
                                         }),
-                                        
-                                        
-                                        
-                                        
-                                        Select::make('sistema_id')
+
+
+
+
+                                    Select::make('sistema_id')
                                         ->relationship('sistemas', 'nombre') // Relación con 'sistemas' y el campo 'nombre'
                                         ->label('Sistema')
                                         ->multiple()
@@ -199,7 +376,7 @@ class TercerosResource extends Resource
                                         ->options(function () {
                                             // Agregamos la opción "Seleccionar todos" al inicio
                                             $sistemas = \App\Models\Sistema::pluck('nombre', 'id')->toArray(); // Obtenemos las opciones de la relación
-                                    
+
                                             // Preservamos las claves para que los IDs de sistemas no se vean afectados
                                             return ['all' => 'Seleccionar todos'] + $sistemas;
                                         })
@@ -207,7 +384,7 @@ class TercerosResource extends Resource
                                             if (in_array('all', $state)) {
                                                 // Si selecciona "Seleccionar todos", seleccionamos todos los IDs válidos de los sistemas
                                                 $allSistemas = \App\Models\Sistema::pluck('id')->toArray();
-                                    
+
                                                 // Filtrar valores inválidos y asegurarnos de que sean IDs válidos
                                                 $allSistemas = array_filter($allSistemas, fn($id) => $id > 0);
                                                 $set('sistema_id', $allSistemas); // Establecemos todas las opciones seleccionadas
@@ -217,7 +394,29 @@ class TercerosResource extends Resource
                                                 $set('sistema_id', array_values($state));
                                             }
                                         })
-                                    
+                                        ->createOptionForm(function () {
+                                            return [
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->placeholder('Nombre del sistema'),
+                                                MarkdownEditor::make('descripcion')
+                                                    ->label('Descripción')
+                                                    ->nullable()
+                                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state)),
+                                                FileUpload::make('imagen')
+                                                    ->label('Imagen')
+                                                    ->image()
+                                                    ->imageEditor(),
+                                            ];
+                                        })
+                                        ->createOptionAction(function ($action) {
+                                            $action->modalHeading('Crear Sistema');
+                                            $action->modalDescription('Crea un nuevo sistema y será asociado al tercero automáticamente');
+                                            $action->modalWidth('lg');
+                                        })
+
                                 ])->columns(2)->visible(fn(Get $get) => $get('tipo') === 'Proveedor' || $get('tipo') === 'Ambos'),
 
 

@@ -3,12 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReferenciaResource\Pages;
+use App\Filament\Resources;
 use App\Models\Articulo;
 use App\Models\ArticuloReferencia;
 use App\Models\Lista;
 use App\Models\Referencia;
-use Filament\Components\Actions\Action;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action as ActionsAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -126,15 +128,15 @@ class ReferenciaResource extends Resource
                         ];
                     })
                     ->createOptionUsing(function ($data) {
-                        // Crear el artículo con los datos proporcionados
+
                         $articulo = Articulo::create($data);
 
-                        // Asociar el artículo recién creado con la referencia actual
-                        return $articulo->id; // Retornar el ID del nuevo artículo
+                  
+                        return $articulo->id;
                     })
-                    ->createOptionAction(function (ActionsAction $action) {
-                        $action->modalHeading('crear Artículo'); // Personaliza el encabezado
-                        $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
+                    ->createOptionAction(function (Action $action) {
+                        $action->modalHeading('crear Artículo'); 
+                        $action->modalWidth('lg');
                     })
                     ->searchable()
                     ->getSearchResultsUsing(function (string $search): array {
@@ -144,7 +146,7 @@ class ReferenciaResource extends Resource
                             ->selectRaw("articulos.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
                             ->where(function ($query) use ($search) {
                                 $query->where('articulos.descripcionEspecifica', 'like', "%{$search}%")
-                                      ->orWhere('referencias.referencia', 'like', "%{$search}%");
+                                    ->orWhere('referencias.referencia', 'like', "%{$search}%");
                             })
                             ->limit(50) // Limitar el número de resultados
                             ->pluck('full_description', 'articulos.id')
@@ -159,18 +161,45 @@ class ReferenciaResource extends Resource
                             ->where('articulos.id', $value)
                             ->pluck('full_description')
                             ->first();
-                    })
-                    ->required(),
+                    }),
 
 
 
-                Select::make('marca_id')
-                    ->label('Marca')
+                    Select::make('marca_id')
                     ->options(
-                        Lista::where('tipo', 'Marca')->pluck('nombre', 'id')
+                        \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                     )
+                    ->createOptionForm(function () {
+                        return [
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->placeholder('Nombre de la marca'),
+                            Hidden::make('tipo')
+                                ->default('Marca'),
+                            TextArea::make('definicion')
+                                ->label('Descripción')
+                                ->placeholder('Definición de la marca'),
+                            FileUpload::make('foto')
+                                ->label('Foto')
+                                ->image()
+                                ->imageEditor(),
+                        ];
+                    })
+                    ->createOptionUsing(function ($data) {
+                        $marca = Lista::create([
+                            'nombre' => $data['nombre'],
+                            'tipo' => 'Marca',
+                        ]);
+
+                        return $marca->id;
+                    })
+                    ->createOptionAction(function (Action $action) {
+                        $action->modalHeading('Crear Marca');
+                        $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                        $action->modalWidth('lg');
+                    })
                     ->searchable()
-                    ->required(),
+                    ->label('Marca'),
                 Textarea::make('comentario')
                     ->label('Comentario')
                     ->maxLength(500),
@@ -194,10 +223,19 @@ class ReferenciaResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('articulos.descripcionEspecifica')
-                    ->label('Artículos Relacionados')
+                    ->label('Artículo Relacionado')
                     ->limit(50)
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->url(
+                        fn($record) => $record->articuloReferencia->first()?->articulo_id
+                            ? ArticulosResource::getUrl('edit', ['record' => $record->articuloReferencia->first()->articulo_id])
+                            : null
+                    )
+                    ->placeholder('Sin artículo relacionado'), // Muestra este texto si no hay artículo asociado
+
+
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

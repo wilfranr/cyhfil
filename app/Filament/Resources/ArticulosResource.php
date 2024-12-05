@@ -93,7 +93,7 @@ class ArticulosResource extends Resource
                                     ->live()
                                     ->required(),
                                 FileUpload::make('foto_medida')
-                                    ->label('Foto de la medida')
+                                    ->label('Plano Esquemático')
                                     ->image()
                                     ->imageEditor(),
 
@@ -107,7 +107,7 @@ class ArticulosResource extends Resource
                                     ->label('Comentarios')
                                     ->placeholder('Comentarios del artículo'),
                                 FileUpload::make('fotoDescriptiva')
-                                    ->label('Foto descriptiva')
+                                    ->label('Foto de Referencia')
                                     ->image()
                                     ->imageEditor()
                                     ->openable(),
@@ -196,10 +196,39 @@ class ArticulosResource extends Resource
                                                     TextInput::make('referencia')
                                                         ->label('Referencia')
                                                         ->placeholder('Referencia del artículo'),
-                                                    Select::make('marca_id')
+                                                        Select::make('marca_id')
                                                         ->options(
                                                             \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                         )
+                                                        ->createOptionForm(function () {
+                                                            return [
+                                                                TextInput::make('nombre')
+                                                                    ->label('Nombre')
+                                                                    ->placeholder('Nombre de la marca'),
+                                                                Hidden::make('tipo')
+                                                                    ->default('Marca'),
+                                                                TextArea::make('definicion')
+                                                                    ->label('Descripción')
+                                                                    ->placeholder('Definición de la marca'),
+                                                                FileUpload::make('foto')
+                                                                    ->label('Foto')
+                                                                    ->image()
+                                                                    ->imageEditor(),
+                                                            ];
+                                                        })
+                                                        ->createOptionUsing(function ($data) {
+                                                            $marca = Lista::create([
+                                                                'nombre' => $data['nombre'],
+                                                                'tipo' => 'Marca',
+                                                            ]);
+                                    
+                                                            return $marca->id;
+                                                        })
+                                                        ->createOptionAction(function (Action $action) {
+                                                            $action->modalHeading('Crear Marca');
+                                                            $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                                            $action->modalWidth('lg');
+                                                        })
                                                         ->searchable()
                                                         ->label('Marca'),
                                                 ];
