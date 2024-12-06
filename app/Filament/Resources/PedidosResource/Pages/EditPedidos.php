@@ -138,20 +138,19 @@ class EditPedidos extends EditRecord
         return Action::make('Enviar a Costeo')
             ->action(function () {
                 $record = $this->getRecord();
+
+                // Sincroniza los datos del formulario con el modelo
+                $record->fill($this->form->getState());
                 $record->estado = 'En_Costeo';
                 $record->save();
 
+                // Enviar la notificación
                 $this->sendNotification(
                     'Pedido Enviado a Costeo',
                     "El pedido No. {$record->id} ha sido enviado a Costeo."
                 );
 
-                Notification::make()
-                    ->title('Éxito')
-                    ->body('El estado del pedido se ha cambiado a En Costeo.')
-                    ->success()
-                    ->send();
-
+                // Redirigir al índice de pedidos
                 $this->redirect($this->getResource()::getUrl('index'));
             })
             ->color('info')
@@ -160,6 +159,8 @@ class EditPedidos extends EditRecord
             ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.');
     }
 
+
+
     // Acción: Generar Cotización
     private function getGenerarCotizacionAction(): Action
     {
@@ -167,6 +168,11 @@ class EditPedidos extends EditRecord
             ->color('success')
             ->action(function () {
                 $record = $this->getRecord();
+
+                // Guardar los cambios del formulario
+                $record->fill($this->form->getState());
+                $record->estado = 'Cotizado';
+                $record->save();
 
                 // Verificar referencias activas
                 if (!PedidoReferencia::where('pedido_id', $record->id)->where('estado', 1)->exists()) {
@@ -184,44 +190,103 @@ class EditPedidos extends EditRecord
                     'tercero_id' => $record->tercero_id,
                 ]);
 
+
                 Notification::make()
                     ->title('Cotización Generada')
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
                     ->send();
 
+                // Redirigir para generar el PDF
                 $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
             });
     }
 
+
     // Acción: Aprobar Cotización
     private function getAprobarCotizacionAction(): Action
     {
-        return Action::make('Aprobar Cotización')
-            ->color('info')
-            ->form([
-                Select::make('direccion')
-                    ->label('Dirección de Entrega')
-                    ->preload()
-                    ->searchable()
-                    ->options(fn() => Direccion::where('tercero_id', $this->record->tercero_id)
-                        ->pluck('direccion', 'id')
-                        ->toArray())
-                    ->required(),
-            ])
-            ->action(function ($data) {
-                $record = $this->getRecord();
-                $record->estado = 'Aprobado';
-                $record->save();
-
-                Notification::make()
-                    ->title('Éxito')
-                    ->body('La cotización ha sido aprobada.')
-                    ->success()
-                    ->send();
-
-                $this->redirect($this->getResource()::getUrl('index'));
-            });
+        return Action::make('Aprobar')
+        ->label('Aprobar Cotización')
+        ->color('info')
+        ->form([
+            Select::make('direccion')
+                ->label('Dirección de Entrega')
+                ->preload()
+                ->searchable()
+                ->options(fn() => Direccion::where('tercero_id', $this->record->tercero_id)
+                    ->pluck('direccion', 'id')
+                    ->toArray())
+                ->required()
+                ->placeholder('Seleccione una dirección')
+                ->createOptionForm([
+                    TextInput::make('direccion')
+                        ->label('Nueva Dirección')
+                        ->required(),
+                ])
+                ->createOptionUsing(function ($data) {
+                    $direccion = Direccion::create([
+                        'tercero_id' => $this->record->tercero_id,
+                        'direccion' => $data['direccion'],
+                        'city_id' => $this->record->tercero->city_id,
+                        'state_id' => $this->record->tercero->city->state_id,
+                        'country_id' => $this->record->tercero->city->state->country_id,
+                    ]);
+                    return $direccion->id;
+                }),
+        ])
+        ->action(function (array $data) {
+            // Obtener el registro actual
+            $record = $this->getRecord();
+            // Actualizar el registro con los datos del formulario
+            $this->form->getState();
+            $record->fill($data);
+            // Cambiar el estado del pedido a 'Aprobado'
+            $record->estado = 'Aprobado';
+            // cambiar el estado de la cotización a 'Aprobado'
+            $cotizacion = \App\Models\Cotizacion::where('pedido_id', $record->id)->first();
+            $cotizacion->estado = 'Aprobada';
+            // Guardar el pedido con todos los cambios
+            $record->save();
+            // Notificar al usuario
+            Notification::make()
+                ->title('Éxito')
+                ->body('La cotización ha sido aprobada y todos los cambios han sido guardados.')
+                ->success()
+                ->send();
+            //Viene desde la tabla pedido_referencia
+            $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
+            // dd($pedido_referencia);
+            foreach ($pedido_referencia as $referencia) {
+                $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
+                // dd($proveedor);
+                $referencia_nombre = Referencia::where('id', $referencia->referencia_id);
+                //crear orden de compra
+                $ordenCompra = new \App\Models\OrdenCompra();
+                $ordenCompra->pedido_id = $record->id;
+                $ordenCompra->tercero_id = $record->tercero_id;
+                // $ordenCompra->proveedor_id = $record->proveedor_id;
+                $ordenCompra->referencia_id = $referencia->referencia_id;
+                $ordenCompra->fecha_expedicion = now();
+                $ordenCompra->fecha_entrega = now()->addDays(30);
+                $ordenCompra->observaciones = $record->observaciones;
+                $ordenCompra->direccion = $data['direccion'];
+                $ordenCompra->telefono = $record->tercero->telefono;
+                $ordenCompra->proveedor_id = $proveedor->proveedor_id;
+                $ordenCompra->cantidad = $proveedor->cantidad;
+                $ordenCompra->valor_unitario = $proveedor->costo_unidad;
+                $ordenCompra->valor_total = $proveedor->valor_total;
+                $ordenCompra->save();
+            }
+            //Traer todos los proveedores de este pedido
+            // $proveedor = PedidoReferenciaProveedor::where('pedido_id', $pedido_referencia->id)->first();
+            // dd($proveedor);
+            // $ordenCompra_id = $ordenCompra->id;
+            // Redirigir a la página de la orden de compra en PDF
+            // return redirect()->route('pdf.ordenCompra', ['id' => $ordenCompra_id]);
+            //Redirigir a la página de pedidos
+            $this->redirect($this->getResource()::getUrl('index'));
+        });
     }
 
     // Acción: Rechazar Cotización

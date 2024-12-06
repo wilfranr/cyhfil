@@ -69,6 +69,7 @@ class PartesPanelProvider extends PanelProvider
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
                 \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),
+                \App\Filament\Widgets\UltimosPedidos::make(),
 
             ])
             ->middleware([

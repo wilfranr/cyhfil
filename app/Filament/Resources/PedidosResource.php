@@ -1750,7 +1750,11 @@ class PedidosResource extends Resource
                                                         TextInput::make('cantidad')
                                                             ->label('Cantidad')
                                                             ->numeric()
-                                                            ->required(),
+                                                            ->required()
+                                                            ->default(fn (Get $get) => $get('../../cantidad')), // Usa $get para acceder al valor del otro campo
+
+                                                            
+                                                            
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),

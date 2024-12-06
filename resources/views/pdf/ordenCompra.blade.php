@@ -132,7 +132,7 @@
                     <td>{{ $item }}</td>
                     <td>${{ $ordenCompra->valor_unitario }}</td>
                     <td>{{ $ordenCompra->cantidad }}</td>
-                    <td>${{ $ordenCompra->descuento }}</td>
+                    <td>{{ $ordenCompra->descuento ? '$' . $ordenCompra->descuento : 'N/A' }}</td>
                     <td>${{ $ordenCompra->valor_unitario*$ordenCompra->cantidad }}</td>
                 </tr>
 
