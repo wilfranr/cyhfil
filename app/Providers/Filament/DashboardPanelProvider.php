@@ -21,6 +21,7 @@ use App\Models\Empresa;
 
 class DashboardPanelProvider extends PanelProvider
 {
+
     public function panel(Panel $panel): Panel
     {
 
@@ -36,7 +37,6 @@ class DashboardPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->default()
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
@@ -77,6 +77,8 @@ class DashboardPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\RedirectUnauthorizedPanelAccess::class, // Aquí añades tu middleware personalizado
+
             ])
             ->plugins([
                 FilamentShieldPlugin::make()
@@ -97,13 +99,12 @@ class DashboardPanelProvider extends PanelProvider
                     ]),
                 PanelRoles::make()
                     ->restrictedRoles(['super_admin', 'Administrador']),
-                
+
             ])
             ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
-                
+
             ]);
-            
     }
 }

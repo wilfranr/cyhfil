@@ -79,6 +79,8 @@ class PartesPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\RedirectUnauthorizedPanelAccess::class, // Aquí añades tu middleware personalizado
+
             ])
             ->plugins([
                 SpotlightPlugin::make(),

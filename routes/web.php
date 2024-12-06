@@ -36,20 +36,10 @@ Route::get('/pdf/generateOrdenCompra/{id}', [OrdenCompraController::class, 'gene
 
 Route::get('/ordenTrabajo/{id}/pdf', [OrdenTrabajoController::class, 'generarPDF'])->name('ordenTrabajo.pdf');
 
-// Route::get('/auth-status', function () {
-//     return response()->json(['isAuthenticated' => Auth::check()]);
-// });
-
-
-
-
 Route::post('/broadcasting/auth', function () {
     return response()->json([], 200);
 });
 
-// Route::get('/test-event', function () {
-//     event(new \App\Events\TestEvent('Mensaje de prueba'));
-//     return "Evento de prueba enviado";
-// });
+
 
 
