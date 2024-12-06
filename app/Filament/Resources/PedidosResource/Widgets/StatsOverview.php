@@ -35,6 +35,14 @@ class StatsOverview extends BaseWidget
                     ->color('warning')
                     ->icon('ri-checkbox-line'),
             ];
+        } elseif ($rol == 'Vendedor') {
+            return [
+                Stat::make('Mis Pedidos', Pedido::where('user_id', $user->id)->count())
+                    ->chart($this->getBarChartDataForUser($user->id))
+                    ->description('Pedidos gestionados por ti')
+                    ->color('success')
+                    ->icon('heroicon-o-user'),
+            ];
         } else {
             return [
                 Stat::make('Pedidos Nuevos', Pedido::where('estado', 'nuevo')->count())
@@ -75,6 +83,25 @@ class StatsOverview extends BaseWidget
         }
     }
 
+    protected function getBarChartDataForUser(int $userId): array
+    {
+        // Obtiene los pedidos gestionados por un usuario específico
+        $orders = Pedido::select(DB::raw('MONTH(updated_at) as month'), DB::raw('count(*) as count'))
+            ->where('user_id', $userId)
+            ->whereYear('updated_at', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Asegura que haya datos para cada mes
+        $months = collect(range(1, 12))->mapWithKeys(function ($i) {
+            return [$i => 0];
+        });
+
+        return $months->merge($orders)->values()->toArray();
+    }
     protected function getBarChartData(string $estado): array
     {
         // Obtiene la cantidad de pedidos agrupados por mes para el año actual

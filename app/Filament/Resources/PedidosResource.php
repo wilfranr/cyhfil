@@ -24,17 +24,24 @@ class PedidosResource extends Resource
 
     protected static ?int $navigationSort = 0;
 
-    //Funcion para enviar notificacion de pedido creado
-    public static  function getNavigationBadge(): ?string
+    public static function getNavigationBadge(): ?string
     {
-        $user = Auth::user();
-        $rol = $user->roles->first()->name;
+        $user = Auth::user(); // Obtener el usuario autenticado
+        $rol = $user->roles->first()->name; // Obtener el rol del usuario
+
+        // Aplicar lógica según el rol del usuario
         if ($rol == 'Logistica') {
             return Pedido::query()->where('estado', 'Aprobado')->count();
-        } else {
+        } elseif ($rol == 'Analista') {
             return Pedido::query()->where('estado', 'Nuevo')->count();
+        } elseif ($rol == 'Vendedor') {
+            return Pedido::query()->where('user_id', $user->id)->count();
+        } else {
+            // Para otros roles, devolver el total de pedidos
+            return Pedido::query()->count();
         }
     }
+
 
 
     public static function getEloquentQuery(): Builder
@@ -973,7 +980,7 @@ class PedidosResource extends Resource
                                             'email' => $data['email'],
                                             'tercero_id' => $terceroId,
                                             'country_id' => $data['country_id'],
-                                            
+
                                         ]);
                                         return $contacto->id;
                                     })
@@ -1613,7 +1620,7 @@ class PedidosResource extends Resource
                                             ->createOptionUsing(function ($data) {
                                                 return Sistema::create($data)->id;
                                             }),
-                                            Select::make('marca_id')
+                                        Select::make('marca_id')
                                             ->options(
                                                 \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                             )
@@ -1747,7 +1754,7 @@ class PedidosResource extends Resource
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),
-                                                            Select::make('marca_id')
+                                                        Select::make('marca_id')
                                                             ->options(
                                                                 \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                             )
@@ -1772,7 +1779,7 @@ class PedidosResource extends Resource
                                                                     'nombre' => $data['nombre'],
                                                                     'tipo' => 'Marca',
                                                                 ]);
-                                        
+
                                                                 return $marca->id;
                                                             })
                                                             ->createOptionAction(function (Action $action) {

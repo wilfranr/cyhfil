@@ -2,23 +2,38 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Logistica\Resources\PedidoResource;
 use App\Filament\Resources\PedidosResource;
 use App\Models\Pedido;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Auth;
 
 class UltimosPedidos extends BaseWidget
 {
     protected static ?string $heading = 'Últimos Pedidos';
     protected static ?int $sort = 2;
     protected int | string | array $columnSpan = 'full';
+
     public function table(Tables\Table $table): Tables\Table
     {
+        $user = Auth::user();
+        $rol = $user->roles->first()->name;
+
+        // Definir la consulta según el rol del usuario
+        $query = Pedido::query();
+
+        if ($rol === 'Analista') {
+            $query = $query->where('estado', 'Nuevo');
+        } elseif ($rol === 'Logistica') {
+            $query = $query->where('estado', 'Aprobado');
+        } elseif ($rol === 'Vendedor') {
+            $query = $query->where('user_id', $user->id);
+        }
+
         return $table
             ->query(
-                Pedido::query()->latest('created_at')->take(10) // Obtiene los 10 pedidos más recientes
+                $query->latest('created_at')->take(10) // Obtiene los 10 pedidos más recientes
             )
             ->columns([
                 TextColumn::make('id')
