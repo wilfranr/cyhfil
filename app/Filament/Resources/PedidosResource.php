@@ -1613,13 +1613,41 @@ class PedidosResource extends Resource
                                             ->createOptionUsing(function ($data) {
                                                 return Sistema::create($data)->id;
                                             }),
-                                        Select::make('marca_id')
-                                            ->label('Marca')
+                                            Select::make('marca_id')
                                             ->options(
-                                                Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
+                                                \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                             )
-                                            ->preload()
-                                            ->searchable(),
+                                            ->createOptionForm(function () {
+                                                return [
+                                                    TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->placeholder('Nombre de la marca'),
+                                                    Hidden::make('tipo')
+                                                        ->default('Marca'),
+                                                    TextArea::make('definicion')
+                                                        ->label('Descripción')
+                                                        ->placeholder('Definición de la marca'),
+                                                    FileUpload::make('foto')
+                                                        ->label('Foto')
+                                                        ->image()
+                                                        ->imageEditor(),
+                                                ];
+                                            })
+                                            ->createOptionUsing(function ($data) {
+                                                $marca = Lista::create([
+                                                    'nombre' => $data['nombre'],
+                                                    'tipo' => 'Marca',
+                                                ]);
+
+                                                return $marca->id;
+                                            })
+                                            ->createOptionAction(function (Action $action) {
+                                                $action->modalHeading('Crear Marca');
+                                                $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                                $action->modalWidth('lg');
+                                            })
+                                            ->searchable()
+                                            ->label('Marca'),
 
 
 
@@ -1719,12 +1747,41 @@ class PedidosResource extends Resource
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),
-                                                        Select::make('marca_id')
+                                                            Select::make('marca_id')
                                                             ->options(
-                                                                Fabricante::query()->pluck('nombre', 'id')->toArray()
+                                                                \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                             )
-                                                            ->label('Fabricante')
-                                                            ->searchable(),
+                                                            ->createOptionForm(function () {
+                                                                return [
+                                                                    TextInput::make('nombre')
+                                                                        ->label('Nombre')
+                                                                        ->placeholder('Nombre de la marca'),
+                                                                    Hidden::make('tipo')
+                                                                        ->default('Marca'),
+                                                                    TextArea::make('definicion')
+                                                                        ->label('Descripción')
+                                                                        ->placeholder('Descripción de la marca'),
+                                                                    FileUpload::make('foto')
+                                                                        ->label('Foto')
+                                                                        ->image()
+                                                                        ->imageEditor(),
+                                                                ];
+                                                            })
+                                                            ->createOptionUsing(function ($data) {
+                                                                $marca = Lista::create([
+                                                                    'nombre' => $data['nombre'],
+                                                                    'tipo' => 'Marca',
+                                                                ]);
+                                        
+                                                                return $marca->id;
+                                                            })
+                                                            ->createOptionAction(function (Action $action) {
+                                                                $action->modalHeading('Crear Marca');
+                                                                $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
+                                                                $action->modalWidth('lg');
+                                                            })
+                                                            ->searchable()
+                                                            ->label('Marca'),
                                                         Select::make('Entrega')
                                                             ->options([
                                                                 'Inmediata' => 'Inmediata',
