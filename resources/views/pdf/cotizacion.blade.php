@@ -118,7 +118,8 @@
         <td colspan="3"><strong>Email: </strong>{{ $cliente->email }}</td>
     </tr>
     <tr>
-        <td colspan="12"><strong>Contacto</strong></td>
+        @php $contacto = App\Models\Contacto::find($pedido->contacto_id); @endphp
+        <td colspan="12"><strong>Contacto: </strong>{{ $contacto->nombre }}</td>
     </tr>
     <tr>
         <td colspan="8"><strong>Maquina: </strong>{{ $tipo_maquina }}</td>
