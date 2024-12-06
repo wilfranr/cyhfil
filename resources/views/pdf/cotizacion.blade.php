@@ -156,7 +156,11 @@
                                 'pedido_id',
                                 $ref->id,
                             )->get();
-                            $articulo = App\Models\Articulo::find($referencia->articulo_id);
+
+                            // Buscar el artículo relacionado usando la tabla pivot
+                            $articulo = $referencia->articuloReferencia()->first()?->articulo; // Obtiene el primer artículo relacionado con esta referencia
+
+                            // dd($articulo);
                         @endphp
 
                         @foreach ($pedRefProveedor as $proveedor)
@@ -167,9 +171,9 @@
                                     @else
                                         <td>{{ $referencia->referencia }}</td>
                                     @endif
-                                    <td>{{ $articulo->definicion }}</td>
+                                    <td>{{ $articulo->descripcionEspecifica }}</td>
                                     <td>{{ $ref->cantidad }}</td>
-                                    @php $marca = App\Models\Marca::find($proveedor->marca_id); @endphp
+                                    @php $marca = App\Models\Lista::find($proveedor->marca_id); @endphp
                                     <td>{{ $marca->nombre }}</td>
 
                                     @if ($proveedor->Entrega == 'Programada')
