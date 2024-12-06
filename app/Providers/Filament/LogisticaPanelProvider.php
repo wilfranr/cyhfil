@@ -33,9 +33,17 @@ class LogisticaPanelProvider extends PanelProvider
             ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_dark) : asset('images/logo.png'))
             ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
             ->login()
+            ->profile(isSimple: false)
             ->colors([
                 'primary' => Color::Teal,
+                'secondary' => Color::Indigo,
             ])
+            ->globalSearchKeyBindings(['ctrl+b'])
+            ->sidebarCollapsibleOnDesktop()
+            // ->maxContentWidth('full')
+            ->unsavedChangesAlerts()
+            ->databaseTransactions()
+            ->sidebarWidth('15 rem')
             // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             // ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverResources(in: app_path('Filament/Logistica/Resources'), for: 'App\\Filament\\Logistica\\Resources')
@@ -43,6 +51,7 @@ class LogisticaPanelProvider extends PanelProvider
             // ->pages([
             //     Pages\Dashboard::class,
             // ])
+
             ->discoverWidgets(in: app_path('Filament/Logistica/Widgets'), for: 'App\\Filament\\Logistica\\Widgets')
             ->widgets([
                 \App\Filament\Resources\PedidosResource\Widgets\StatsOverview::make(),

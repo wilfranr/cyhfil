@@ -18,6 +18,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Shanerbaner82\PanelRoles\PanelRoles;
 use App\Filament\Widgets\OrdersPerMonthChart;
 use App\Models\Empresa;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
+use Filament\Support\Enums\MaxWidth;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -34,26 +37,32 @@ class DashboardPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
+            ->profile(isSimple: false)
             ->colors([
                 'primary' => Color::Amber,
+                'secondary' => Color::Blue,
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
+            // ->maxContentWidth(MaxWidth::Full)
+            ->unsavedChangesAlerts()
+            ->databaseTransactions()
             ->userMenuItems([
-                MenuItem::make('Profile')
-                    ->icon('heroicon-s-user')
-                    ->label('Perfil')
-                    ->url(''),
-                MenuItem::make('Settings')
-                    ->icon('heroicon-s-cog')
-                    ->label('Configuración')
-                    ->url(''),
+                // MenuItem::make('Profile')
+                //     ->icon('heroicon-s-user')
+                //     ->label('Perfil')
+                //     ->url(''),
+                // MenuItem::make('Settings')
+                //     ->icon('heroicon-s-cog')
+                //     ->label('Configuración')
+                //     ->url(''),
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
                     ->url('\admin\trm-settings'),
             ])
-
+            ->sidebarWidth('15 rem')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

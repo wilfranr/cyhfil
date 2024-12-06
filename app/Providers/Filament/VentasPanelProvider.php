@@ -35,6 +35,8 @@ class VentasPanelProvider extends PanelProvider
             ->id('ventas')
             ->path('ventas')
             ->login()
+            ->profile(isSimple: false)
+            ->passwordReset()
             ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
             ->brandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_dark) : asset('images/logo.png'))
             ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
@@ -44,15 +46,14 @@ class VentasPanelProvider extends PanelProvider
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
+            // ->maxContentWidth('full')
+            ->unsavedChangesAlerts()
+            ->databaseTransactions()
             ->userMenuItems([
-                MenuItem::make('Profile')
-                    ->icon('heroicon-s-user')
-                    ->label('Perfil')
-                    ->url(''),
-                MenuItem::make('Settings')
-                    ->icon('heroicon-s-cog')
-                    ->label('Configuración')
-                    ->url(''),
+                // MenuItem::make('Settings')
+                //     ->icon('heroicon-s-cog')
+                //     ->label('Configuración')
+                //     ->url(''),
                 MenuItem::make('TRM')
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
@@ -63,6 +64,7 @@ class VentasPanelProvider extends PanelProvider
             // ->discoverPages(in: app_path('Filament/Ventas/Pages'), for: 'App\\Filament\\Ventas\\Pages')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->sidebarWidth('15 rem')
             ->pages([
                 Pages\Dashboard::class,
             ])
