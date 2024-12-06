@@ -11,18 +11,17 @@ class RedirectUnauthorizedPanelAccess
     {
         $user = $request->user();
 
-        // Excluir rutas de login para evitar bucles de redirección
-        if ($request->is('home/login') || $request->is('logout') || $request->is('*/logout')) {
+        // Excluir rutas de login y logout para evitar bucles
+        if ($request->is('home/login') || $request->is('logout')) {
             return $next($request);
         }
-        
 
         // Si el usuario no está autenticado, redirige al login
         if (!$user) {
             return redirect('/home/login');
         }
 
-        // Mapear roles a sus rutas correspondientes
+        // Mapear roles a las rutas base de sus paneles correspondientes
         $panelRoutesByRole = [
             'super_admin' => '/admin',
             'Administrador' => '/admin',
@@ -31,13 +30,16 @@ class RedirectUnauthorizedPanelAccess
             'Analista' => '/partes',
         ];
 
-        // Redirige según el rol
-        foreach ($panelRoutesByRole as $role => $route) {
+        // Obtener la URL base de la ruta actual
+        $currentBasePath = '/' . explode('/', trim($request->path(), '/'))[0];
+
+        // Verificar si la URL base pertenece al panel del usuario
+        foreach ($panelRoutesByRole as $role => $basePath) {
             if ($user->hasRole($role)) {
-                if ($request->is(trim($route, '/'))) {
-                    return $next($request); // Si ya está en la ruta correcta, permite el acceso
+                if ($currentBasePath === $basePath) {
+                    return $next($request); // Permitir acceso a la ruta
                 }
-                return redirect($route); // Redirige al panel correspondiente
+                return redirect($basePath); // Redirigir al panel base
             }
         }
 
