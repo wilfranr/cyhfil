@@ -898,7 +898,6 @@ class PedidosResource extends Resource
 
                                 TextInput::make('direccion')
                                     ->label('Dirección')
-
                                     ->disabled(),
                                 TextInput::make('telefono')
                                     ->label('Telefono')

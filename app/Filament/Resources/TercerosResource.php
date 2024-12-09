@@ -127,7 +127,7 @@ class TercerosResource extends Resource
                                                         ->label('Nombre')
                                                         ->required()
                                                         ->placeholder('Ingrese el nombre del tipo de máquina'),
-                                                    TextArea::make('definicion')
+                                                    MarkdownEditor::make('definicion')
                                                         ->label('Descripción')
                                                         ->required()
                                                         ->placeholder('Proporcione una descripción del tipo de máquina'),

@@ -180,7 +180,8 @@ class MaquinasResource extends Resource
 
                 Forms\Components\TextInput::make('serie')
                     ->label('Serie')
-                    ->required(),
+                    // ->required()
+                    ->unique(),
 
                 Forms\Components\TextInput::make('arreglo')
                     ->label('Arreglo')

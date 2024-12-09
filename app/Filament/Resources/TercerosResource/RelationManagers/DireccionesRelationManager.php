@@ -59,7 +59,7 @@ class DireccionesRelationManager extends RelationManager
                     ->preload(),
                     Forms\Components\Toggle::make('principal')
                     ->label('Principal')
-                    ->default(false)
+                    ->default(true)
                     ->reactive()
                     ->afterStateUpdated(function ($state, $get, $set) {
                         if ($state) {
