@@ -1149,18 +1149,29 @@ class PedidosResource extends Resource
                                             ->relationship('referencia', 'referencia')
                                             ->options(
                                                 Referencia::query()
-                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
-                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
-                                                    ->selectRaw("referencias.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
-                                                    ->limit(50)
-                                                    ->pluck('full_description', 'referencias.id')
-                                                    ->toArray()
+                                                ->leftJoin('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                ->leftJoin('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                ->selectRaw("
+                                                    referencias.id,
+                                                    CASE
+                                                        WHEN articulos.id IS NULL THEN referencias.referencia
+                                                        ELSE CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica)
+                                                    END as full_description
+                                                ")
+                                                ->pluck('full_description', 'referencias.id')
+                                                ->toArray()
                                             )
                                             ->getSearchResultsUsing(function (string $search) {
                                                 return Referencia::query()
-                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
-                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
-                                                    ->selectRaw("referencias.id, CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                                                    ->leftJoin('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->leftJoin('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("
+                                                        referencias.id,
+                                                        CASE
+                                                            WHEN articulos.id IS NULL THEN referencias.referencia
+                                                            ELSE CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica)
+                                                        END as full_description
+                                                    ")
                                                     ->where(function ($query) use ($search) {
                                                         $query->where('referencias.referencia', 'like', "%{$search}%")
                                                             ->orWhere('articulos.descripcionEspecifica', 'like', "%{$search}%");
@@ -1171,9 +1182,14 @@ class PedidosResource extends Resource
                                             })
                                             ->getOptionLabelUsing(function ($value) {
                                                 return Referencia::query()
-                                                    ->join('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
-                                                    ->join('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
-                                                    ->selectRaw("CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica) as full_description")
+                                                    ->leftJoin('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->leftJoin('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("
+                                                        CASE
+                                                            WHEN articulos.id IS NULL THEN referencias.referencia
+                                                            ELSE CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica)
+                                                        END as full_description
+                                                    ")
                                                     ->where('referencias.id', $value)
                                                     ->pluck('full_description')
                                                     ->first();
