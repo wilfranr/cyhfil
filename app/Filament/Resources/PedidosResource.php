@@ -113,15 +113,15 @@ class PedidosResource extends Resource
                             ->hiddenOn('create')
                             ->label('Cliente'),
                         Placeholder::make('direccion')
-                            ->content(fn(Pedido $record): string => $record->tercero->direccion)
-                            ->hiddenOn('create')
+                        ->content(fn(Pedido $record): string => $record->tercero?->direccion ?? 'N/A') // Verifica que $tercero exista
+                        ->hiddenOn('create')
                             ->label('Dirección'),
                         Placeholder::make('telefono')
-                            ->content(fn(Pedido $record): string => $record->tercero->telefono)
+                            ->content(fn(Pedido $record): string => $record->tercero->telefono ?? 'N/A')
                             ->hiddenOn('create')
                             ->label('Telefono'),
                         Placeholder::make('email')
-                            ->content(fn(Pedido $record): string => $record->tercero->email)
+                            ->content(fn(Pedido $record): string => $record->tercero->email ?? 'N/A')
                             ->hiddenOn('create')
                             ->label('Email'),
                         Placeholder::make('contacto')

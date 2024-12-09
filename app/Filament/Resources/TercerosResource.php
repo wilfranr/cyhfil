@@ -427,6 +427,7 @@ class TercerosResource extends Resource
                         ->icon('heroicon-o-map-pin')
                         ->schema([
                             TextInput::make('direccion')
+                                ->required()
                                 ->label('Dirección'),
                             Forms\Components\Select::make('country_id')
                                 ->relationship(name: 'country', titleAttribute: 'name')
