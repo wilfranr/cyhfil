@@ -40,7 +40,7 @@ class LogisticaPanelProvider extends PanelProvider
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
-            // ->maxContentWidth('full')
+            ->maxContentWidth('full')
             ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->sidebarWidth('15 rem')

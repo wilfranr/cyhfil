@@ -46,7 +46,7 @@ class VentasPanelProvider extends PanelProvider
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
-            // ->maxContentWidth('full')
+            ->maxContentWidth('full')
             ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->userMenuItems([

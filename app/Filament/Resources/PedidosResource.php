@@ -1144,7 +1144,7 @@ class PedidosResource extends Resource
                                     ->schema([
                                         // Textinput::make('referencia'),
                                         Select::make('referencia_id')
-                                            ->label('Referencia - Artículo')
+                                            // ->label('Referencia - Artículo')
                                             ->searchable()
                                             ->relationship('referencia', 'referencia')
                                             ->options(

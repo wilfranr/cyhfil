@@ -45,7 +45,7 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->globalSearchKeyBindings(['ctrl+b'])
             ->sidebarCollapsibleOnDesktop()
-            // ->maxContentWidth(MaxWidth::Full)
+            ->maxContentWidth(MaxWidth::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->userMenuItems([
