@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PedidosResource\Pages;
+use App\Filament\Resources\PedidosResource\RelationManagers;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Fabricante, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista, State, City};
@@ -113,8 +114,8 @@ class PedidosResource extends Resource
                             ->hiddenOn('create')
                             ->label('Cliente'),
                         Placeholder::make('direccion')
-                        ->content(fn(Pedido $record): string => $record->tercero?->direccion ?? 'N/A') // Verifica que $tercero exista
-                        ->hiddenOn('create')
+                            ->content(fn(Pedido $record): string => $record->tercero?->direccion ?? 'N/A') // Verifica que $tercero exista
+                            ->hiddenOn('create')
                             ->label('Dirección'),
                         Placeholder::make('telefono')
                             ->content(fn(Pedido $record): string => $record->tercero->telefono ?? 'N/A')
@@ -193,7 +194,7 @@ class PedidosResource extends Resource
                             ->icon('heroicon-o-user')
                             ->columns(2)
                             ->schema([
-
+                                //Seleccionar Tercero
                                 Select::make('tercero_id')
                                     ->label('Cliente')
                                     ->relationship('tercero', 'nombre', fn($query) => $query->whereIn('tipo', ['Cliente', 'Ambos'])) // Filtra por tipo "cliente" o "ambos"
@@ -905,6 +906,7 @@ class PedidosResource extends Resource
                                 TextInput::make('email')
                                     ->label('Email')
                                     ->disabled(),
+                                //Selecionar Contacto del Tercero
                                 Select::make('contacto_id')
                                     ->label('Contacto')
                                     ->options(function (callable $get) {
@@ -989,6 +991,7 @@ class PedidosResource extends Resource
                                         $action->modalWidth('lg');
                                     }),
 
+                                //Selecionar Maquina del Tercero
                                 Select::make('maquina_id')
                                     ->label('Máquinas')
                                     ->options(function ($get) {
@@ -1092,7 +1095,7 @@ class PedidosResource extends Resource
                                             ->required(),
                                         TextInput::make('serie')
                                             ->label('Serie')
-                                            ->required(),
+                                            ->unique('maquinas', 'serie', ignoreRecord: true),
                                         TextInput::make('arreglo')
                                             ->label('Arreglo'),
                                         FileUpload::make('foto')
@@ -1149,17 +1152,17 @@ class PedidosResource extends Resource
                                             ->relationship('referencia', 'referencia')
                                             ->options(
                                                 Referencia::query()
-                                                ->leftJoin('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
-                                                ->leftJoin('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
-                                                ->selectRaw("
+                                                    ->leftJoin('articulos_referencias', 'referencias.id', '=', 'articulos_referencias.referencia_id')
+                                                    ->leftJoin('articulos', 'articulos_referencias.articulo_id', '=', 'articulos.id')
+                                                    ->selectRaw("
                                                     referencias.id,
                                                     CASE
                                                         WHEN articulos.id IS NULL THEN referencias.referencia
                                                         ELSE CONCAT(referencias.referencia, ' - ', articulos.descripcionEspecifica)
                                                     END as full_description
                                                 ")
-                                                ->pluck('full_description', 'referencias.id')
-                                                ->toArray()
+                                                    ->pluck('full_description', 'referencias.id')
+                                                    ->toArray()
                                             )
                                             ->getSearchResultsUsing(function (string $search) {
                                                 return Referencia::query()
@@ -1766,10 +1769,10 @@ class PedidosResource extends Resource
                                                             ->label('Cantidad')
                                                             ->numeric()
                                                             ->required()
-                                                            ->default(fn (Get $get) => $get('../../cantidad')), // Usa $get para acceder al valor del otro campo
+                                                            ->default(fn(Get $get) => $get('../../cantidad')), // Usa $get para acceder al valor del otro campo
 
-                                                            
-                                                            
+
+
                                                         TextInput::make('ubicacion')
                                                             ->label('Ubicación')
                                                             ->readOnly(),
@@ -2160,7 +2163,7 @@ class PedidosResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // 'referencia' => RelationManagers\ReferenciasRelationManager::class,
+            // 'referencias' => RelationManagers\ReferenciasRelationManager::class,
 
         ];
     }
