@@ -5,7 +5,7 @@ namespace App\Filament\Resources\ListasResource\Pages;
 use App\Filament\Resources\ListasResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\ListRecords\Tab;
+use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListListas extends ListRecords
@@ -38,6 +38,7 @@ class ListListas extends ListRecords
             'Tipo Medida' => Tab::make()->query(function (Builder $query) {
                 $query->where('tipo', 'Tipo de medida');
             }),
+            
         ];
     }
 }

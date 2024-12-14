@@ -6,8 +6,7 @@ use App\Filament\Resources\PedidosResource;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\ListRecords\Tab;
-use Filament\Tables\Table;
+use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
