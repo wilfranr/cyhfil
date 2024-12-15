@@ -1284,5 +1284,4 @@
 
     <x-filament-actions::modals />
 </div>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.7/dist/cdn.min.js" defer></script>
-<script src="{{ asset('js/filament/tables/tables.js') }}" defer></script>
+

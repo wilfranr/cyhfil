@@ -26,7 +26,7 @@ class ListListas extends ListRecords
             Action::make('FileUpload')
                 ->label('Cargar Excel')
                 ->modalHeading('Cargar archivo Excel')
-                ->modalDescription('Seleccione un archivo Excel con los datos de la lista. Si lo requiere puede descargar la plantilla correponmdiente.')
+                ->modalDescription('Seleccione un archivo Excel con los datos de la lista. Si lo requiere puede descargar la plantilla correspondiente.')
                 ->modalSubmitActionLabel('Cargar')
                 ->icon('heroicon-o-document-arrow-up')
                 ->color('success')
