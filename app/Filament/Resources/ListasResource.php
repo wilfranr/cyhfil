@@ -39,11 +39,11 @@ class ListasResource extends Resource
                     ->label('Tipo')
                     ->live()
                     ->options([
-                        'Marca' => 'Marca',
-                        'Tipo de Máquina' => 'Tipo de máquina',
-                        'Definición de artículo' => 'Definición de artículo',
-                        'Unidad de medida' => 'Unidad de medida',
-                        'Tipo de medida' => 'Tipo de medida',
+                        'MARCA' => 'Marca',
+                        'TIPO DE MAQUINA' => 'Tipo de máquina',
+                        'DEFINICION DE ARTICULO' => 'Definición de artículo',
+                        'UNIDAD DE MEDIDA' => 'Unidad de medida',
+                        'TIPO DE MEDIDA' => 'Tipo de medida',
                     ])
                     ->required(),
                 TextInput::make('nombre')

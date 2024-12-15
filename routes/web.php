@@ -40,6 +40,10 @@ Route::post('/broadcasting/auth', function () {
     return response()->json([], 200);
 });
 
+//Ruta para descarga Plantilla de excel en listas
+Route::get('/downloadExcel', function () {
+    $filePath = public_path('storage/PlantillaListas.xlsx');
+    $fileName = 'PlantillaListas.xlsx';
 
-
-
+    return response()->download($filePath, $fileName);
+})->name('downloadExcel');
