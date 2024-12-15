@@ -7,7 +7,7 @@ use App\Filament\Resources\FabricanteResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class Editfabricante extends EditRecord
+class EditFabricante extends EditRecord
 {
     protected static string $resource = FabricanteResource::class;
 
