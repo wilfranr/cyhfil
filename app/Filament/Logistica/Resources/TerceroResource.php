@@ -371,7 +371,7 @@ class TerceroResource extends Resource
     {
         return [
             'index' => Pages\ListTerceros::route('/'),
-            'edit' => Pages\EditTerceros::route('/{record}/edit'),
+            'edit' => Pages\EditTercero::route('/{record}/edit'),
         ];
     }
 }

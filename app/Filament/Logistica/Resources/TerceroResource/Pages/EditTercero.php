@@ -7,7 +7,7 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Actions\Action;
 
-class EditTerceros extends EditRecord
+class EditTercero extends EditRecord
 {
     protected static string $resource = TerceroResource::class;
 
@@ -75,4 +75,3 @@ class EditTerceros extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 }
-
