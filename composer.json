@@ -19,6 +19,7 @@
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.0",
         "leandrocfe/filament-apex-charts": "^3.1",
+        "maatwebsite/excel": "^3.1",
         "pusher/pusher-php-server": "^7.2",
         "pxlrbt/filament-spotlight": "^1.2",
         "shanerbaner82/panel-roles": "^0.0.3",
