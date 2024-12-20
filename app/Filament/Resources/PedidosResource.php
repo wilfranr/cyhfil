@@ -391,11 +391,11 @@ class PedidosResource extends Resource
 
                                                                 TextInput::make('serie')
                                                                     ->label('Serie')
-                                                                    ->required(),
+                                                                    ->unique(table: 'maquinas', column: 'serie', ignoreRecord: true),
 
                                                                 TextInput::make('arreglo')
                                                                     ->label('Arreglo')
-                                                                    ->required(),
+                                                                    ->unique(table: 'maquinas', column: 'arreglo', ignoreRecord: true),
 
                                                                 FileUpload::make('foto')
                                                                     ->label('Foto')
@@ -1095,9 +1095,10 @@ class PedidosResource extends Resource
                                             ->required(),
                                         TextInput::make('serie')
                                             ->label('Serie')
-                                            ->unique('maquinas', 'serie', ignoreRecord: true),
+                                            ->unique(table: 'maquinas', column: 'serie', ignoreRecord: true), // Personaliza tabla y columna
                                         TextInput::make('arreglo')
-                                            ->label('Arreglo'),
+                                            ->label('Arreglo')
+                                            ->unique(table: 'maquinas', column: 'arreglo', ignoreRecord: true), // Personaliza tabla y columna
                                         FileUpload::make('foto')
                                             ->label('Foto')
                                             ->image(),
@@ -1122,6 +1123,7 @@ class PedidosResource extends Resource
                                         }
 
                                         return $maquina->id;
+                                        return [$maquina->id => "{$tipo} - {$maquina->modelo} - {$maquina->serie} - {$fabricanteNombre}"];
                                     })
                                     ->afterStateUpdated(function ($state, $set) {
                                         if ($state) {

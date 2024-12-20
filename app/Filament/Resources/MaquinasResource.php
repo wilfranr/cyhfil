@@ -130,15 +130,15 @@ class MaquinasResource extends Resource
                                 ->label('Nombre')
                                 ->required()
                                 ->placeholder('Nombre del fabricante'),
-                                MarkdownEditor::make('descripcion')
+                            MarkdownEditor::make('descripcion')
                                 ->label('Descripción')
                                 ->nullable()
                                 ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
                                 ->required()
                                 ->maxLength(500),
-                                FileUpload::make('logo')
-                                    ->label('Logo')
-                                    ->image(),
+                            FileUpload::make('logo')
+                                ->label('Logo')
+                                ->image(),
                         ];
                     })
                     ->editOptionForm(function ($record) {
@@ -147,15 +147,15 @@ class MaquinasResource extends Resource
                                 ->label('Nombre')
                                 ->required()
                                 ->placeholder('Nombre del fabricante'),
-                                MarkdownEditor::make('descripcion')
+                            MarkdownEditor::make('descripcion')
                                 ->label('Descripción')
                                 ->nullable()
                                 ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
                                 ->required()
                                 ->maxLength(500),
-                                FileUpload::make('logo')
-                                    ->label('Logo')
-                                    ->image(),
+                            FileUpload::make('logo')
+                                ->label('Logo')
+                                ->image(),
                         ];
                     })
                     ->createOptionUsing(function ($data) {
@@ -178,14 +178,13 @@ class MaquinasResource extends Resource
                     ->label('Modelo')
                     ->required(),
 
-                Forms\Components\TextInput::make('serie')
+                TextInput::make('serie')
                     ->label('Serie')
-                    // ->required()
-                    ->unique(),
+                    ->unique(ignoreRecord: true),
 
-                Forms\Components\TextInput::make('arreglo')
+                TextInput::make('arreglo')
                     ->label('Arreglo')
-                    ->required(),
+                    ->unique(ignoreRecord: true),
 
                 Forms\Components\FileUpload::make('foto')
                     ->label('Foto')

@@ -237,11 +237,11 @@ class TercerosResource extends Resource
 
                                         TextInput::make('serie')
                                             ->label('Serie')
-                                            ->unique('maquinas', 'serie', ignoreRecord: true),
+                                            ->unique(ignoreRecord: true),
 
                                         TextInput::make('arreglo')
-                                            ->label('Arreglo'),
-
+                                            ->label('Arreglo')
+                                            ->unique(ignoreRecord: true),
                                         FileUpload::make('foto')
                                             ->label('Foto')
                                             ->image()
