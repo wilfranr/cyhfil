@@ -156,6 +156,20 @@ class EditPedidos extends EditRecord
                     return;
                 }
 
+                //verificar si PedidoReferencia tiene sistemas asociados
+                $referenciasSinSistema = $record->referencias()
+                    ->whereNull('sistema_id')
+                    ->exists();
+                if ($referenciasSinSistema) {
+                    // Mostrar un mensaje de error y detener la acción
+                    Notification::make()
+                    ->title('No se puede enviar a costeo. Hay referencias sin sistemas asociados.')
+                    ->danger()
+                    ->send();
+                    
+                    return;
+                }
+
                 $record->estado = 'En_Costeo';
                 $record->save();
 
