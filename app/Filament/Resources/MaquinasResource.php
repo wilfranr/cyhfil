@@ -183,8 +183,7 @@ class MaquinasResource extends Resource
                     ->unique(ignoreRecord: true),
 
                 TextInput::make('arreglo')
-                    ->label('Arreglo')
-                    ->unique(ignoreRecord: true),
+                    ->label('Arreglo'),
 
                 Forms\Components\FileUpload::make('foto')
                     ->label('Foto')

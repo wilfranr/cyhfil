@@ -21,6 +21,7 @@ use App\Models\Empresa;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Support\Enums\MaxWidth;
+use Filament\Actions\Action;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -36,6 +37,7 @@ class DashboardPanelProvider extends PanelProvider
             ->darkModeBrandLogo($empresaActiva ? asset('storage/' . $empresaActiva->logo_light) : asset('images/logo.png'))
             ->id('admin')
             ->path('admin')
+            ->default()
             ->login()
             ->passwordReset()
             ->profile(isSimple: false)
@@ -61,7 +63,9 @@ class DashboardPanelProvider extends PanelProvider
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
                     ->url('\admin\trm-settings'),
+                    
             ])
+            
             ->sidebarWidth('15 rem')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

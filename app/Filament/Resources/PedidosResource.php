@@ -6,7 +6,7 @@ use App\Filament\Resources\PedidosResource\Pages;
 use App\Filament\Resources\PedidosResource\RelationManagers;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Fabricante, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista, State, City};
+use App\Models\{Pedido, Tercero, Articulo, Contacto, Maquina, Fabricante, Referencia, Sistema, TRM, PedidoReferenciaProveedor, User, Lista, State, City, Empresa};
 use App\Notifications\PedidoCreadoNotification;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Forms\{Form, Get, Set};
@@ -16,6 +16,14 @@ use Filament\Forms\Components;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\{Wizard, Wizard\Step, Textarea, ToggleButtons, ViewField, Select, Repeater, FileUpload, Hidden, Placeholder, DatePicker, Button, Actions\Action, Actions, Section, TextInput, Toggle, MarkdownEditor};
 use Illuminate\Support\Collection;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\View;
+use Illuminate\Support\Facades\Storage;
+use Filament\Support\Enums\ActionSize;
+use Filament\Forms\Components\Grid;
+
+
+
 
 class PedidosResource extends Resource
 {
@@ -176,14 +184,28 @@ class PedidosResource extends Resource
                 Section::make('Información de máquina')
                     ->schema([
                         Placeholder::make('maquina')
+                            ->key('maquina') // Agregamos un identificador único
                             ->content(
                                 fn(Pedido $record): string => $record->maquina
-                                    ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie} - {$record->maquina->fabricantes->nombre}"
+                                    ? "{$record->maquina->listas->nombre} - {$record->maquina->modelo} - {$record->maquina->serie} - 
+                                    {$record->maquina->arreglo} -{$record->maquina->fabricantes->nombre}"
                                     : 'Sin máquina asociada'
                             )
                             ->hiddenOn('create')
                             ->label('Máquina')
-
+                            ->hintIcon('heroicon-o-question-mark-circle')
+                            ->hintAction(
+                                Action::make('info')
+                                    ->modalHeading('Foto de la máquina')
+                                    ->modalContent(function (Pedido $record) {
+                                        return view('components.maquina-foto', [
+                                            'hasImage' => $record->maquina && $record->maquina->foto,
+                                            'imageUrl' => $record->maquina && $record->maquina->foto ? Storage::url($record->maquina->foto) : null,
+                                            'maquina' => $record->maquina, // Pasamos la máquina para mostrar más info
+                                        ]);
+                                    })
+                                    ->modalSubmitAction(false)
+                            ),
                     ])->hiddenOn('create'),
 
                 //Fin de Placeholders
@@ -1216,7 +1238,7 @@ class PedidosResource extends Resource
                                                                 ->label('Definición')
                                                                 ->options(
                                                                     Lista::query()
-                                                                        ->where('tipo', 'Definición de artículo')
+                                                                        ->where('tipo', 'Tipo de artículo')
                                                                         ->get()
                                                                         ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
                                                                         ->toArray()
@@ -1224,11 +1246,11 @@ class PedidosResource extends Resource
                                                                 ->createOptionForm(function () {
                                                                     return [
                                                                         Hidden::make('tipo')
-                                                                            ->default('Definición de artículo')
+                                                                            ->default('Tipo de Artículo')
                                                                             ->required(),
                                                                         TextInput::make('nombre')
                                                                             ->label('Nombre')
-                                                                            ->placeholder('Nombre de la definición'),
+                                                                            ->placeholder('Nombre del tipo de artículo'),
                                                                         TextInput::make('definicion')
                                                                             ->label('Descripción de definición')
                                                                             ->placeholder('Definición del artículo'),
@@ -1240,7 +1262,7 @@ class PedidosResource extends Resource
                                                                 })
                                                                 ->createOptionUsing(function ($data) {
                                                                     $definicion = Lista::create([
-                                                                        'tipo' => 'Definición de artículo',
+                                                                        'tipo' => 'Tipo de Artículo',
                                                                         'nombre' => $data['nombre'],
                                                                         'definicion' => $data['definicion'],
                                                                     ]);
@@ -1248,7 +1270,7 @@ class PedidosResource extends Resource
                                                                     return $definicion->nombre;
                                                                 })
                                                                 ->createOptionAction(function (Action $action) {
-                                                                    $action->modalHeading('Nueva Definición de Artículo'); // Personaliza el encabezado
+                                                                    $action->modalHeading('Nuevo Tipo de Artículo'); // Personaliza el encabezado
                                                                     $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
                                                                 })
                                                                 ->searchable()
@@ -1264,8 +1286,8 @@ class PedidosResource extends Resource
                                                                 ->placeholder('Descripción específica del artículo')
                                                                 ->required(),
                                                             TextInput::make('peso')
-                                                                ->label('Peso (gr)')
-                                                                ->placeholder('Peso del artículo en gramos')
+                                                                ->label('Peso (Kg)')
+                                                                ->placeholder('Peso del artículo en Kilogramos')
                                                                 ->numeric(),
                                                             Textarea::make('comentarios')
                                                                 ->label('Comentarios')
@@ -1353,11 +1375,11 @@ class PedidosResource extends Resource
                                                         )
                                                         ->createOptionForm(function () {
                                                             return [
-                                                                Select::make('definicion')
-                                                                    ->label('Definición')
+                                                                Select::make('tipo')
+                                                                    ->label('Tipo')
                                                                     ->options(
                                                                         Lista::query()
-                                                                            ->where('tipo', 'Definición de artículo')
+                                                                            ->where('tipo', 'Tipo de Artículo')
                                                                             ->get()
                                                                             ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
                                                                             ->toArray()
@@ -1365,7 +1387,7 @@ class PedidosResource extends Resource
                                                                     ->createOptionForm(function () {
                                                                         return [
                                                                             Hidden::make('tipo')
-                                                                                ->default('Definición de artículo')
+                                                                                ->default('Tipo de Artículo')
                                                                                 ->required(),
                                                                             TextInput::make('nombre')
                                                                                 ->label('Nombre')
@@ -1381,7 +1403,7 @@ class PedidosResource extends Resource
                                                                     })
                                                                     ->createOptionUsing(function ($data) {
                                                                         $definicion = Lista::create([
-                                                                            'tipo' => 'Definición de artículo',
+                                                                            'tipo' => 'Tipo de Artículo',
                                                                             'nombre' => $data['nombre'],
                                                                             'definicion' => $data['definicion'],
                                                                         ]);
@@ -1389,7 +1411,7 @@ class PedidosResource extends Resource
                                                                         return $definicion->nombre;
                                                                     })
                                                                     ->createOptionAction(function (Action $action) {
-                                                                        $action->modalHeading('Nueva Definición de Artículo'); // Personaliza el encabezado
+                                                                        $action->modalHeading('Nuevo Tipo de Artículo'); // Personaliza el encabezado
                                                                         $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
                                                                     })
                                                                     ->searchable()
@@ -1405,8 +1427,8 @@ class PedidosResource extends Resource
                                                                     ->placeholder('Descripción específica del artículo')
                                                                     ->required(),
                                                                 TextInput::make('peso')
-                                                                    ->label('Peso (gr)')
-                                                                    ->placeholder('Peso del artículo en gramos')
+                                                                    ->label('Peso (Kg)')
+                                                                    ->placeholder('Peso del artículo en Kilogramos')
                                                                     ->numeric(),
                                                                 Textarea::make('comentarios')
                                                                     ->label('Comentarios')
@@ -1420,11 +1442,11 @@ class PedidosResource extends Resource
                                                         })
                                                         ->editOptionForm(function () {
                                                             return [
-                                                                Select::make('definicion')
-                                                                    ->label('Definición')
+                                                                Select::make('tipo')
+                                                                    ->label('Tipo')
                                                                     ->options(
                                                                         Lista::query()
-                                                                            ->where('tipo', 'Definición de artículo')
+                                                                            ->where('tipo', 'Tipo de Artículo')
                                                                             ->get()
                                                                             ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
                                                                             ->toArray()
@@ -1442,8 +1464,8 @@ class PedidosResource extends Resource
                                                                     ->placeholder('Descripción específica del artículo')
                                                                     ->required(),
                                                                 TextInput::make('peso')
-                                                                    ->label('Peso (gr)')
-                                                                    ->placeholder('Peso del artículo en gramos')
+                                                                    ->label('Peso (Kg)')
+                                                                    ->placeholder('Peso del artículo en Kilogramos')
                                                                     ->numeric(),
                                                                 Textarea::make('comentarios')
                                                                     ->label('Comentarios')
@@ -1588,58 +1610,7 @@ class PedidosResource extends Resource
 
                                         // Campos adicionales
                                         Hidden::make('articulo_id')->disabled(),
-                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
-                                        TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
-                                        Select::make('definicion')
-                                            ->label('Definición')
-                                            ->options(
-                                                Lista::where('tipo', 'Definición de artículo')->pluck('nombre', 'id')->toArray()
-                                            )
-                                            ->searchable()
-                                            ->preload()
-                                            ->visible(fn(Get $get) => $get('articulo_id') == null),
-
-
-                                        TextInput::make('peso')
-                                            ->label('Peso (gr)')
-                                            ->disabled()
-                                            ->visible(fn(Get $get) => $get('articulo_id') !== null) // Visible solo si hay un artículo asociado
-                                            ->afterStateHydrated(function (Set $set, Get $get) {
-                                                // Cargar el peso del artículo al cargar el formulario
-                                                $articuloId = $get('articulo_id');
-                                                if ($articuloId) {
-                                                    $articulo = \App\Models\Articulo::find($articuloId);
-                                                    if ($articulo) {
-                                                        $set('peso', $articulo->peso);
-                                                    }
-                                                }
-                                            })
-                                            ->reactive(), // Reactivo para detectar cambios dinámicos
-
-
-                                        Select::make('sistema_id')
-                                            ->label('Sistema')
-                                            ->searchable()
-                                            ->preload()
-                                            ->options(
-                                                Sistema::query()->pluck('nombre', 'id')
-                                            )
-                                            ->createOptionForm([
-                                                TextInput::make('nombre')
-                                                    ->label('Nombre')
-                                                    ->required()
-                                                    ->unique(ignoreRecord: true)
-                                                    ->placeholder('Nombre del sistema'),
-                                                TextInput::make('descripcion')
-                                                    ->label('Descripción'),
-                                                FileUpload::make('imagen')
-                                                    ->label('Imagen')
-                                                    ->image()
-                                                    ->imageEditor(),
-                                            ])
-                                            ->createOptionUsing(function ($data) {
-                                                return Sistema::create($data)->id;
-                                            }),
+                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
                                         Select::make('marca_id')
                                             ->options(
                                                 \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
@@ -1675,27 +1646,73 @@ class PedidosResource extends Resource
                                             })
                                             ->searchable()
                                             ->label('Marca'),
+                                        Select::make('sistema_id')
+                                            ->label('Sistema')
+                                            ->searchable()
+                                            ->preload()
+                                            ->options(
+                                                Sistema::query()->pluck('nombre', 'id')
+                                            )
+                                            ->createOptionForm([
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->placeholder('Nombre del sistema'),
+                                                TextInput::make('descripcion')
+                                                    ->label('Descripción'),
+                                                FileUpload::make('imagen')
+                                                    ->label('Imagen')
+                                                    ->image()
+                                                    ->imageEditor(),
+                                            ])
+                                            ->createOptionUsing(function ($data) {
+                                                return Sistema::create($data)->id;
+                                            })
+                                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: function ($get) {
+                                                $sistemaId = $get('sistema_id');
+                                                return $sistemaId ? Sistema::find($sistemaId)?->descripcion ?? 'Sin descripción' : 'Seleccione un sistema';
+                                            })->live(),
+
+                                        Select::make('tipo')
+                                            ->label('Tipo')
+                                            ->options(
+                                                Lista::where('tipo', 'Tipo de Artículo')->pluck('nombre', 'id')->toArray()
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn(Get $get) => $get('articulo_id') == null),
+                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
 
 
-
-
-                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
                                         TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
+                                        TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
+                                        TextInput::make('peso')
+                                            ->label('Peso (gr)')
+                                            ->disabled()
+                                            ->visible(fn(Get $get) => $get('articulo_id') !== null) // Visible solo si hay un artículo asociado
+                                            ->afterStateHydrated(function (Set $set, Get $get) {
+                                                // Cargar el peso del artículo al cargar el formulario
+                                                $articuloId = $get('articulo_id');
+                                                if ($articuloId) {
+                                                    $articulo = \App\Models\Articulo::find($articuloId);
+                                                    if ($articulo) {
+                                                        $set('peso', $articulo->peso);
+                                                    }
+                                                }
+                                            })
+                                            ->reactive(), // Reactivo para detectar cambios dinámicos
                                         Toggle::make('mostrar_referencia')
                                             ->label('Mostrar nombre de referencia en cotización')
                                             ->default(true)
-                                            ->hidden(function () {
-                                                $user = Auth::user();
-                                                if ($user != null) {
-                                                    $rol = $user->roles->first()->name;
-                                                    if ($rol == 'Analista') {
-                                                        return $rol == 'Analista';
-                                                    } elseif ($rol == 'Logistica') {
-                                                        return $rol == 'Logistica';
-                                                    }
-                                                }
-                                            }),
+                                            ->hidden(
+                                                fn($get) => ($pedido = \App\Models\Pedido::find($get('pedido_id')))
+                                                    ? (!in_array($pedido->estado, ['En_Costeo', 'Cotizado'])
+                                                        || in_array(Auth::user()?->roles->first()?->name, ['Analista', 'Logistica']))
+                                                    : true
+                                            )
+                                            ->visibleOn('edit'),
                                         ToggleButtons::make('estado')
                                             ->label('Estado de referencia')
                                             ->options([
@@ -1711,7 +1728,14 @@ class PedidosResource extends Resource
                                                 0 => 'heroicon-o-x-circle',
                                             ])
                                             ->default(1)
-                                            ->inline(),
+                                            ->inline()
+                                            ->hidden(
+                                                fn($get) => ($pedido = \App\Models\Pedido::find($get('pedido_id')))
+                                                    ? (!in_array($pedido->estado, ['En_Costeo', 'Cotizado'])
+                                                        || in_array(Auth::user()?->roles->first()?->name, ['Analista', 'Logistica']))
+                                                    : true
+                                            )
+                                            ->visibleOn('edit'),
                                         //Referencias de proveedores
                                         Section::make()
                                             ->schema([
@@ -1845,14 +1869,26 @@ class PedidosResource extends Resource
                                                                 $costo_unidad = $get('costo_unidad');
                                                                 $utilidad = $get('utilidad');
                                                                 $cantidad = $get('cantidad');
-                                                                $trm = TRM::query()->first()->trm;
+                                                                $peso = $get('../../peso');
+                                                                $trm = TRM::query()->latest()->first()->trm;
+                                                                $flete = Empresa::query()->first()->flete;
+                                                                //valor unidad = costo unidad + (peso * 2.2 * flete)
+                                                                //valor unidad = valor unidad * TRM
+                                                                //valor unidad = $valor unidad + (($utilidad * $valor unidad) / 100);
+                                                                //valor total = valor unidad * cantidad
                                                                 if ($get('ubicacion') == 'Internacional') {
-                                                                    $costo_total = $costo_unidad * $cantidad;
-                                                                    $costo_total = $costo_total * $trm;
-                                                                    $costo_total = $costo_total + (($utilidad * $costo_total) / 100);
-                                                                    $valor_total = $costo_total;
-                                                                    $valor_unidad = $valor_total / $cantidad;
-                                                                    $set('valor_total', $costo_total);
+                                                                    $valor_unidad = $costo_unidad + ($peso * 2.2 * $flete);
+                                                                    $valor_unidad = $valor_unidad * $trm;
+                                                                    // dd($valor_unidad);
+                                                                    $valor_unidad = $valor_unidad + (($utilidad * $valor_unidad) / 100);
+                                                                    $valor_unidad = round($valor_unidad, -2);
+                                                                    $valor_total = $valor_unidad * $cantidad;
+                                                                    // $costo_total = $costo_unidad * $cantidad;
+                                                                    // $costo_total = $costo_total * $trm;
+                                                                    // $costo_total = $costo_total + (($utilidad * $costo_total) / 100);
+                                                                    // $valor_total = $costo_total;
+                                                                    // $valor_unidad = $valor_total / $cantidad;
+                                                                    $set('valor_total', $valor_total);
                                                                     $set('valor_unidad', $valor_unidad);
                                                                 } else {
                                                                     $costo_total = $costo_unidad + (($utilidad * $costo_unidad) / 100);

@@ -95,14 +95,17 @@ class ListListas extends ListRecords
             'Tipos de Máquina' => Tab::make()->query(function (Builder $query) {
                 $query->where('tipo', 'Tipo de Máquina');
             }),
-            'Definiciones' => Tab::make()->query(function (Builder $query) {
-                $query->where('tipo', 'Definición de artículo');
+            'Tipos de Artículo' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Tipo de Artículo');
             }),
-            'Uni. Medida' => Tab::make()->query(function (Builder $query) {
-                $query->where('tipo', 'Unidad de medida');
+            'Unidades Medida' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Unidad de Medida');
             }),
-            'Tipo Medida' => Tab::make()->query(function (Builder $query) {
-                $query->where('tipo', 'Tipo de medida');
+            'Tipos de Medida' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Tipo de Medida');
+            }),
+            'Nombres de Medida' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Nombre de Medida');
             }),
         ];
     }

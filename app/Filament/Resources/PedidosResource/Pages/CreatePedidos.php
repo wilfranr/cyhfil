@@ -5,7 +5,6 @@ namespace App\Filament\Resources\PedidosResource\Pages;
 use App\Filament\Resources\PedidosResource;
 use Filament\Resources\Pages\CreateRecord;
 use App\Models\User;
-use App\Notifications\PedidoCreadoNotification;
 use Filament\Notifications\Notification; // Usamos la clase Notification de Filament
 use Filament\Notifications\Actions\Action;
 
@@ -45,6 +44,20 @@ class CreatePedidos extends CreateRecord
                 ])
                 ->sendToDatabase($recipient);
         }
+
+    }
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Pedido Creado')
+            ->body("Se ha creado un nuevo pedido con ID: {$this->record->id}.")
+            ->success()
+            ->actions([
+                Action::make('Ver Pedido')
+                ->url($this->getResource()::getUrl('edit', ['record' => $this->record->id]))
+                ->button(),
+            ])
+            ->send();
     }
 
     /**

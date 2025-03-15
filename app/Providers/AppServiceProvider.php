@@ -12,6 +12,7 @@ use Filament\Support\Assets\Js; // Asegúrate de importar esta clase
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Auth;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -40,7 +41,8 @@ class AppServiceProvider extends ServiceProvider
                 ->labels([
                     'admin' => 'Admin Panel',
                     'app' => 'SaaS Application'
-                ]);
+                ])
+                ->visible(fn (): bool => auth()->user()?->hasRole('Administrador') || auth()->user()?->hasRole('super_admin'));
         });
 
         // Registrar el script JavaScript personalizado con FilamentAsset

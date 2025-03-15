@@ -7,6 +7,7 @@ use App\Filament\Resources\ArticulosResource\Pages;
 use App\Filament\Resources\ArticulosResource\RelationManagers;
 use App\Models\Lista;
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -22,9 +23,16 @@ use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
+use Filament\Resources\Pages\Page;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Pages\SubNavigationPosition;
 
 class ArticulosResource extends Resource
 {
@@ -35,6 +43,8 @@ class ArticulosResource extends Resource
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'definicion';
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
@@ -48,155 +58,79 @@ class ArticulosResource extends Resource
     {
         return $form
             ->schema([
-                Tabs::make('Tabs')
-                    ->tabs([
-                        Tabs\Tab::make('Detalles de artículo')
+
+                Group::make()
+                    ->schema([
+                        Select::make('definicion')
+                            ->label('Tipo')
+                            ->options(
+                                Lista::query()
+                                    ->where('tipo', 'Tipo de artículo')
+                                    ->get()
+                                    ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
+                                    ->toArray()
+                            )
+                            ->createOptionForm(function () {
+                                return [
+                                    Hidden::make('tipo')
+                                        ->default('Tipo de Artículo')
+                                        ->required(),
+                                    TextInput::make('nombre')
+                                        ->label('Nombre')
+                                        ->placeholder('Nombre del tipo de artículo'),
+                                    TextInput::make('definicion')
+                                        ->label('Definición')
+                                        ->placeholder('Definición del artículo'),
+                                    FileUpload::make('foto')
+                                        ->label('Foto')
+                                        ->image()
+                                        ->imageEditor(),
+                                ];
+                            })
+                            ->createOptionUsing(function ($data) {
+                                $definicion = Lista::create([
+                                    'tipo' => 'Tipo de Artículo',
+                                    'nombre' => $data['nombre'],
+                                    'definicion' => $data['definicion'],
+                                ]);
+
+                                return $definicion->nombre;
+                            })
+
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->required(),
+
+
+                        TextInput::make('descripcionEspecifica')
+                            ->label('Decripción')
+                            ->placeholder('Descripción específica del artículo'),
+                        TextInput::make('peso')
+                            ->label('Peso (Kg)')
+                            ->placeholder('Peso del artículo en Kilogramos'),
+                        Textarea::make('comentarios')
+                            ->label('Comentarios')
+                            ->placeholder('Comentarios del artículo'),
+
+                        Section::make('Referenicas Cruzadas')
                             ->schema([
-                                Select::make('definicion')
-                                    ->label('Definición')
-                                    ->options(
-                                        Lista::query()
-                                            ->where('tipo', 'Definición de artículo')
-                                            ->get()
-                                            ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
-                                            ->toArray()
-                                    )
-                                    ->createOptionForm(function () {
-                                        return [
-                                            Hidden::make('tipo')
-                                                ->default('Definición de artículo')
-                                                ->required(),
-                                            TextInput::make('nombre')
-                                                ->label('Nombre')
-                                                ->placeholder('Nombre de la definición'),
-                                            TextInput::make('definicion')
-                                                ->label('Definición')
-                                                ->placeholder('Definición del artículo'),
-                                            FileUpload::make('foto')
-                                                ->label('Foto')
-                                                ->image()
-                                                ->imageEditor(),
-                                        ];
-                                    })
-                                    ->createOptionUsing(function ($data) {
-                                        $definicion = Lista::create([
-                                            'tipo' => 'Definición de artículo',
-                                            'nombre' => $data['nombre'],
-                                            'definicion' => $data['definicion'],
-                                        ]);
-
-                                        return $definicion->nombre;
-                                    })
-
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->required(),
-                                FileUpload::make('foto_medida')
-                                    ->label('Plano Esquemático')
-                                    ->image()
-                                    ->imageEditor(),
-
-                                TextInput::make('descripcionEspecifica')
-                                    ->label('Decripción específica')
-                                    ->placeholder('Descripción específica del artículo'),
-                                TextInput::make('peso')
-                                    ->label('Peso (gr)')
-                                    ->placeholder('Peso del artículo en gramos'),
-                                Textarea::make('comentarios')
-                                    ->label('Comentarios')
-                                    ->placeholder('Comentarios del artículo'),
-                                FileUpload::make('fotoDescriptiva')
-                                    ->label('Foto de Referencia')
-                                    ->image()
-                                    ->imageEditor()
-                                    ->openable(),
-                                Section::make('Referenicas Cruzadas')
-                                    ->schema([
-                                        Repeater::make('articuloReferencia')->label('')
-                                            ->relationship()
-                                            ->schema([
-                                                Select::make('referencia_id')
-                                                    ->options(
-                                                        Referencia::query()
-                                                            ->whereDoesntHave('ArticuloReferencia') // Excluye las referencias ya asociadas a cualquier artículo
-                                                            ->pluck('referencia', 'id')
-                                                    )
-                                                    ->createOptionForm(function () {
-                                                        return [
-                                                            TextInput::make('referencia')
-                                                                ->label('Referencia')
-                                                                ->placeholder('Referencia del artículo')
-                                                                ->unique('referencias', 'referencia', ignoreRecord: true),
-                                                            Select::make('marca_id')
-                                                                ->options(
-                                                                    \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
-                                                                )
-                                                                ->createOptionForm(function () {
-                                                                    return [
-                                                                        TextInput::make('nombre')
-                                                                            ->label('Nombre')
-                                                                            ->placeholder('Nombre de la marca'),
-                                                                        Hidden::make('tipo')
-                                                                            ->default('Marca'),
-                                                                        TextArea::make('definicion')
-                                                                            ->label('Descripción')
-                                                                            ->placeholder('Definición de la marca'),
-                                                                        FileUpload::make('foto')
-                                                                            ->label('Foto')
-                                                                            ->image()
-                                                                            ->imageEditor(),
-                                                                    ];
-                                                                })
-                                                                ->createOptionUsing(function ($data) {
-                                                                    $marca = Lista::create([
-                                                                        'nombre' => $data['nombre'],
-                                                                        'tipo' => 'Marca',
-                                                                    ]);
-
-                                                                    return $marca->id;
-                                                                })
-                                                                ->searchable()
-                                                                ->label('Marca'),
-                                                            Textarea::make('comentario')
-                                                                ->label('Comentario')
-                                                                ->maxLength(500),
-                                                        ];
-                                                    })
-                                                    ->createOptionUsing(function ($data) {
-                                                        $referencia = Referencia::create([
-                                                            'referencia' => $data['referencia'],
-                                                            'marca_id' => $data['marca_id'],
-                                                        ]);
-
-                                                        return $referencia->id;
-                                                    })
-
-                                                    ->label('Referencia')
-                                                    ->searchable()
-                                                    ->live(onBlur: true)
-                                                    ->required(),
-                                            ])
-                                            ->columns(1)
-                                            ->reorderable()
-                                    ])->visibleOn('create'),
-                            ])->columns(2),
-
-                        Tabs\Tab::make('Juegos')
-                            ->schema([
-                                Repeater::make('articuloJuegos')
+                                Repeater::make('articuloReferencia')->label('')
                                     ->relationship()
                                     ->schema([
                                         Select::make('referencia_id')
                                             ->options(
-                                                Referencia::query()->pluck('referencia', 'id')
+                                                Referencia::query()
+                                                    ->whereDoesntHave('ArticuloReferencia') // Excluye las referencias ya asociadas a cualquier artículo
+                                                    ->pluck('referencia', 'id')
                                             )
                                             ->createOptionForm(function () {
                                                 return [
                                                     TextInput::make('referencia')
                                                         ->label('Referencia')
-                                                        ->placeholder('Referencia del artículo'),
-                                                        Select::make('marca_id')
+                                                        ->placeholder('Referencia del artículo')
+                                                        ->unique('referencias', 'referencia', ignoreRecord: true),
+                                                    Select::make('marca_id')
                                                         ->options(
                                                             \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
                                                         )
@@ -221,16 +155,14 @@ class ArticulosResource extends Resource
                                                                 'nombre' => $data['nombre'],
                                                                 'tipo' => 'Marca',
                                                             ]);
-                                    
+
                                                             return $marca->id;
-                                                        })
-                                                        ->createOptionAction(function (Action $action) {
-                                                            $action->modalHeading('Crear Marca');
-                                                            $action->modalDescription('Crea una nueva marca y será asociada a la referencia automáticamente');
-                                                            $action->modalWidth('lg');
                                                         })
                                                         ->searchable()
                                                         ->label('Marca'),
+                                                    Textarea::make('comentario')
+                                                        ->label('Comentario')
+                                                        ->maxLength(500),
                                                 ];
                                             })
                                             ->createOptionUsing(function ($data) {
@@ -244,53 +176,41 @@ class ArticulosResource extends Resource
 
                                             ->label('Referencia')
                                             ->searchable()
-                                            ->live(onBlur: true),
-                                        TextInput::make('cantidad')
-                                            ->label('Cantidad'),
-                                        TextInput::make('comentario')
-                                            ->label('Comentario'),
+                                            ->live(onBlur: true)
+                                            ->required(),
                                     ])
-                                    ->columns(3)
-                                    ->grid(1)
+                                    ->columns(1)
                                     ->reorderable()
-                                    ->collapsed()
-                                    ->itemLabel(function (array $state): ?string {
-                                        $referencia = Referencia::find($state['referencia_id']);
-                                        return $referencia ? $referencia->referencia : null;
-                                    })
-                                    ->extraItemActions([
-                                        Action::make('openreference')  // Asegúrate de usar la clase correcta aquí
-                                            ->tooltip('Abrir referencia')
-                                            ->icon('heroicon-m-arrow-top-right-on-square')
-                                            ->url(function (array $arguments, Repeater $component): ?string {
-                                                // Obtener el estado del ítem actual
-                                                $itemData = $component->getRawItemState($arguments['item']);
-
-                                                // Obtener el ID de la referencia
-                                                $referenciaId = $itemData['referencia_id'] ?? null;
-
-                                                // Verificar si existe
-                                                if (! $referenciaId) {
-                                                    return null;
-                                                }
-
-                                                // Buscar la referencia
-                                                $referencia = Referencia::find($referenciaId);
-
-                                                // Si no se encuentra, retornar null
-                                                if (! $referencia) {
-                                                    return null;
-                                                }
-
-                                                // Retornar la URL de edición
-                                                return ReferenciaResource::getUrl('edit', ['record' => $referencia->id]);
-                                            }, shouldOpenInNewTab: true)
-                                            ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
-                                    ]),
-                            ]),
-                    ])->columnSpan('full')
-
-            ]);
+                            ])->visibleOn('create'),
+                    ])->columns(4),
+                Group::make()
+                    ->schema([
+                        FileUpload::make('fotoDescriptiva')
+                            ->label('Foto de Referencia')
+                            ->image()
+                            ->imageEditor()
+                            ->openable()
+                            ->imagePreviewHeight('250')
+                            ->loadingIndicatorPosition('left')
+                            ->panelAspectRatio('2:1')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->uploadButtonPosition('left')
+                            ->uploadProgressIndicatorPosition('left'),
+                        FileUpload::make('foto_medida')
+                            ->label('Plano Esquemático')
+                            ->image()
+                            ->openable()
+                            ->imageEditor()
+                            ->imagePreviewHeight('150')
+                            ->loadingIndicatorPosition('left')
+                            ->panelAspectRatio('2:1')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->uploadButtonPosition('left')
+                            ->uploadProgressIndicatorPosition('left'),
+                    ])->columns(2)
+            ])->columns(1);
     }
 
 
@@ -307,7 +227,7 @@ class ArticulosResource extends Resource
                     ->label('Foto'),
 
                 TextColumn::make('definicion')
-                    ->label('Definición')
+                    ->label('Tipo')
                     ->searchable()
                     ->sortable(),
 
@@ -317,7 +237,7 @@ class ArticulosResource extends Resource
                     ->limit(50)
                     ->sortable(),
                 TextColumn::make('peso')
-                    ->label('Peso')
+                    ->label('Peso (Kg)')
                     ->searchable()
                     ->sortable(),
                 // TextColumn::make('cruces')
@@ -335,9 +255,9 @@ class ArticulosResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label(''),
-                Tables\Actions\EditAction::make()->label(''),
-                Tables\Actions\DeleteAction::make()->label(''),
+                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -345,6 +265,79 @@ class ArticulosResource extends Resource
                 ]),
             ]);
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('articuloJuegos.referencia.marca');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Components\Section::make()
+                    ->schema([
+                        Components\Split::make([
+                            Components\Grid::make(3)
+                                ->schema([
+                                    Components\Group::make([
+                                        Components\TextEntry::make('definicion')
+                                            ->label('Tipo'),
+                                        Components\TextEntry::make('descripcionEspecifica')
+                                            ->label('Descripción específica'),
+                                        Components\TextEntry::make('peso')
+                                            ->label('Peso (Kg)'),
+                                    ]),
+                                    Components\Group::make([
+                                        Components\ImageEntry::make('fotoDescriptiva')
+                                            ->label('Foto Descriptiva')->width(300)->square()->height(200)
+                                    ]),
+                                    Components\Group::make([
+                                        Components\ImageEntry::make('foto_medida')
+                                            ->label('Plano Esquemático')->width(300)->height(200)->square(),
+                                    ]),
+
+                                ]),
+                        ]),
+                    ]),
+                // Components\Section::make('Juegos')
+                //     ->schema([
+                //         Components\Grid::make(1)
+                //             ->schema([
+
+                //                 Components\Group::make([
+                //                     RepeatableEntry::make('articuloJuegos')
+                //                         ->schema([
+                //                             TextEntry::make('referencia.referencia')
+                //                                 ->label('Referencia')
+                //                                 ->default('N/A') // Evita errores si el campo es nulo
+                //                                 ->formatStateUsing(fn($state) => $state ?? 'Sin referencia'),
+
+                //                             TextEntry::make('referencia.marca.nombre')
+                //                                 ->label('Marca')
+                //                                 ->default('N/A')
+                //                                 ->formatStateUsing(fn($state) => $state ?? 'Sin marca'),
+
+                //                             TextEntry::make('cantidad')->label('Cantidad'),
+                //                             TextEntry::make('comentario')->label('Comentario'),
+                //                         ])
+                //                         ->columns(4) // Muestra en una sola línea
+                //                         ->columnSpanFull(),
+
+                //                 ]),
+
+                //             ]),
+                //     ]),
+
+            ]);
+    }
+
+    // public static function getRecordSubNavigation(Page $page): array    {
+    //     return [
+    //         Pages\ViewArticulos::class,
+    //         Pages\EditArticulos::class,
+    //     ];
+    // }
 
 
     protected function getHeaderWidgets(): array
@@ -361,6 +354,7 @@ class ArticulosResource extends Resource
         return [
             'referencias' => RelationManagers\ReferenciasRelationManager::class,
             'medidas' => RelationManagers\MedidasRelationManager::class,
+            'articuloReferencias' => RelationManagers\ArticuloReferenciasRelationManager::class,
 
 
         ];
@@ -372,6 +366,7 @@ class ArticulosResource extends Resource
             'index' => Pages\ListArticulos::route('/'),
             'create' => Pages\CreateArticulos::route('/create'),
             'edit' => Pages\EditArticulos::route('/{record}/edit'),
+            'view' => Pages\ViewArticulos::route('/{record}'),
         ];
     }
 }

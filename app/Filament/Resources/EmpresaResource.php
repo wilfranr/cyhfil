@@ -9,6 +9,7 @@ use App\Models\Empresa;
 use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -54,14 +55,6 @@ class EmpresaResource extends Resource
                     ->unique('empresas', 'email', ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('logo_light')
-                    ->label('Logo para modo oscuro')
-                    ->image()
-                    ->imageEditor(),
-                Forms\Components\FileUpload::make('logo_dark')
-                    ->label('Logo para modo claro')
-                    ->image()
-                    ->imageEditor(),
                 Forms\Components\TextInput::make('nit')
                     ->unique('empresas', 'nit', ignoreRecord: true)
                     ->required()
@@ -98,9 +91,32 @@ class EmpresaResource extends Resource
                     ->searchable()
                     ->live()
                     ->preload(),
+                Forms\Components\TextInput::make('flete')
+                    ->label('Flete')
+                    ->required()
+                    ->numeric()
+                    ->step(0.1)
+                    ->default(2.2),
+                Forms\Components\TextInput::make('trm')
+                    ->label('TRM')
+                    ->required()
+                    ->numeric()
+                    ->step(0.01)
+                    ->default(0),
+                Section::make('Logos')
+                    ->schema([
+                        Forms\Components\FileUpload::make('logo_light')
+                            ->label('Logo para modo oscuro')
+                            ->image()
+                            ->imageEditor(),
+                        Forms\Components\FileUpload::make('logo_dark')
+                            ->label('Logo para modo claro')
+                            ->image()
+                            ->imageEditor(),
+                    ])->columns(2),
 
 
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table

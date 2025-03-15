@@ -16,4 +16,13 @@ class ArticuloJuego extends Model
         'comentario',
     ];
 
+    public function articulo()
+    {
+        return $this->belongsTo(Articulo::class, 'articulo_id');
+    }
+
+    public function referencia()
+    {
+        return $this->belongsTo(Referencia::class, 'referencia_id');
+    }
 }

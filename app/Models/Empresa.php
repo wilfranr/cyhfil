@@ -24,6 +24,8 @@ class Empresa extends Model
         'city_id',
         'estado',
         'siglas',
+        'flete',
+        'trm',
     ];
 
     protected $casts = [

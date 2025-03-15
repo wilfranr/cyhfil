@@ -114,8 +114,11 @@ class EditPedidos extends EditRecord
                 $this->getWhatsappClienteAction(),
             ];
         }
-
-        return [$this->getGuardarCambiosAction()];
+        
+        return [
+            $this->getGuardarCambiosAction(),
+            $this->getWhatsappClienteAction()
+        ];
     }
 
     // Acciones predeterminadas

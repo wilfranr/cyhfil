@@ -62,11 +62,11 @@ class ReferenciaResource extends Resource
                     )
                     ->createOptionForm(function () {
                         return [
-                            Select::make('definicion')
-                                ->label('Definición')
+                            Select::make('tipo')
+                                ->label('Tipo')
                                 ->options(
                                     Lista::query()
-                                        ->where('tipo', 'Definición de artículo')
+                                        ->where('tipo', 'Tipo de Artículo')
                                         ->get()
                                         ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
                                         ->toArray()
@@ -74,11 +74,11 @@ class ReferenciaResource extends Resource
                                 ->createOptionForm(function () {
                                     return [
                                         Hidden::make('tipo')
-                                            ->default('Definición de artículo')
+                                            ->default('Tipo de Artículo')
                                             ->required(),
                                         TextInput::make('nombre')
                                             ->label('Nombre')
-                                            ->placeholder('Nombre de la definición'),
+                                            ->placeholder('Nombre del tipo de artículo'),
                                         TextInput::make('definicion')
                                             ->label('Descripción de definición')
                                             ->placeholder('Definición del artículo'),
@@ -90,7 +90,7 @@ class ReferenciaResource extends Resource
                                 })
                                 ->createOptionUsing(function ($data) {
                                     $definicion = Lista::create([
-                                        'tipo' => 'Definición de artículo',
+                                        'tipo' => 'Tipo de Artículo',
                                         'nombre' => $data['nombre'],
                                         'definicion' => $data['definicion'],
                                     ]);
@@ -98,7 +98,7 @@ class ReferenciaResource extends Resource
                                     return $definicion->nombre;
                                 })
                                 ->createOptionAction(function (ActionsAction $action) {
-                                    $action->modalHeading('Nueva Definición de Artículo'); // Personaliza el encabezado
+                                    $action->modalHeading('Nuevo Tipo de Artículo'); // Personaliza el encabezado
                                     $action->modalWidth('lg'); // Ajusta el ancho del modal (opcional)
                                 })
                                 ->searchable()
@@ -114,8 +114,8 @@ class ReferenciaResource extends Resource
                                 ->placeholder('Descripción específica del artículo')
                                 ->required(),
                             TextInput::make('peso')
-                                ->label('Peso (gr)')
-                                ->placeholder('Peso del artículo en gramos')
+                                ->label('Peso (Kg)')
+                                ->placeholder('Peso del artículo en Kilogramos')
                                 ->numeric(),
                             Textarea::make('comentarios')
                                 ->label('Comentarios')
@@ -199,7 +199,8 @@ class ReferenciaResource extends Resource
                         $action->modalWidth('lg');
                     })
                     ->searchable()
-                    ->label('Marca'),
+                    ->label('Marca')
+                    ->required(),
                 Textarea::make('comentario')
                     ->label('Comentario')
                     ->maxLength(500),

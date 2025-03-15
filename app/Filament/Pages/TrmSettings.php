@@ -2,9 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Empresa;
 use Filament\Pages\Page;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
 class TrmSettings extends Page implements Forms\Contracts\HasForms
@@ -39,22 +41,24 @@ class TrmSettings extends Page implements Forms\Contracts\HasForms
     public function submit()
     {
         // Guardar TRM en la base de datos
-        DB::table('t_r_m_s')->updateOrInsert(
-            ['date' => now()->toDateString()],
-            ['trm' => $this->trm]
-        );
+        DB::table('empresas')
+            ->where('estado', true)
+            ->update(['trm' => $this->trm]);
 
         //Resetear el formulario después de guardar
         $this->form->fill([
-            'trm' => $this->getTrm(),
+            'trm' => $this->getTrm()
         ]);
+        Notification::make('TRM actualizada correctamente');
+       
+
     }
 
     protected function getTrm()
     {
-    
-        $latestTrm = DB::table('t_r_m_s')
-            ->latest('date')
+
+        $latestTrm = DB::table('empresas')
+            ->where('estado', true)
             ->value('trm');
 
         return $latestTrm ?? 0;

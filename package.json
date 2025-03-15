@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "laravel-echo": "^1.16.1",
+        "magnify": "^2.3.3",
         "pusher-js": "^8.4.0-rc2"
     }
 }
