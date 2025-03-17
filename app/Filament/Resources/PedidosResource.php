@@ -1669,10 +1669,26 @@ class PedidosResource extends Resource
                                             ->createOptionUsing(function ($data) {
                                                 return Sistema::create($data)->id;
                                             })
-                                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: function ($get) {
-                                                $sistemaId = $get('sistema_id');
-                                                return $sistemaId ? Sistema::find($sistemaId)?->descripcion ?? 'Sin descripción' : 'Seleccione un sistema';
-                                            })->live(),
+                                            ->hintIcon('heroicon-o-question-mark-circle')
+                                            ->hintAction(
+                                                Action::make('infoSistema')
+                                                ->label('Info')
+                                                    ->modalHeading('Información del Sistema')
+                                                    ->modalContent(function (Get $get) {
+                                                        $sistema = Sistema::find($get('sistema_id'));
+                                                        if (!$sistema) {
+                                                            return 'No hay información del sistema seleccionada.';
+                                                        }
+
+                                                        return view('components.sistema-info', [
+                                                            'hasImage' => $sistema->imagen !== null,
+                                                            'imageUrl' => $sistema->imagen ? Storage::url($sistema->imagen) : null,
+                                                            'sistema' => $sistema,
+                                                        ]);
+                                                    })
+                                                    ->modalSubmitAction(false)
+                                            )
+                                            ->live(),
 
                                         Select::make('tipo')
                                             ->label('Tipo')
@@ -1682,7 +1698,26 @@ class PedidosResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->visible(fn(Get $get) => $get('articulo_id') == null),
-                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
+                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null)
+                                        ->hintIcon('heroicon-o-question-mark-circle')
+                                        ->hintAction(
+                                            Action::make('infoArticulo')
+                                                ->label('Info')
+                                                ->modalHeading('Información del Artículo')
+                                                ->modalContent(function (Get $get) {
+                                                    $articulo = Articulo::find($get('articulo_id'));
+                                                    if (!$articulo) {
+                                                        return 'No hay información del artículo seleccionado.';
+                                                    }
+
+                                                    return view('components.articulo-info', [
+                                                        'hasImage' => $articulo->fotoDescriptiva !== null,
+                                                        'imageUrl' => $articulo->fotoDescriptiva ? Storage::url($articulo->fotoDescriptiva) : null,
+                                                        'articulo' => $articulo,
+                                                    ]);
+                                                })
+                                                ->modalSubmitAction(false)
+                                        ),
 
 
                                         TextInput::make('comentario')->label('Comentario'),

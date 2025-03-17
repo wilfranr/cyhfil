@@ -21,13 +21,24 @@ use Filament\Tables;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use League\CommonMark\Reference\Reference;
+use Filament\Resources\Pages\EditRecord;
+
 
 class ReferenciasRelationManager extends RelationManager
 {
     protected static string $relationship = 'ArticuloReferencia';
     protected static ?string $title = 'Referencias Cruzadas';
+
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return is_subclass_of($pageClass, EditRecord::class);
+    }
+
+
 
 
     public function form(Form $form): Form
@@ -43,18 +54,18 @@ class ReferenciasRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('referencia.referencia') // Accede al campo de la relación
             ->columns([
-                    // Tables\Columns\TextColumn::make('referencia.id') // Relación seguida por el campo
-                    //     ->searchable()
-                    //     ->label('Id')
-                    //     ->sortable(),
-                    Tables\Columns\TextColumn::make('referencia.referencia') // Relación seguida por el campo
-                        ->searchable()
-                        ->label('Referencia')
-                        ->sortable(),
-                    Tables\Columns\TextColumn::make('referencia.marca.nombre') // Accede a la relación y al campo de la marca
-                        ->label('Marca')
-                        ->sortable()
-                        ->searchable(),
+                // Tables\Columns\TextColumn::make('referencia.id') // Relación seguida por el campo
+                //     ->searchable()
+                //     ->label('Id')
+                //     ->sortable(),
+                Tables\Columns\TextColumn::make('referencia.referencia') // Relación seguida por el campo
+                    ->searchable()
+                    ->label('Referencia')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('referencia.marca.nombre') // Accede a la relación y al campo de la marca
+                    ->label('Marca')
+                    ->sortable()
+                    ->searchable(),
 
             ])
             ->filters([

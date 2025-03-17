@@ -8,11 +8,17 @@ use App\Models\ArticuloReferencia;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Forms;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class ArticuloReferenciasRelationManager extends RelationManager
 {
     protected static string $relationship = 'articuloJuegos'; // Debe coincidir con el método en Articulo
     protected static ?string $title = 'Juegos';
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return is_subclass_of($pageClass, EditRecord::class);
+    }
 
     public function form(Forms\Form $form): Forms\Form
     {

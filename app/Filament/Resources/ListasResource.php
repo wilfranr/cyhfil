@@ -136,23 +136,23 @@ class ListasResource extends Resource
 
 
     public static function getRelations(): array
-{
-    $recordId = request()->route('record'); // 🔥 Obtiene el ID del registro desde la URL
+    {
+        $recordId = request()->route('record');
 
-    if (!$recordId) {
-        return []; // Si no hay registro, no mostramos ninguna relación
+        if (!$recordId) {
+            return [];
+        }
+
+        $record = Lista::find($recordId);
+
+        if (!$record || $record->tipo !== 'Tipo de Artículo') {
+            return []; // Si no existe o no es un Tipo de Artículo, no mostramos el Relation Manager
+        }
+        // 
+        return [
+            RelationManagers\SistemasRelationManager::class,
+        ];
     }
-
-    $record = Lista::find($recordId); // 🔥 Busca el registro en la base de datos
-
-    if (!$record || $record->tipo !== 'Tipo de Artículo') {
-        return []; // Si no existe o no es un Tipo de Artículo, no mostramos el IRelation Manager
-    }
-// 
-    return [
-        RelationManagers\SistemasRelationManager::class,
-    ];
-}
 
 
     public static function getPages(): array

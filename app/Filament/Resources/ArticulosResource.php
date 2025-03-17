@@ -22,6 +22,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Set;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
@@ -33,6 +34,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\SubNavigationPosition;
+use Filament\Infolists\Components\ViewEntry;
 
 class ArticulosResource extends Resource
 {
@@ -108,7 +110,51 @@ class ArticulosResource extends Resource
                             ->placeholder('Descripción específica del artículo'),
                         TextInput::make('peso')
                             ->label('Peso (Kg)')
-                            ->placeholder('Peso del artículo en Kilogramos'),
+                            ->placeholder('Peso del artículo en Kilogramos')
+                            ->numeric()
+                            ->reactive()
+                            ->hintIcon('heroicon-o-calculator')
+                            ->hintAction(
+                                Action::make('Conversor')
+                                    ->modalHeading('Conversor de Peso')
+                                    ->modalWidth('lg')
+                                    ->form([
+                                        Select::make('unidad_origen')
+                                            ->label('Unidad de origen')
+                                            ->options([
+                                                'g' => 'Gramos (gr)',
+                                                'lb' => 'Libras (lb)',
+                                                'oz' => 'Onzas (oz)',
+                                                't' => 'Toneladas (t)',
+                                            ])
+                                            ->default('g')
+                                            ->required(),
+                                        TextInput::make('valor_origen')
+                                            ->label('Valor a convertir')
+                                            ->numeric()
+                                            ->required()
+                                            ->placeholder('Ingrese el valor'),
+                                    ])
+                                    ->action(function (array $data, Set $set) {
+                                        $valor = $data['valor_origen'];
+                                        $unidad = $data['unidad_origen'];
+
+                                        // Conversión a Kg
+                                        $pesoKg = match ($unidad) {
+                                            'g' => $valor / 1000,       // Gramos a Kg
+                                            'lb' => $valor * 0.453592,  // Libras a Kg
+                                            'oz' => $valor * 0.0283495, // Onzas a Kg
+                                            't' => $valor * 1000,       // Toneladas a Kg
+                                            default => $valor,          // Si ya está en Kg
+                                        };
+
+                                        // Redondeamos a 3 decimales y actualizamos el campo 'peso'
+                                        $set('peso', round($pesoKg, 3));
+                                    })
+                            )
+                            ->suffix('Kg'),
+
+
                         Textarea::make('comentarios')
                             ->label('Comentarios')
                             ->placeholder('Comentarios del artículo'),
@@ -290,44 +336,32 @@ class ArticulosResource extends Resource
                                     ]),
                                     Components\Group::make([
                                         Components\ImageEntry::make('fotoDescriptiva')
-                                            ->label('Foto Descriptiva')->width(300)->square()->height(200)
+                                            ->label('Foto Descriptiva')->width(200)->square()->height(200),
                                     ]),
                                     Components\Group::make([
                                         Components\ImageEntry::make('foto_medida')
-                                            ->label('Plano Esquemático')->width(300)->height(200)->square(),
+                                            ->label('Plano Esquemático')->width(200)->height(200)->square(),
                                     ]),
+
+
 
                                 ]),
                         ]),
                     ]),
-                // Components\Section::make('Juegos')
-                //     ->schema([
-                //         Components\Grid::make(1)
-                //             ->schema([
+                Components\Section::make()
+                    ->schema([
+                        ViewEntry::make('referencias')
+                            ->view('filament.infolists.entries.referencias-table')
+                            ->label('Referencias Cruzadas')
+                            ->hidden(fn($record) => empty($record->referencias)), // Ocultar si no hay referencias
 
-                //                 Components\Group::make([
-                //                     RepeatableEntry::make('articuloJuegos')
-                //                         ->schema([
-                //                             TextEntry::make('referencia.referencia')
-                //                                 ->label('Referencia')
-                //                                 ->default('N/A') // Evita errores si el campo es nulo
-                //                                 ->formatStateUsing(fn($state) => $state ?? 'Sin referencia'),
+                        ViewEntry::make('articuloJuegos')
+                            ->view('filament.infolists.entries.juegos-table')
+                            ->label('Lista de Juegos')
+                            ->hidden(fn($record) => empty($record->articuloJuegos)),
+                    ])->columns(2),
 
-                //                             TextEntry::make('referencia.marca.nombre')
-                //                                 ->label('Marca')
-                //                                 ->default('N/A')
-                //                                 ->formatStateUsing(fn($state) => $state ?? 'Sin marca'),
 
-                //                             TextEntry::make('cantidad')->label('Cantidad'),
-                //                             TextEntry::make('comentario')->label('Comentario'),
-                //                         ])
-                //                         ->columns(4) // Muestra en una sola línea
-                //                         ->columnSpanFull(),
-
-                //                 ]),
-
-                //             ]),
-                //     ]),
 
             ]);
     }
@@ -352,11 +386,9 @@ class ArticulosResource extends Resource
     public static function getRelations(): array
     {
         return [
-            'referencias' => RelationManagers\ReferenciasRelationManager::class,
-            'medidas' => RelationManagers\MedidasRelationManager::class,
-            'articuloReferencias' => RelationManagers\ArticuloReferenciasRelationManager::class,
-
-
+            RelationManagers\ReferenciasRelationManager::class,
+            RelationManagers\MedidasRelationManager::class,
+            RelationManagers\ArticuloReferenciasRelationManager::class,
         ];
     }
 
