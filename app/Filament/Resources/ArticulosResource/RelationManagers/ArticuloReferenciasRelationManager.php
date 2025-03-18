@@ -74,11 +74,11 @@ class ArticuloReferenciasRelationManager extends RelationManager
                             ->send();
                     }),
 
-                Tables\Actions\Action::make('Ver')
-                    ->icon('heroicon-o-eye')
-                    ->url(function (ArticuloJuego $record): string {
-                        return ReferenciaResource::getUrl('edit', ['record' => $record->referencia_id]);
-                    })
+                // Tables\Actions\Action::make('Ver')
+                //     ->icon('heroicon-o-eye')
+                //     ->url(function (ArticuloJuego $record): string {
+                //         return ReferenciaResource::getUrl('edit', ['record' => $record->referencia_id]);
+                //     })
             ]);
     }
 }

@@ -178,11 +178,11 @@ class ReferenciasRelationManager extends RelationManager
                             ->send();
                     }),
 
-                Tables\Actions\Action::make('Ver')
-                    ->icon('heroicon-o-eye')
-                    ->url(function (ArticuloReferencia $record): string {
-                        return ReferenciaResource::getUrl('edit', ['record' => $record->referencia_id]);
-                    })
+                // Tables\Actions\Action::make('Ver')
+                //     ->icon('heroicon-o-eye')
+                //     ->url(function (ArticuloReferencia $record): string {
+                //         return ReferenciaResource::getUrl('edit', ['record' => $record->referencia_id]);
+                //     })
 
 
             ])

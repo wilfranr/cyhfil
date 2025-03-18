@@ -75,7 +75,6 @@ class ListasRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tipo')->sortable()->label('Tipo'),
                 Tables\Columns\TextColumn::make('nombre')->sortable()->label('Nombre'),
                 Tables\Columns\TextColumn::make('definicion')
                     ->sortable()
@@ -86,28 +85,28 @@ class ListasRelationManager extends RelationManager
                 CreateAction::make()
                     ->label('Crear Tipo de Artículo')
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['tipo'] = 'Tipo de artículo'; // 🔥 Asigna automáticamente el tipo
+                        $data['tipo'] = 'Tipo de artículo'; 
                         return $data;
                     })
                     ->after(function (Lista $record, RelationManager $livewire) {
-                        $livewire->ownerRecord->listas()->attach($record->id); // 🔥 Asocia el nuevo tipo al sistema automáticamente
+                        $livewire->ownerRecord->listas()->attach($record->id);
                     }),
                 
                 AttachAction::make()
                     ->label('Asociar Tipo de Artículo')
                     // ->multiple()
                     ->preloadRecordSelect()
-                    ->recordTitleAttribute('nombre') // 🔥 Asegura que Filament use el valor real de 'nombre'
+                    ->recordTitleAttribute('nombre')
                     ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('tipo', 'Tipo de artículo'))
                     ->recordSelectSearchColumns(['nombre', 'definicion']),
             ])
             
 
             ->actions([
-                Action::make('Ver')
-                ->icon('heroicon-o-eye')
-                ->url(fn (Lista $record): string => ListasResource::getUrl('edit', ['record' => $record->id]))
-                ->openUrlInNewTab(), // 🔥 Abre en una nueva pestaña
+                // Action::make('Ver')
+                // ->icon('heroicon-o-eye')
+                // ->url(fn (Lista $record): string => ListasResource::getUrl('edit', ['record' => $record->id]))
+                // ->openUrlInNewTab(),
                 EditAction::make()->slideOver(),
                 DetachAction::make(), // Permite desasociar un tipo de artículo
             ])

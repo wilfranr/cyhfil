@@ -270,7 +270,7 @@ class ArticulosResource extends Resource
                     ->sortable(),
 
                 ImageColumn::make('fotoDescriptiva')
-                    ->label('Foto'),
+                    ->label('Foto')->square(),
 
                 TextColumn::make('definicion')
                     ->label('Tipo')
@@ -301,7 +301,7 @@ class ArticulosResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -336,15 +336,12 @@ class ArticulosResource extends Resource
                                     ]),
                                     Components\Group::make([
                                         Components\ImageEntry::make('fotoDescriptiva')
-                                            ->label('Foto Descriptiva')->width(200)->square()->height(200),
+                                            ->label('Foto Descriptiva')->square()->height(200),
                                     ]),
                                     Components\Group::make([
                                         Components\ImageEntry::make('foto_medida')
-                                            ->label('Plano Esquemático')->width(200)->height(200)->square(),
+                                            ->label('Plano Esquemático')->height(200)->square(),
                                     ]),
-
-
-
                                 ]),
                         ]),
                     ]),

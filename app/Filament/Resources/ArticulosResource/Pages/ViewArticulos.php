@@ -21,7 +21,7 @@ class ViewArticulos extends ViewRecord
   protected function getActions(): array
   {
     return [
-      Action::make('edit')->label('Edit Articulo')->icon('heroicon-o-pencil')->url( function ($record) {
+      Action::make('edit')->label('Editar Articulo')->icon('heroicon-o-pencil')->url( function ($record) {
         return ArticulosResource::getUrl('edit', ['record' => $record->id]);
       }),
       // 'edit' => ArticulosResource\Pages\EditArticulos::class,

@@ -230,10 +230,11 @@ class ReferenciaResource extends Resource
                     ->sortable()
                     ->url(
                         fn($record) => $record->articuloReferencia->first()?->articulo_id
-                            ? ArticulosResource::getUrl('edit', ['record' => $record->articuloReferencia->first()->articulo_id])
+                            ? ArticulosResource::getUrl('view', ['record' => $record->articuloReferencia->first()->articulo_id])
                             : null
                     )
-                    ->placeholder('Sin artículo relacionado'), // Muestra este texto si no hay artículo asociado
+                    ->placeholder('Sin artículo relacionado')
+                    ->badge(),
 
 
 
@@ -241,15 +242,15 @@ class ReferenciaResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->label('Creado')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Actualizado')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
@@ -262,7 +263,7 @@ class ReferenciaResource extends Resource
         return [
             'index' => Pages\ListReferencias::route('/'),
             'create' => Pages\CreateReferencia::route('/create'),
-            'edit' => Pages\EditReferencia::route('/{record}/edit'),
+            // 'edit' => Pages\EditReferencia::route('/{record}/edit'),
         ];
     }
 }
