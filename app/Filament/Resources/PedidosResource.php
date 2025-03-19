@@ -2064,6 +2064,8 @@ class PedidosResource extends Resource
                             ]),
                         Step::make('Referencias_Masivas')
                             ->icon('heroicon-s-clipboard-document-list')
+                            ->label('Referencias
+                            Masivas')
                             ->schema([
                                 Textarea::make('referencias_copiadas')
                                     ->label('Copiar Referencias')

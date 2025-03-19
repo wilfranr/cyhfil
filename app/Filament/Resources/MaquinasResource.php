@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MaquinasResource\RelationManagers\MarcaRelationManager;
 use App\Models\Fabricante;
 use App\Models\Lista;
+use App\Models\Tercero;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
@@ -62,7 +63,7 @@ class MaquinasResource extends Resource
         return $form
             ->schema([
                 Section::make([
-                    
+
                     Select::make('tipo')
                         ->relationship('Listas', 'nombre')
                         ->createOptionForm(function () {
@@ -90,7 +91,7 @@ class MaquinasResource extends Resource
                                 'definicion' => $data['definicion'],
                                 'tipo' => 'Tipo de Máquina',
                             ]);
-    
+
                             return $tipo->id;
                         })
                         ->createOptionAction(function ($action) {
@@ -126,15 +127,8 @@ class MaquinasResource extends Resource
                             $definicion = Lista::where('id', $tipo)->value('definicion'); // Obtiene la definición desde la base de datos
                             return $definicion ?? 'Sin definición disponible';
                         })
-                        
-                        ->hintColor('primary')
-                        
-                        
-                        
-                        
-                        
-                        ,
-    
+                        ->hintColor('primary'),
+
                     Select::make('fabricante_id')
                         ->relationship('fabricantes', 'nombre')
                         ->label('Fabricante')
@@ -180,9 +174,9 @@ class MaquinasResource extends Resource
                                 'nombre' => $data['nombre'],
                                 'descripcion' => $data['descripcion'],
                                 'logo' => $data['logo'],
-    
+
                             ]);
-    
+
                             return $fabricante->id;
                         })
                         ->createOptionAction(function ($action) {
@@ -190,29 +184,39 @@ class MaquinasResource extends Resource
                             $action->modalDescription('Crea un nuevo fabricante y será asociado a la máquina automáticamente');
                             $action->modalWidth('lg');
                         }),
-    
+
                     Forms\Components\TextInput::make('modelo')
                         ->label('Modelo')
                         ->required(),
-    
+
                     TextInput::make('serie')
                         ->label('Serie')
                         ->unique(ignoreRecord: true),
-    
+
                     TextInput::make('arreglo')
                         ->label('Arreglo'),
+                        
+                    Select::make('tercero_id')
+                        ->relationship('terceros', 'nombre', function ($query) {
+                            return $query->where('tipo','!=', 'Proveedor');
+                        })
+                        ->label('Propietario')
+                        ->preload()
+                        ->live()
+                        ->searchable()
+                        ->required()
                 ])->columns(3),
 
                 Section::make([
-                Forms\Components\FileUpload::make('foto')
-                    ->label('Foto')
-                    ->image()
-                    ->imageEditor(),
+                    Forms\Components\FileUpload::make('foto')
+                        ->label('Foto')
+                        ->image()
+                        ->imageEditor(),
 
-                Forms\Components\FileUpload::make('fotoId')
-                    ->label('FotoId')
-                    ->image()
-                    ->imageEditor(),
+                    Forms\Components\FileUpload::make('fotoId')
+                        ->label('FotoId')
+                        ->image()
+                        ->imageEditor(),
                 ])->columns(2),
             ]);
     }
@@ -285,6 +289,9 @@ class MaquinasResource extends Resource
                                     ->label('Serie'),
                                 Components\TextEntry::make('arreglo')
                                     ->label('Arreglo'),
+                                Components\TextEntry::make('terceros.nombre')
+                                    ->label('Propietario')
+                                    ->visible(fn($record) => !empty($record->terceros)),
 
                             ])->columns(3),
                         ]),
@@ -308,11 +315,11 @@ class MaquinasResource extends Resource
             ]);
     }
 
-
     public static function getRelations(): array
     {
         return [
-            'terceros' => RelationManagers\TercerosRelationManager::class,
+            // 'terceros' => RelationManagers\TercerosRelationManager::class,
+            'pedidos' => RelationManagers\PedidosRelationManager::class,
         ];
     }
 
