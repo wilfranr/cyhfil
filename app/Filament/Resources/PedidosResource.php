@@ -1169,6 +1169,106 @@ class PedidosResource extends Resource
                                 Repeater::make('referencias')
                                     ->relationship()
                                     ->schema([
+                                        Select::make('sistema_id')
+                                            ->label('Sistema')
+                                            ->searchable()
+                                            ->preload()
+                                            ->options(
+                                                Sistema::query()->pluck('nombre', 'id')
+                                            )
+                                            ->createOptionForm([
+                                                TextInput::make('nombre')
+                                                    ->label('Nombre')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->placeholder('Nombre del sistema'),
+                                                TextInput::make('descripcion')
+                                                    ->label('Descripción'),
+                                                FileUpload::make('imagen')
+                                                    ->label('Imagen')
+                                                    ->image()
+                                                    ->imageEditor(),
+                                            ])
+                                            ->createOptionUsing(function ($data) {
+                                                return Sistema::create($data)->id;
+                                            })
+                                            ->hintIcon(fn(Get $get) => $get('sistema_id') ? 'heroicon-o-question-mark-circle' : null)
+                                            ->hintAction(function (Get $get) {
+                                                if (!$get('sistema_id')) {
+                                                    return null; // No mostrar la acción si no hay sistema seleccionado
+                                                }
+
+                                                return Action::make('infoSistema')
+                                                    ->label('Info')
+                                                    ->modalHeading('Información del Sistema')
+                                                    ->modalContent(function () use ($get) {
+                                                        $sistema = Sistema::find($get('sistema_id'));
+                                                        if (!$sistema) {
+                                                            return 'No hay información del sistema seleccionada.';
+                                                        }
+
+                                                        return view('components.sistema-info', [
+                                                            'hasImage' => $sistema->imagen !== null,
+                                                            'imageUrl' => $sistema->imagen ? Storage::url($sistema->imagen) : null,
+                                                            'sistema' => $sistema,
+                                                        ]);
+                                                    })
+                                                    ->modalSubmitAction(false);
+                                            })
+
+                                            ->live(),
+                                        Select::make('tipo')
+                                            ->label('Tipo')
+                                            ->options(
+                                                Lista::where('tipo', 'Tipo de Artículo')->pluck('nombre', 'id')->toArray()
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn(Get $get) => $get('articulo_id') == null)
+                                            ->hintIcon(fn(Get $get) => $get('tipo') ? 'heroicon-o-question-mark-circle' : null)
+                                            ->hintAction(function (Get $get) {
+                                                if (!$get('tipo')) {
+                                                    return null;
+                                                }
+
+                                                return Action::make('infoTipo')
+                                                    ->label('Ver detalle')
+                                                    ->modalHeading('Información del Tipo')
+                                                    ->modalContent(function () use ($get) {
+                                                        $tipo = Lista::find($get('tipo'));
+                                                        if (!$tipo) {
+                                                            return 'No hay información del tipo seleccionado.';
+                                                        }
+
+                                                        return view('components.tipo-info', [
+                                                            'tipo' => $tipo,
+                                                        ]);
+                                                    })
+                                                    ->modalSubmitAction(false);
+                                            }),
+
+                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null)
+                                            ->hintIcon('heroicon-o-question-mark-circle')
+                                            ->hintAction(
+                                                Action::make('infoArticulo')
+                                                    ->label('Info')
+                                                    ->modalHeading('Información del Artículo')
+                                                    ->modalContent(function (Get $get) {
+                                                        $articulo = Articulo::find($get('articulo_id'));
+                                                        if (!$articulo) {
+                                                            return 'No hay información del artículo seleccionado.';
+                                                        }
+
+                                                        return view('components.articulo-info', [
+                                                            'hasImage' => $articulo->fotoDescriptiva !== null,
+                                                            'imageUrl' => $articulo->fotoDescriptiva ? Storage::url($articulo->fotoDescriptiva) : null,
+                                                            'articulo' => $articulo,
+                                                        ]);
+                                                    })
+                                                    ->modalSubmitAction(false)
+                                            ),
+                                        TextInput::make('comentario')->label('Comentario'),
+
                                         // Textinput::make('referencia'),
                                         Select::make('referencia_id')
                                             // ->label('Referencia - Artículo')
@@ -1610,7 +1710,7 @@ class PedidosResource extends Resource
 
                                         // Campos adicionales
                                         Hidden::make('articulo_id')->disabled(),
-                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
+
                                         Select::make('marca_id')
                                             ->options(
                                                 \App\Models\Lista::where('tipo', 'Marca')->pluck('nombre', 'id')->toArray()
@@ -1646,81 +1746,8 @@ class PedidosResource extends Resource
                                             })
                                             ->searchable()
                                             ->label('Marca'),
-                                        Select::make('sistema_id')
-                                            ->label('Sistema')
-                                            ->searchable()
-                                            ->preload()
-                                            ->options(
-                                                Sistema::query()->pluck('nombre', 'id')
-                                            )
-                                            ->createOptionForm([
-                                                TextInput::make('nombre')
-                                                    ->label('Nombre')
-                                                    ->required()
-                                                    ->unique(ignoreRecord: true)
-                                                    ->placeholder('Nombre del sistema'),
-                                                TextInput::make('descripcion')
-                                                    ->label('Descripción'),
-                                                FileUpload::make('imagen')
-                                                    ->label('Imagen')
-                                                    ->image()
-                                                    ->imageEditor(),
-                                            ])
-                                            ->createOptionUsing(function ($data) {
-                                                return Sistema::create($data)->id;
-                                            })
-                                            ->hintIcon('heroicon-o-question-mark-circle')
-                                            ->hintAction(
-                                                Action::make('infoSistema')
-                                                ->label('Info')
-                                                    ->modalHeading('Información del Sistema')
-                                                    ->modalContent(function (Get $get) {
-                                                        $sistema = Sistema::find($get('sistema_id'));
-                                                        if (!$sistema) {
-                                                            return 'No hay información del sistema seleccionada.';
-                                                        }
+                                        TextInput::make('cantidad')->label('Cantidad')->numeric()->minValue(1)->required()->default(1),
 
-                                                        return view('components.sistema-info', [
-                                                            'hasImage' => $sistema->imagen !== null,
-                                                            'imageUrl' => $sistema->imagen ? Storage::url($sistema->imagen) : null,
-                                                            'sistema' => $sistema,
-                                                        ]);
-                                                    })
-                                                    ->modalSubmitAction(false)
-                                            )
-                                            ->live(),
-
-                                        Select::make('tipo')
-                                            ->label('Tipo')
-                                            ->options(
-                                                Lista::where('tipo', 'Tipo de Artículo')->pluck('nombre', 'id')->toArray()
-                                            )
-                                            ->searchable()
-                                            ->preload()
-                                            ->visible(fn(Get $get) => $get('articulo_id') == null),
-                                        TextInput::make('articulo_definicion')->label('Artículo')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null)
-                                        ->hintIcon('heroicon-o-question-mark-circle')
-                                        ->hintAction(
-                                            Action::make('infoArticulo')
-                                                ->label('Info')
-                                                ->modalHeading('Información del Artículo')
-                                                ->modalContent(function (Get $get) {
-                                                    $articulo = Articulo::find($get('articulo_id'));
-                                                    if (!$articulo) {
-                                                        return 'No hay información del artículo seleccionado.';
-                                                    }
-
-                                                    return view('components.articulo-info', [
-                                                        'hasImage' => $articulo->fotoDescriptiva !== null,
-                                                        'imageUrl' => $articulo->fotoDescriptiva ? Storage::url($articulo->fotoDescriptiva) : null,
-                                                        'articulo' => $articulo,
-                                                    ]);
-                                                })
-                                                ->modalSubmitAction(false)
-                                        ),
-
-
-                                        TextInput::make('comentario')->label('Comentario'),
                                         FileUpload::make('imagen')->label('Imagen')->image()->imageEditor(),
                                         TextInput::make('articulo_descripcionEspecifica')->label('Descripción')->disabled()->Visible(fn(Get $get) => $get('articulo_id') == !null),
                                         TextInput::make('peso')

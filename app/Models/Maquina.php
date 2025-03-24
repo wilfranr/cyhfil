@@ -26,7 +26,7 @@ class Maquina extends Model
     {
         // Reference to the terceros table
         return $this->belongsToMany(Tercero::class, 'tercero_maquina', 'maquina_id', 'tercero_id');
-    } 
+    }
 
     //función para traer los datos concatenados de la maquina
 
@@ -47,12 +47,25 @@ class Maquina extends Model
         return $this->belongsTo(Fabricante::class, 'fabricante_id');
     }
 
-    
+
 
     //relación con listas para traer lo tipos de maquina
     public function listas(): BelongsTo
     {
         // Reference to the listas table
         return $this->belongsTo(Lista::class, 'tipo')->where('tipo', "Tipo de Máquina");
+    }
+    
+    //relación con pedidos para traer las referencias vendidas
+    public function referenciasVendidas()
+    {
+        return $this->hasManyThrough(
+            \App\Models\PedidoReferencia::class, // Modelo final
+            \App\Models\Pedido::class,           // Modelo intermedio
+            'maquina_id',                        // Foreign key en Pedido que apunta a Maquina
+            'pedido_id',                         // Foreign key en PedidoReferencia que apunta a Pedido
+            'id',                                // Local key en Maquina
+            'id'                                 // Local key en Pedido
+        );
     }
 }

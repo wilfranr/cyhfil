@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MaquinasResource\Pages;
 use App\Filament\Resources\MaquinasResource\Pages\EditMaquinas;
 use App\Filament\Resources\MaquinasResource\RelationManagers;
+use App\Filament\Resources\MaquinaResource\RelationManagers\ReferenciasVendidasRelationManager;
 use App\Models\Maquina;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -211,12 +212,14 @@ class MaquinasResource extends Resource
                     Forms\Components\FileUpload::make('foto')
                         ->label('Foto')
                         ->image()
-                        ->imageEditor(),
+                        ->imageEditor()
+                        ->openable(),
 
                     Forms\Components\FileUpload::make('fotoId')
                         ->label('FotoId')
                         ->image()
-                        ->imageEditor(),
+                        ->imageEditor()
+                        ->openable(),
                 ])->columns(2),
             ]);
     }
@@ -320,6 +323,8 @@ class MaquinasResource extends Resource
         return [
             // 'terceros' => RelationManagers\TercerosRelationManager::class,
             'pedidos' => RelationManagers\PedidosRelationManager::class,
+            'referenciasVendidas' => RelationManagers\ReferenciasVendidasRelationManager::class,
+            
         ];
     }
 
