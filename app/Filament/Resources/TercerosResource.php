@@ -603,7 +603,7 @@ class TercerosResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label(''),
-                Tables\Actions\EditAction::make()->label(''),
+                // Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label(''),
             ])
             ->bulkActions([
@@ -612,6 +612,7 @@ class TercerosResource extends Resource
                 ]),
             ]);
     }
+    
 
     public static function getRelations(): array
     {
@@ -628,6 +629,7 @@ class TercerosResource extends Resource
             'index' => Pages\ListTerceros::route('/'),
             'create' => Pages\CreateTerceros::route('/create'),
             'edit' => Pages\EditTerceros::route('/{record}/edit'),
+            'view' => Pages\ViewTerceros::route('/{record}'),
         ];
     }
 }
