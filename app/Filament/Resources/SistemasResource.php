@@ -14,6 +14,8 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
 use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
@@ -99,12 +101,28 @@ class SistemasResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+    
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns([
+                Components\TextEntry::make('id')
+                    ->label('ID'),
+                Components\TextEntry::make('nombre')
+                    ->label('Nombre'),
+                Components\TextEntry::make('descripcion')
+                    ->label('Descripción'),
+                Components\ImageEntry::make('imagen')
+                    ->label('Imagen'),
             ]);
     }
 
@@ -122,6 +140,7 @@ class SistemasResource extends Resource
             'index' => Pages\ListSistemas::route('/'),
             'create' => Pages\CreateSistemas::route('/create'),
             'edit' => Pages\EditSistemas::route('/{record}/edit'),
+            'view' => Pages\ViewSistemas::route('/{record}'),
         ];
     }
     
