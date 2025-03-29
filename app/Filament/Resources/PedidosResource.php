@@ -1180,7 +1180,7 @@ class PedidosResource extends Resource
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
                                                     ->placeholder('Nombre del sistema'),
-                                                TextInput::make('descripcion')
+                                                TextArea::make('descripcion')
                                                     ->label('Descripción'),
                                                 FileUpload::make('imagen')
                                                     ->label('Imagen')
@@ -1333,7 +1333,7 @@ class PedidosResource extends Resource
                                                     ->createOptionForm(function () {
                                                         return [
                                                             Select::make('definicion')
-                                                                ->label('Definición')
+                                                                ->label('Tipo de Artículo')
                                                                 ->options(
                                                                     Lista::query()
                                                                         ->where('tipo', 'Tipo de artículo')
@@ -1930,7 +1930,7 @@ class PedidosResource extends Resource
                                                                 $utilidad = $get('utilidad');
                                                                 $cantidad = $get('cantidad');
                                                                 $peso = $get('../../peso');
-                                                                $trm = TRM::query()->latest()->first()->trm;
+                                                                $trm = Empresa::query()->first()->trm;
                                                                 $flete = Empresa::query()->first()->flete;
                                                                 //valor unidad = costo unidad + (peso * 2.2 * flete)
                                                                 //valor unidad = valor unidad * TRM
