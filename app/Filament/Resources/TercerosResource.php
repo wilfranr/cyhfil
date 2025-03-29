@@ -80,6 +80,9 @@ class TercerosResource extends Resource
                                 ->integer()
                                 ->minValue(1000)
                                 ->unique('terceros', 'numero_documento', ignoreRecord: true), // Validación única
+                            TextInput::make('dv')->nullable()
+                                ->label('Dígito Verificador')
+                                ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
                             TextInput::make('telefono')
                                 ->label('Teléfono')
                                 ->required()
@@ -89,9 +92,6 @@ class TercerosResource extends Resource
                                 ->email()
                                 ->label('Correo Electrónico')
                                 ->unique('terceros', 'email', ignoreRecord: true)->suffixIcon('ri-mail-line'),
-                            TextInput::make('dv')->nullable()
-                                ->label('Dígito Verificador')
-                                ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
                             Select::make('forma_pago')
                                 ->nullable()
                                 ->label('Forma de Pago')
@@ -612,7 +612,7 @@ class TercerosResource extends Resource
                 ]),
             ]);
     }
-    
+
 
     public static function getRelations(): array
     {

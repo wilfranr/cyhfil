@@ -257,6 +257,9 @@ class PedidosResource extends Resource
                                                         ->integer()
                                                         ->minValue(1000)
                                                         ->unique('terceros', 'numero_documento', ignoreRecord: true), // Validación única
+                                                    TextInput::make('dv')->nullable()
+                                                        ->label('Dígito Verificador')
+                                                        ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
                                                     TextInput::make('telefono')
                                                         ->label('Teléfono')
                                                         ->required()
@@ -266,9 +269,6 @@ class PedidosResource extends Resource
                                                         ->email()
                                                         ->label('Correo Electrónico')
                                                         ->unique('terceros', 'email', ignoreRecord: true)->suffixIcon('ri-mail-line'),
-                                                    TextInput::make('dv')->nullable()
-                                                        ->label('Dígito Verificador')
-                                                        ->visible(fn(Get $get) => $get('tipo_documento') === 'nit'),
                                                     Select::make('forma_pago')
                                                         ->nullable()
                                                         ->label('Forma de Pago')
@@ -277,7 +277,7 @@ class PedidosResource extends Resource
                                                             'credito' => 'Crédito',
                                                         ]),
                                                     TextInput::make('email_factura_electronica')->nullable()->label('Correo Factura Electrónica')->suffixIcon('ri-mail-line')->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos'),
-                                                    TextInput::make('sitio_web')->nullable()->label('Sitio Web')->prefix('https://')->suffixIcon('heroicon-m-globe-alt')->url(),
+                                                    TextInput::make('sitio_web')->nullable()->label('Sitio Web')->suffixIcon('heroicon-m-globe-alt')->url(),
                                                     Select::make('maquina_id')
                                                         ->label('Máquina')
                                                         ->relationship('maquinas', 'modelo')
@@ -363,11 +363,10 @@ class PedidosResource extends Resource
                                                                                 ->label('Nombre')
                                                                                 ->required()
                                                                                 ->placeholder('Nombre del fabricante'),
-                                                                            MarkdownEditor::make('descripcion')
+                                                                            TextArea::make('descripcion')
                                                                                 ->label('Descripción')
                                                                                 ->nullable()
                                                                                 ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
-                                                                                ->required()
                                                                                 ->maxLength(500),
                                                                             FileUpload::make('logo')
                                                                                 ->label('Logo')
@@ -453,7 +452,6 @@ class PedidosResource extends Resource
                                                         ->live()
                                                         ->visible(fn(Get $get) => $get('tipo') === 'Cliente' || $get('tipo') === 'Ambos')
                                                         ->searchable(),
-
 
                                                     Section::make('Fabricantes y Sistemas')
                                                         ->schema([
@@ -2176,7 +2174,15 @@ class PedidosResource extends Resource
                             ])
                             ->required()
                             ->inline(),
-                    ])->columnSpan('full'),
+                    ])->columnSpan('full')->hidden(function () {
+                        $user = Auth::user();
+                        if ($user) {
+                            $rol = $user->roles->first()?->name;
+                            return !in_array($rol, ['super_admin', 'Administrador']);
+                        }
+                        return true; // Ocultar si no hay usuario autenticado
+                    })
+                    
             ]);
     }
 
