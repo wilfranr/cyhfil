@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdenTrabajoResource\Pages;
 use App\Models\Direccion;
+use App\Models\Transportadora;
 use App\Models\OrdenTrabajo;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -14,6 +15,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Collection;
+use App\Models\City;
+use App\Models\State;
+
 
 class OrdenTrabajoResource extends Resource
 {
@@ -110,7 +117,69 @@ class OrdenTrabajoResource extends Resource
                 Forms\Components\Select::make('transportadora_id')
                     ->label('Transportadora')
                     ->relationship('transportadora', 'nombre')
-                    ->required()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('nombre')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('nit')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('telefono')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('direccion')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('country_id')
+                            ->relationship(name: 'country', titleAttribute: 'name')
+                            ->label('País')
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('state_id', null);
+                                $set('city_id', null);
+                            }),
+                        Forms\Components\Select::make('state_id')
+                            ->options(fn(Get $get): Collection => State::query()
+                                ->where('country_id', $get('country_id'))
+                                ->pluck('name', 'id'))
+                            ->label('Departamento')
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('city_id', null);
+                            }),
+                            Forms\Components\Select::make('city_id')
+                            ->options(fn(Get $get): Collection => City::query()
+                                ->where('state_id', $get('state_id'))
+                                ->pluck('name', 'id'))
+                            ->label('Ciudad')
+                            ->searchable()
+                            ->live()
+                            ->preload(),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('contacto')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('celular')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('observaciones')
+                            ->maxLength(255)
+                            ->default(null),
+                        Forms\Components\TextInput::make('logo')
+                            ->maxLength(255)
+                            ->default(null),
+                    ])
+                    ->createOptionUsing(function (array $data): Transportadora {
+                        return Transportadora::create($data);
+                    })
                     ->preload()
                     ->searchable(),
 
@@ -173,7 +242,8 @@ class OrdenTrabajoResource extends Resource
 
                 Tables\Columns\TextColumn::make('transportadora.nombre')
                     ->label('Transportadora')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('referencias')
                     ->label('Referencia')

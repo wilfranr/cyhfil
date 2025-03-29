@@ -109,6 +109,7 @@ class EditPedidos extends EditRecord
         } elseif ($this->record->estado === 'Cotizado') {
             return [
                 $this->getGuardarCambiosAction(),
+                $this->getGenerarNuevaCotizacionAction(),
                 $this->getAprobarCotizacionAction(),
                 $this->getRechazarCotizacionAction(),
                 $this->getWhatsappClienteAction(),
