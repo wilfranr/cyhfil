@@ -72,7 +72,7 @@ class OrdenTrabajoResource extends Resource
                 Forms\Components\Textarea::make('observaciones')
                     ->label('Observaciones'),
 
-                Select::make('direccion')
+                Select::make('direccion_id')
                     ->label('Dirección')
                     ->options(function ($get) {
                         $terceroId = $get('tercero_id'); // Obtener el tercero_id del formulario actual

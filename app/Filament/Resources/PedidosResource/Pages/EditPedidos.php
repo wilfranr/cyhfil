@@ -34,6 +34,7 @@ class EditPedidos extends EditRecord
                     // Otras acciones específicas para el estado "Nuevo"
                 ];
             } elseif ($this->record->estado === 'En_Costeo') {
+
                 return [
                     $this->getGuardarCambiosAction(),
                     $this->getGenerarCotizacionAction(),
@@ -42,6 +43,7 @@ class EditPedidos extends EditRecord
                 ];
             } elseif ($this->record->estado === 'Cotizado') {
                 return [
+                    $this->getGenerarNuevaCotizacionAction(),
                     $this->getGuardarCambiosAction(),
                     $this->getAprobarCotizacionAction(),
                     $this->getRechazarCotizacionAction(),
@@ -75,8 +77,6 @@ class EditPedidos extends EditRecord
                 return $this->getDefaultActions();
         }
     }
-
-
 
     // Acciones específicas para "Analista"
     private function getAnalistaActions(): array
@@ -114,7 +114,7 @@ class EditPedidos extends EditRecord
                 $this->getWhatsappClienteAction(),
             ];
         }
-        
+
         return [
             $this->getGuardarCambiosAction(),
             $this->getWhatsappClienteAction()
@@ -152,10 +152,10 @@ class EditPedidos extends EditRecord
                 if ($referenciasSinArticulo) {
                     // Mostrar un mensaje de error y detener la acción
                     Notification::make()
-                    ->title('No se puede enviar a costeo. Hay referencias sin artículos asociados.')
-                    ->danger()
-                    ->send();
-                    
+                        ->title('No se puede enviar a costeo. Hay referencias sin artículos asociados.')
+                        ->danger()
+                        ->send();
+
                     return;
                 }
 
@@ -166,10 +166,10 @@ class EditPedidos extends EditRecord
                 if ($referenciasSinSistema) {
                     // Mostrar un mensaje de error y detener la acción
                     Notification::make()
-                    ->title('No se puede enviar a costeo. Hay referencias sin sistemas asociados.')
-                    ->danger()
-                    ->send();
-                    
+                        ->title('No se puede enviar a costeo. Hay referencias sin sistemas asociados.')
+                        ->danger()
+                        ->send();
+
                     return;
                 }
 
@@ -191,11 +191,6 @@ class EditPedidos extends EditRecord
             ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.');
     }
 
-
-
-
-
-
     // Acción: Generar Cotización
     private function getGenerarCotizacionAction(): Action
     {
@@ -204,36 +199,38 @@ class EditPedidos extends EditRecord
             ->action(function () {
                 $record = $this->getRecord();
 
-                // Guardar los cambios del formulario
+                // Guardar cambios
                 $record->fill($this->form->getState());
-                $record->estado = 'Cotizado';
                 $record->save();
 
-                // Verificar referencias activas
                 if (!PedidoReferencia::where('pedido_id', $record->id)->where('estado', 1)->exists()) {
                     Notification::make()
                         ->title('Error')
                         ->body('Debe seleccionar al menos una referencia activa para generar la cotización.')
                         ->danger()
                         ->send();
+
                     return;
                 }
 
-                // Crear la cotización
+                $record->estado = 'Cotizado';
+                $record->save();
+
                 $cotizacion = Cotizacion::create([
                     'pedido_id' => $record->id,
                     'tercero_id' => $record->tercero_id,
                 ]);
 
-
+                // Enviar la notificación
                 Notification::make()
                     ->title('Cotización Generada')
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
                     ->send();
-
-                // Redirigir para generar el PDF
+                    
+                // Redirigir al PDF
                 $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
+
             });
     }
 
@@ -293,14 +290,11 @@ class EditPedidos extends EditRecord
                 $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
                 // dd($pedido_referencia);
                 foreach ($pedido_referencia as $referencia) {
-                    $proveedor = PedidoReferenciaProveedor::where('pedido_id', $referencia->id)->first();
-                    // dd($proveedor);
-                    $referencia_nombre = Referencia::where('id', $referencia->referencia_id);
-                    //crear orden de compra
+                    $proveedor = PedidoReferenciaProveedor::where('pedido_referencia_id', $referencia->id)->first();
+
                     $ordenCompra = new \App\Models\OrdenCompra();
                     $ordenCompra->pedido_id = $record->id;
                     $ordenCompra->tercero_id = $record->tercero_id;
-                    // $ordenCompra->proveedor_id = $record->proveedor_id;
                     $ordenCompra->referencia_id = $referencia->referencia_id;
                     $ordenCompra->fecha_expedicion = now();
                     $ordenCompra->fecha_entrega = now()->addDays(30);
@@ -313,14 +307,64 @@ class EditPedidos extends EditRecord
                     $ordenCompra->valor_total = $proveedor->valor_total;
                     $ordenCompra->save();
                 }
-                //Traer todos los proveedores de este pedido
-                // $proveedor = PedidoReferenciaProveedor::where('pedido_id', $pedido_referencia->id)->first();
-                // dd($proveedor);
-                // $ordenCompra_id = $ordenCompra->id;
-                // Redirigir a la página de la orden de compra en PDF
-                // return redirect()->route('pdf.ordenCompra', ['id' => $ordenCompra_id]);
-                //Redirigir a la página de pedidos
+
+                // ✅ Crear orden de trabajo
+                \App\Models\OrdenTrabajo::create([
+                    'pedido_id' => $record->id,
+                    'cotizacion_id' => $cotizacion->id,
+                    'tercero_id' => $record->tercero_id,
+                    'estado' => 'Pendiente',
+                    'fecha_ingreso' => now(),
+                    'fecha_entrega' => now()->addDays(30),
+                    'direccion_id' => $record->direccion,
+                    'telefono' => $record->tercero->telefono,
+                    'observaciones' => $record->observaciones,
+                ]);
+
                 $this->redirect($this->getResource()::getUrl('index'));
+            });
+    }
+
+    // Acción: Generar Cotización
+    private function getGenerarNuevaCotizacionAction(): Action
+    {
+        return Action::make('Generar Nueva Cotización')
+            ->color('success')
+            ->action(function () {
+                $record = $this->getRecord();
+
+                // Guardar cambios
+                $record->fill($this->form->getState());
+                $record->save();
+
+                if (!PedidoReferencia::where('pedido_id', $record->id)->where('estado', 1)->exists()) {
+                    Notification::make()
+                        ->title('Error')
+                        ->body('Debe seleccionar al menos una referencia activa para generar la cotización.')
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                $record->estado = 'Cotizado';
+                $record->save();
+
+                $cotizacion = Cotizacion::create([
+                    'pedido_id' => $record->id,
+                    'tercero_id' => $record->tercero_id,
+                ]);
+
+                // Enviar la notificación
+                Notification::make()
+                    ->title('Cotización Generada')
+                    ->body('La cotización ha sido generada exitosamente.')
+                    ->success()
+                    ->send();
+                    
+                // Redirigir al PDF
+                $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
+
             });
     }
 

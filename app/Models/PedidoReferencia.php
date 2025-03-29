@@ -38,10 +38,9 @@ class PedidoReferencia extends Model
         return $this->belongsTo(Referencia::class);
     }
 
-    public function referenciasProveedor(): HasMany
+    public function proveedores(): HasMany
     {
-        return $this->hasMany(PedidoReferenciaProveedor::class, 'pedido_id', 'id');
+        // Aunque el campo se llama 'pedido_id', en realidad es el id de 'pedido_referencia'
+        return $this->hasMany(PedidoReferenciaProveedor::class, 'pedido_referencia_id', 'id');
     }
-    
-
 }

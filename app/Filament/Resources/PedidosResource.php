@@ -1801,7 +1801,7 @@ class PedidosResource extends Resource
                                         //Referencias de proveedores
                                         Section::make()
                                             ->schema([
-                                                Repeater::make('referenciasProveedor')->label('Proveedores')
+                                                Repeater::make('proveedores')->label('Proveedores')
                                                     ->relationship()
                                                     ->schema([
 
@@ -1854,7 +1854,7 @@ class PedidosResource extends Resource
                                                             ->label('Proveedores')
                                                             ->searchable(),
                                                         TextInput::make('cantidad')
-                                                            ->label('Cantidad')
+                                                            ->label('Cantidad Cotizadas')
                                                             ->numeric()
                                                             ->required()
                                                             ->default(fn(Get $get) => $get('../../cantidad')), // Usa $get para acceder al valor del otro campo
@@ -2087,7 +2087,7 @@ class PedidosResource extends Resource
                                             }, shouldOpenInNewTab: true)
                                             ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['referencia_id'])),
 
-                                    ]),
+                                    ])
                             ]),
                         Step::make('Referencias_Masivas')
                             ->icon('heroicon-s-clipboard-document-list')

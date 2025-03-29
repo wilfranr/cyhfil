@@ -128,7 +128,11 @@ document.addEventListener("DOMContentLoaded", function () {
       sendMessage(); // Llama a la función para enviar el mensaje
     }
   });
-
+  // Evento para abrir el PDF en una nueva pestaña
+  window.addEventListener('ver-pdf', event => {
+    window.open(event.detail.url, '_blank');
+  });
+  
 
 });
 

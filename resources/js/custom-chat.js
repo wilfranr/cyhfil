@@ -129,6 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Evento para abrir el PDF en una nueva pestaña
+  window.addEventListener('ver-pdf', event => {
+    window.open(event.detail.url, '_blank');
+  });
 
 });
 
