@@ -145,7 +145,8 @@ class OrdenTrabajoResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn($state) => 'OT-' . $state),
                 Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->searchable()
@@ -175,7 +176,7 @@ class OrdenTrabajoResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('referencias')
-                    ->label('Referencias')
+                    ->label('Referencia')
                     ->getStateUsing(function ($record) {
                         return $record->referencias->map(function ($referencia) {
                             return $referencia->referencia->referencia; // Ajusta según el campo de referencia
@@ -190,7 +191,7 @@ class OrdenTrabajoResource extends Resource
                     ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Última Actualización')
@@ -212,7 +213,8 @@ class OrdenTrabajoResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ])
+            ->defaultSort('id', 'desc');
     }
 
 

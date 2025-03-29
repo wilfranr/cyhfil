@@ -108,7 +108,12 @@ class OrdenCompraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id'),
+                Tables\Columns\TextColumn::make('id')->
+                    label('ID')
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(fn($state) => 'OC-' . $state),
+                    
                 Tables\Columns\ColorColumn::make('color')
                     ->label(''),
                 Tables\Columns\TextColumn::make('tercero.nombre')
@@ -117,41 +122,17 @@ class OrdenCompraResource extends Resource
                     ->label('Pedido')
                     ->numeric()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('cotizaciones_id')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('referencia_id')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('estado')
-                //     ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('fecha_expedicion')
                     ->date()
                     ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('fecha_entrega')
                     ->date()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('cantidad')
-                //     ->numeric()
-                //     ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('direccion')
                     ->searchable(),
-                // Tables\Columns\TextColumn::make('telefono')
-                //     ->searchable(),
-                // Tables\Columns\TextColumn::make('valor_unitario')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('valor_total')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('valor_iva')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('valor_descuento')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('guia')
-                //     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
