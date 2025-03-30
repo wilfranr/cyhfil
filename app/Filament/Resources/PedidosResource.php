@@ -82,7 +82,7 @@ class PedidosResource extends Resource
                 Hidden::make('user_id')->default(auth()->user()->id),
                 //Inicio de Placeholders
                 Section::make('Información de pedido')
-                    ->columns(4)
+                    ->columns(5)
                     ->schema([
                         Placeholder::make('numero_pedido')
                             ->content(fn(Pedido $record): string => $record->id)
@@ -108,10 +108,15 @@ class PedidosResource extends Resource
                             ->label('Motivo de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
                         Placeholder::make('comentarios_rechazo')
+                        
                             ->content(fn(Pedido $record): string => $record->comentarios_rechazo ?? 'Sin comnetarios de rechazo')
                             ->hiddenOn('create')
                             ->label('Comentario de rechazo')
                             ->visible(fn(Get $get) => $get('estado') === 'Rechazado'),
+                        Placeholder::make('estado')
+                            ->content(fn(Pedido $record): string => $record->estado)
+                            ->hiddenOn('create')
+                            ->label('Estado'),
                     ])->collapsed()->hiddenOn('create'),
 
                 Section::make('Información de cliente')

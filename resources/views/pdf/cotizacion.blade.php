@@ -111,7 +111,7 @@ th {
     <td colspan="3"><strong>Email: </strong>{{ $cliente->email }}</td>
   </tr>
   <tr>
-    <td colspan="8"><strong>Contacto: </strong>{{ $pedido->contacto->nombre ?? 'Sin contacto asignado' }}</td>
+    <td colspan="8"><strong>Contacto: </strong>{{ $contacto->nombre ?? 'Sin contacto asignado' }}</td>
   </tr>
   <tr>
     <td colspan="8"><strong>Máquina: </strong>{{ $tipo_maquina }}</td>

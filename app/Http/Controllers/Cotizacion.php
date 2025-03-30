@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\City;
+use App\Models\Contacto;
 use App\Models\Cotizacion as ModelsCotizacion;
 use App\Models\Empresa;
 use App\Models\Lista;
@@ -20,6 +21,7 @@ class Cotizacion extends Controller
     {
         $cotizacion = ModelsCotizacion::findOrFail($id);
         $pedido = Pedido::with('user')->findOrFail($cotizacion->pedido_id);
+        $contacto = Contacto::find($pedido->contacto_id);
         $pedidoReferencia = PedidoReferencia::with(['referencia.articuloReferencia.articulo', 'proveedores'])
             ->where('pedido_id', $pedido->id)
             ->get();
@@ -39,6 +41,7 @@ class Cotizacion extends Controller
             'id' => $id,
             'pedido' => $pedido,
             'cliente' => $cliente,
+            'contacto' => $contacto,
             'vendedor' => $pedido->user,
             'empresas' => Empresa::all(),
             'cotizacion' => $cotizacion,
