@@ -1215,25 +1215,25 @@ class PedidosResource extends Resource
                                             })
 
                                             ->live(),
-                                        Select::make('tipo')
-                                            ->label('Tipo')
+                                        Select::make('definicion')
+                                            ->label('Tipo de Artículo')
                                             ->options(
-                                                Lista::where('tipo', 'Tipo de Artículo')->pluck('nombre', 'id')->toArray()
+                                                Articulo::whereNotNull('definicion')->pluck('definicion', 'id')->toArray()
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->visible(fn(Get $get) => $get('articulo_id') == null)
-                                            ->hintIcon(fn(Get $get) => $get('tipo') ? 'heroicon-o-question-mark-circle' : null)
+                                            ->hintIcon(fn(Get $get) => $get('definicion') ? 'heroicon-o-question-mark-circle' : null)
                                             ->hintAction(function (Get $get) {
-                                                if (!$get('tipo')) {
+                                                if (!$get('definicion')) {
                                                     return null;
                                                 }
 
                                                 return Action::make('infoTipo')
                                                     ->label('Ver detalle')
-                                                    ->modalHeading('Información del Tipo')
+                                                    ->modalHeading('Información del Tipo de Artículo')
                                                     ->modalContent(function () use ($get) {
-                                                        $tipo = Lista::find($get('tipo'));
+                                                        $tipo = Articulo::with('referencias.marca')->find($get('definicion'));
                                                         if (!$tipo) {
                                                             return 'No hay información del tipo seleccionado.';
                                                         }
@@ -1252,18 +1252,18 @@ class PedidosResource extends Resource
                                                     ->label('Info')
                                                     ->modalHeading('Información del Artículo')
                                                     ->modalContent(function (Get $get) {
-                                                        $articulo = Articulo::find($get('articulo_id'));
+                                                        $articulo = Articulo::with('referencias.marca')->find($get('articulo_id'));
+
                                                         if (!$articulo) {
                                                             return 'No hay información del artículo seleccionado.';
                                                         }
 
-                                                        return view('components.articulo-info', [
-                                                            'hasImage' => $articulo->fotoDescriptiva !== null,
-                                                            'imageUrl' => $articulo->fotoDescriptiva ? Storage::url($articulo->fotoDescriptiva) : null,
-                                                            'articulo' => $articulo,
+                                                        return view('components.tipo-info', [
+                                                            'tipo' => $articulo, // 👈 así la vista recibe lo que espera
                                                         ]);
                                                     })
                                                     ->modalSubmitAction(false)
+
                                             ),
                                         TextInput::make('comentario')->label('Comentario'),
 
@@ -2182,7 +2182,7 @@ class PedidosResource extends Resource
                         }
                         return true; // Ocultar si no hay usuario autenticado
                     })
-                    
+
             ]);
     }
 
