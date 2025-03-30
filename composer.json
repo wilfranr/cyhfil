@@ -12,6 +12,7 @@
         "bezhansalleh/filament-panel-switch": "^1.0",
         "bezhansalleh/filament-shield": "^3.2",
         "filament/filament": "^3.2",
+        "filament/tables": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel-lang/lang": "^12.17",
         "laravel/framework": "^10.10",
