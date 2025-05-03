@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrdenTrabajoResource\Pages;
+use App\Filament\Resources\OrdenTrabajoResource\RelationManagers;
 use App\Models\Direccion;
 use App\Models\Transportadora;
 use App\Models\OrdenTrabajo;
@@ -291,7 +292,7 @@ class OrdenTrabajoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+           RelationManagers\ReferenciasRelationManager::class,
         ];
     }
 

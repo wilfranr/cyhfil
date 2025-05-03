@@ -47,9 +47,8 @@ class OrdenTrabajo extends Model
 
     public function referencias()
     {
-        return $this->hasMany(PedidoReferencia::class, 'pedido_id', 'pedido_id');
+        return $this->hasMany(OrdenTrabajoReferencia::class);
     }
-    // App\Models\OrdenTrabajo.php
 
     public function direccion()
     {

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\CustomChatifyPage;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\{Authenticate, DispatchServingFilamentEvent, DisableBladeIconComponents};
 use Filament\Navigation\MenuItem;
@@ -22,6 +23,9 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Actions\Action;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+use Monzer\FilamentChatifyIntegration\ChatifyPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -63,9 +67,9 @@ class DashboardPanelProvider extends PanelProvider
                     ->icon('heroicon-s-currency-dollar')
                     ->label('TRM del Día')
                     ->url('\admin\trm-settings'),
-                    
+
             ])
-            
+
             ->sidebarWidth('15 rem')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -114,6 +118,7 @@ class DashboardPanelProvider extends PanelProvider
                     ->restrictedRoles(['super_admin', 'Administrador']),
 
             ])
+
             ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
