@@ -25,7 +25,6 @@ use Filament\Support\Enums\MaxWidth;
 use Filament\Actions\Action;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
-use Monzer\FilamentChatifyIntegration\ChatifyPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -33,7 +32,12 @@ class DashboardPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
 
-        $empresaActiva = Empresa::where('estado', true)->first();
+
+        try {
+            $empresaActiva = \App\Models\Empresa::where('estado', true)->first();
+        } catch (\Throwable $e) {
+            $empresaActiva = null;
+        }
 
         return $panel
             ->brandName($empresaActiva ? $empresaActiva->nombre : 'Venta de Repuestos')
