@@ -228,7 +228,7 @@ class EditPedidos extends EditRecord
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
                     ->send();
-                    
+
                 // Redirigir al PDF
                 $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
 
@@ -287,6 +287,20 @@ class EditPedidos extends EditRecord
                     ->body('La cotización ha sido aprobada y todos los cambios han sido guardados.')
                     ->success()
                     ->send();
+
+                // Crear orden de trabajo
+                $ordenTrabajo = \App\Models\OrdenTrabajo::create([
+                    'pedido_id' => $record->id,
+                    'cotizacion_id' => $cotizacion->id,
+                    'tercero_id' => $record->tercero_id,
+                    'estado' => 'Pendiente',
+                    'fecha_ingreso' => now(),
+                    'fecha_entrega' => now()->addDays(30),
+                    'direccion_id' => $data['direccion'],
+                    'telefono' => $record->tercero->telefono,
+                    'observaciones' => $record->observaciones,
+                ]);
+
                 //Viene desde la tabla pedido_referencia
                 $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
                 // dd($pedido_referencia);
@@ -307,21 +321,18 @@ class EditPedidos extends EditRecord
                     $ordenCompra->valor_unitario = $proveedor->costo_unidad;
                     $ordenCompra->valor_total = $proveedor->valor_total;
                     $ordenCompra->save();
-                }
 
-                // ✅ Crear orden de trabajo
-                \App\Models\OrdenTrabajo::create([
-                    'pedido_id' => $record->id,
-                    'cotizacion_id' => $cotizacion->id,
-                    'tercero_id' => $record->tercero_id,
-                    'estado' => 'Pendiente',
-                    'fecha_ingreso' => now(),
-                    'fecha_entrega' => now()->addDays(30),
-                    'direccion_id' => $record->direccion,
-                    'telefono' => $record->tercero->telefono,
-                    'observaciones' => $record->observaciones,
+                // Crear relación en orden_trabajo_referencias
+                \App\Models\OrdenTrabajoReferencia::create([
+                    'orden_trabajo_id' => $ordenTrabajo->id,
+                    'pedido_referencia_id' => $referencia->id,
+                    'cantidad' => $referencia->cantidad,
+                    'cantidad_recibida' => 0,
+                    'estado' => '#FF0000', // 🔴 No recibido por defecto
+                    'recibido' => false,
                 ]);
 
+                }
                 $this->redirect($this->getResource()::getUrl('index'));
             });
     }
@@ -362,7 +373,7 @@ class EditPedidos extends EditRecord
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
                     ->send();
-                    
+
                 // Redirigir al PDF
                 $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
 

@@ -187,23 +187,10 @@ class OrdenTrabajoResource extends Resource
                 FileUpload::make('archivo')
                     ->label('Archivo'),
 
-                Forms\Components\Placeholder::make('referencias_text')
-                    ->label('Referencias')
-                    ->content(function ($record) {
-                        return $record->referencias->map(function ($referencia) {
-                            return 'Referencia: ' . $referencia->referencia->referencia . ' - Cantidad: ' . $referencia->cantidad;
-                        })->implode("\n");
-                    })
-                    ->extraAttributes(['style' => 'white-space: pre-line;']),
                 Placeholder::make('motivo_cancelacion')
                     ->label('Motivo de Cancelación')
                     ->content(fn($record) => $record->motivo_cancelacion ?? 'N/A')
                     ->columnSpanFull(),
-
-
-
-
-
 
             ]);
     }

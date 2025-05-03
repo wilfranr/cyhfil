@@ -10,7 +10,7 @@ class OrdenTrabajoReferencia extends Model
     use HasFactory;
     protected $fillable = [
         'orden_trabajo_id',
-        'referencia_id',
+        'pedido_referencia_id',
         'cantidad',
         'cantidad_recibida',
         'estado',

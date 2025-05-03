@@ -35,18 +35,16 @@ class ReferenciasRelationManager extends RelationManager
                     ->label('Cantidad Recibida')
                     ->numeric()
                     ->minValue(0),
+
                 Select::make('estado')
                 ->label('Estado')
                     ->options([
                         '#FF0000' => '🔴 No Recibido',
-                        '#00913F' => '🟡 Recibido Parcial',
-                        '#E5BE01' => '🟢 Recibido Total',
+                        '#E5BE01' => '🟡 Recibido Parcial',
+                        '#00913F' => '🟢 Recibido Total',
                     ])
                     ->default('#FF0000')
                     ->required(),
-
-                Toggle::make('recibido')
-                    ->label('¿Recibido?'),
 
                 DatePicker::make('fecha_recepcion')
                     ->label('Fecha de Recepción'),
