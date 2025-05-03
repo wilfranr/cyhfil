@@ -11,6 +11,7 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js; // Asegúrate de importar esta clase
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 
 class AppServiceProvider extends ServiceProvider
