@@ -16,6 +16,7 @@ class CheckFilamentAuthentication
             ]);
         });
 
+dd(config('database.default'), config('database.connections.mysql'));
         return $next($request);
     }
 }
