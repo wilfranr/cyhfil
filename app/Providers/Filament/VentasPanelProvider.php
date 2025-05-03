@@ -28,7 +28,12 @@ class VentasPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        $empresaActiva = Empresa::where('estado', true)->first();
+
+try {
+    $empresaActiva = \App\Models\Empresa::where('estado', true)->first();
+} catch (\Throwable $e) {
+    $empresaActiva = null;
+}
 
         return $panel
 
