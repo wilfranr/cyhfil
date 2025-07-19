@@ -48,6 +48,17 @@ class SistemasRelationManager extends RelationManager
                     ->label('Nombre del Sistema'),
                 Tables\Columns\TextColumn::make('descripcion')
                     ->sortable()
+                    ->limit(50)
+                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                        $state = $column->getState();
+
+                        if (strlen($state) <= $column->getCharacterLimit()) {
+                            return null;
+                        }
+
+                        // Only render the tooltip if the column content exceeds the length limit.
+                        return $state;
+                    })
                     ->label('Descripción'),
 
             ])
@@ -74,3 +85,4 @@ class SistemasRelationManager extends RelationManager
             ]);
     }
 }
+
