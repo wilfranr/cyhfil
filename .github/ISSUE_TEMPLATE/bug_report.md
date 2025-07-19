@@ -1,3 +1,11 @@
+---
+name: "Reporte de Bug"
+about: "Reportar un error para mejorar la calidad"
+title: "[Bug]: Descripción breve del error"
+labels: ["bug"]
+assignees: []
+---
+
 ### Descripción del Bug
 
 Una descripción clara y concisa del bug.
