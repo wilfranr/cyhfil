@@ -4,26 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ListasResource\Pages;
 use App\Filament\Resources\ListasResource\RelationManagers;
+use Filament\Tables\Columns\Layout\Stack;
 use App\Models\Lista;
-use Faker\Core\File;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\HtmlString;
 
 class ListasResource extends Resource
 {
@@ -107,9 +100,11 @@ class ListasResource extends Resource
                 Tables\Columns\TextColumn::make('definicion')
                     ->label('Definición')
                     ->wrap()
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('sm'),
                 Tables\Columns\ImageColumn::make('foto')
-                    ->label('Foto'),
+                    ->label('Foto')
+                    ->visibleFrom('sm'),
             ])
             ->filters([
                 SelectFilter::make('tipo')
@@ -148,7 +143,7 @@ class ListasResource extends Resource
         if (!$record || $record->tipo !== 'Tipo de Artículo') {
             return []; // Si no existe o no es un Tipo de Artículo, no mostramos el Relation Manager
         }
-        // 
+        //
         return [
             RelationManagers\SistemasRelationManager::class,
         ];
@@ -164,3 +159,4 @@ class ListasResource extends Resource
         ];
     }
 }
+

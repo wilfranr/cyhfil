@@ -106,7 +106,7 @@ class ArticulosResource extends Resource
 
 
                         TextInput::make('descripcionEspecifica')
-                            ->label('Decripción')
+                            ->label('Descripción')
                             ->placeholder('Descripción específica del artículo'),
                         TextInput::make('peso')
                             ->label('Peso (Kg)')
@@ -399,3 +399,4 @@ class ArticulosResource extends Resource
         ];
     }
 }
+

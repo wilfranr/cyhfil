@@ -48,6 +48,7 @@ class SistemasRelationManager extends RelationManager
                     ->label('Nombre del Sistema'),
                 Tables\Columns\TextColumn::make('descripcion')
                     ->sortable()
+                    ->visibreFrom('sm')
                     ->limit(50)
                     ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
                         $state = $column->getState();
@@ -85,4 +86,3 @@ class SistemasRelationManager extends RelationManager
             ]);
     }
 }
-
