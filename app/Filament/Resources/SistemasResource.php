@@ -5,24 +5,17 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SistemasResource\Pages;
 use App\Filament\Resources\SistemasResource\RelationManagers;
 use App\Models\Sistema;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components;
 use Filament\Resources\Resource;
-use Filament\Support\Markdown;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SistemasResource extends Resource
 {
@@ -68,8 +61,7 @@ class SistemasResource extends Resource
                                     ->panelLayout('integrated')
                                     ->removeUploadedFileButtonPosition('right')
                                     ->uploadButtonPosition('left')
-                                    ->uploadProgressIndicatorPosition('left')
-                                    ,
+                                    ->uploadProgressIndicatorPosition('left'),
                             ]),
                     ])->columnSpan(['lg' => 2]),
 
@@ -93,9 +85,22 @@ class SistemasResource extends Resource
                     ->label('Descripción')
                     ->searchable()
                     ->wrap()
-                    ->sortable(),
+                    ->sortable()
+                    ->visibleFrom('sm')
+                    ->limit(50)
+                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                        $state = $column->getState();
+
+                        if (strlen($state) <= $column->getCharacterLimit()) {
+                            return null;
+                        }
+
+                        // Only render the tooltip if the column content exceeds the length limit.
+                        return $state;
+                    }),
                 Tables\Columns\ImageColumn::make('imagen')
-                    ->label('Imagen'),
+                    ->label('Imagen')
+                    ->visibleFrom('sm'),
             ])
             ->filters([
                 //
@@ -110,7 +115,7 @@ class SistemasResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -143,5 +148,5 @@ class SistemasResource extends Resource
             'view' => Pages\ViewSistemas::route('/{record}'),
         ];
     }
-    
 }
+
