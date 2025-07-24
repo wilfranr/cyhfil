@@ -1091,7 +1091,7 @@
 **Namespace**: `App\Models`
 **Clase**: `PedidoReferenciaProveedor`
 **Métodos**:
-- `pedido`
+- `pedidoReferencia`
 - `referencia`
 - `tercero`
 
