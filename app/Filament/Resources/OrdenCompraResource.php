@@ -32,88 +32,70 @@ class OrdenCompraResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Placeholder::make('pedido_id')
-                    ->label('Pedido')
-                    ->content(fn(OrdenCompra $record): string => $record->pedido->id),
-                Placeholder::make('proveedor')
-                    ->label('Proveedor')
-                    ->content(
-                        fn(OrdenCompra $record): string =>
-                        Tercero::find($record->proveedor_id)?->nombre ?? 'Proveedor no encontrado'
-                    ),
-                // Placeholder::make('cliente')
-                //     ->content(fn(OrdenCompra $record): string => $record->tercero->nombre)
-                //     ->label('Cliente'),
-                Placeholder::make('referencia')
-                    ->label('Referencia')
-                    ->content(
-                        fn(OrdenCompra $record): string => Referencia::find($record->referencia_id)?->referencia ?? 'Referecnia no encontrada'
-                    ),
-                Placeholder::make('direccion')
-                ->label('Dirección')
-                ->content(fn (OrdenCompra $record): string => Direccion::find($record->direccion)?->direccion ?? 'No registra dirección' ),
-                // Forms\Components\TextInput::make('cotizaciones_id')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('estado')
-                //     ->required()
-                //     ->maxLength(255),
-                Forms\Components\DatePicker::make('fecha_expedicion')
-                    ->required(),
-                Forms\Components\DatePicker::make('fecha_entrega')
-                    ->required(),
-                Forms\Components\Textarea::make('observaciones')
-                    ->label('Observaciones')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('cantidad')
-                    ->required()
-                    ->numeric(),
-                // Forms\Components\TextInput::make('direccion')
-                //     ->required()
-                //     ->maxLength(255),
-                // Forms\Components\TextInput::make('telefono')
-                //     ->tel()
-                //     ->required()
-                //     ->maxLength(255),
-                Forms\Components\TextInput::make('valor_unitario')
-                    ->required()
-                    ->numeric(),
-                // Forms\Components\TextInput::make('valor_total')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('valor_iva')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('valor_descuento')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('guia')
-                //     ->required()
-                //     ->maxLength(255),
-                // Forms\Components\ColorPicker::make('color')
-                //     ->required(),
-                Select::make('color')
-                ->label('Estado')
-                ->options([
-                    '#FFFF00' => 'En proceso',
-                    '#00ff00' => 'Entregado',
-                    '#ff0000' => 'Cancelado',
+        return $form->schema([
+            Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make('Referencias')
+                        ->schema([
+                            Forms\Components\View::make('filament.orden-compra.referencias')
+                                ->label('Referencias')
+                                ->visible(fn ($record) => $record && $record->referencias->count() > 0),
+                        ]),
+                    Forms\Components\Section::make('Observaciones')
+                        ->schema([
+                            Forms\Components\Textarea::make('observaciones')
+                                ->label('') // Sin label para que ocupe todo el espacio
+                                ->rows(4)
+                                ->placeholder('Añade un comentario u observación a la orden de compra'),
+                        ]),
                 ])
-            ]);
+                ->columnSpan(['lg' => 2]),
+
+            Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make('Detalles de la Orden')
+                        ->schema([
+                            Placeholder::make('pedido_id')
+                                ->label('Pedido')
+                                ->content(fn(OrdenCompra $record): string => '#' . $record->pedido->id),
+                            Placeholder::make('proveedor')
+                                ->label('Proveedor')
+                                ->content(
+                                    fn(OrdenCompra $record): string =>
+                                    Tercero::find($record->proveedor_id)?->nombre ?? 'N/A'
+                                ),
+                            Placeholder::make('direccion')
+                                ->label('Dirección de Entrega')
+                                ->content(fn(OrdenCompra $record): string => Direccion::find($record->direccion)?->direccion ?? 'No disponible'),
+                            Forms\Components\DatePicker::make('fecha_expedicion')
+                                ->label('Fecha de Expedición')
+                                ->required(),
+                            Forms\Components\DatePicker::make('fecha_entrega')
+                                ->label('Fecha de Entrega')
+                                ->required(),
+                            Select::make('color')
+                                ->label('Estado')
+                                ->options([
+                                    '#FFFF00' => 'En proceso',
+                                    '#00ff00' => 'Entregado',
+                                    '#ff0000' => 'Cancelado',
+                                ])
+                                ->required(),
+                        ]),
+                ])
+                ->columnSpan(['lg' => 1]),
+        ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->
-                    label('ID')
+                Tables\Columns\TextColumn::make('id')->label('ID')
                     ->sortable()
                     ->searchable()
                     ->formatStateUsing(fn($state) => 'OC-' . $state),
-                    
+
                 Tables\Columns\ColorColumn::make('color')
                     ->label(''),
                 Tables\Columns\TextColumn::make('tercero.nombre')
@@ -122,15 +104,15 @@ class OrdenCompraResource extends Resource
                     ->label('Pedido')
                     ->numeric()
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('fecha_expedicion')
                     ->date()
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('fecha_entrega')
                     ->date()
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('direccion')
                     ->searchable(),
 
@@ -174,3 +156,4 @@ class OrdenCompraResource extends Resource
         ];
     }
 }
+

@@ -301,37 +301,54 @@ class EditPedidos extends EditRecord
                     'observaciones' => $record->observaciones,
                 ]);
 
-                //Viene desde la tabla pedido_referencia
-                $pedido_referencia = PedidoReferencia::where('pedido_id', $record->id)->get();
-                // dd($pedido_referencia);
-                foreach ($pedido_referencia as $referencia) {
-                    $proveedor = PedidoReferenciaProveedor::where('pedido_referencia_id', $referencia->id)->first();
+                // Agrupar referencias por proveedor
+                $referenciasPorProveedor = PedidoReferencia::where('pedido_id', $record->id)
+                    ->with('proveedores') // Cargar la relación para evitar N+1
+                    ->get()
+                    ->groupBy(function ($referencia) {
+                        // Agrupar por el ID del primer proveedor asociado
+                        return $referencia->proveedores->first()->proveedor_id ?? null;
+                    });
 
+                // Iterar sobre cada proveedor
+                foreach ($referenciasPorProveedor as $proveedorId => $referencias) {
+                    if (!$proveedorId) {
+                        continue; // Omitir referencias sin proveedor
+                    }
+
+                    // Crear una única orden de compra por proveedor
                     $ordenCompra = new \App\Models\OrdenCompra();
                     $ordenCompra->pedido_id = $record->id;
-                    $ordenCompra->tercero_id = $record->tercero_id;
-                    $ordenCompra->referencia_id = $referencia->referencia_id;
+                    $ordenCompra->tercero_id = $record->tercero_id; // Cliente
+                    $ordenCompra->proveedor_id = $proveedorId;
                     $ordenCompra->fecha_expedicion = now();
                     $ordenCompra->fecha_entrega = now()->addDays(30);
                     $ordenCompra->observaciones = $record->observaciones;
                     $ordenCompra->direccion = $data['direccion'];
                     $ordenCompra->telefono = $record->tercero->telefono;
-                    $ordenCompra->proveedor_id = $proveedor->proveedor_id;
-                    $ordenCompra->cantidad = $proveedor->cantidad;
-                    $ordenCompra->valor_unitario = $proveedor->costo_unidad;
-                    $ordenCompra->valor_total = $proveedor->valor_total;
-                    $ordenCompra->save();
+                    $ordenCompra->save(); // Guardar la orden de compra
 
-                // Crear relación en orden_trabajo_referencias
-                \App\Models\OrdenTrabajoReferencia::create([
-                    'orden_trabajo_id' => $ordenTrabajo->id,
-                    'pedido_referencia_id' => $referencia->id,
-                    'cantidad' => $referencia->cantidad,
-                    'cantidad_recibida' => 0,
-                    'estado' => '#FF0000', // 🔴 No recibido por defecto
-                    'recibido' => false,
-                ]);
+                    // Iterar sobre las referencias de este proveedor
+                    foreach ($referencias as $referencia) {
+                        $proveedor = $referencia->proveedores->first(); // Obtener el proveedor
 
+                        // Crear la relación en la tabla pivot
+                        $ordenCompra->referencias()->attach($referencia->referencia_id, [
+                            'cantidad' => $proveedor->cantidad,
+                            'valor_unitario' => $proveedor->costo_unidad,
+                            'valor_total' => $proveedor->valor_total,
+                        ]);
+
+                        // Crear relación en orden_trabajo_referencias
+                        \App\Models\OrdenTrabajoReferencia::create([
+                            'orden_trabajo_id' => $ordenTrabajo->id,
+                            'pedido_referencia_id' => $referencia->id,
+                            'cantidad' => $referencia->cantidad,
+                            'cantidad_recibida' => 0,
+                            'estado' => '#FF0000', // No recibido
+                            'recibido' => false,
+                        ]);
+                    }
                 }
                 $this->redirect($this->getResource()::getUrl('index'));
             });
