@@ -12,7 +12,6 @@ use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Forms\{Form, Get, Set};
 use Filament\Tables;
 use Filament\Tables\{Table, Grouping\Group, Filters\Filter};
-use Filament\Forms\Components;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\{Wizard, Wizard\Step, Textarea, ToggleButtons, ViewField, Select, Repeater, FileUpload, Hidden, Placeholder, DatePicker, Button, Actions\Action, Actions, Section, TextInput, Toggle, MarkdownEditor};
 use Illuminate\Support\Collection;
@@ -21,6 +20,8 @@ use Filament\Forms\Components\View;
 use Illuminate\Support\Facades\Storage;
 use Filament\Support\Enums\ActionSize;
 use Filament\Forms\Components\Grid;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
 
 
 
@@ -2273,6 +2274,65 @@ class PedidosResource extends Resource
             ->defaultSort('id', 'desc');
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Components\Alert::make('estado-alert')
+                    ->body('Este pedido se encuentra cerrado.')
+                    ->color('info')
+                    ->icon('heroicon-o-information-circle')
+                    ->hidden(fn (Pedido $record) => !in_array($record->estado, ['Aprobado', 'Entregado', 'Cancelado'])),
+                Components\Section::make('Resumen')
+                    ->schema([
+                        Components\Grid::make(['sm' => 3])
+                            ->schema([
+                                Components\TextEntry::make('id')->label('Pedido #'),
+                                Components\TextEntry::make('tercero.nombre')->label('Cliente'),
+                                Components\BadgeEntry::make('estado')
+                                    ->label('Estado')
+                                    ->colors([
+                                        'Nuevo' => 'gray',
+                                        'En_Costeo' => 'gray',
+                                        'Cotizado' => 'info',
+                                        'Aprobado' => 'success',
+                                        'Enviado' => 'warning',
+                                        'Entregado' => 'success',
+                                        'Cancelado' => 'danger',
+                                        'Rechazado' => 'danger',
+                                    ]),
+                            ]),
+                    ]),
+                Components\Tabs::make('Detalles')
+                    ->tabs([
+                        Components\Tabs\Tab::make('Cliente')
+                            ->schema([
+                                Components\TextEntry::make('tercero.nombre')->label('Cliente'),
+                                Components\TextEntry::make('tercero.direccion')->label('Dirección'),
+                                Components\TextEntry::make('tercero.telefono')->label('Teléfono'),
+                                Components\TextEntry::make('tercero.email')->label('Email'),
+                            ]),
+                        Components\Tabs\Tab::make('Referencias')
+                            ->schema([
+                                Components\ViewEntry::make('referencias')
+                                    ->view('filament.infolists.entries.pedido-referencias-table'),
+                            ]),
+                        Components\Tabs\Tab::make('Totales')
+                            ->schema([
+                                Components\Grid::make(2)
+                                    ->schema([
+                                        Components\TextEntry::make('referencias_count')
+                                            ->label('Items')
+                                            ->state(fn (Pedido $record) => $record->referencias->count()),
+                                        Components\TextEntry::make('cantidad_total')
+                                            ->label('Cantidad total')
+                                            ->state(fn (Pedido $record) => $record->referencias->sum('cantidad')),
+                                    ]),
+                            ]),
+                    ]),
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -2287,6 +2347,7 @@ class PedidosResource extends Resource
             'index' => Pages\ListPedidos::route('/'),
             'create' => Pages\CreatePedidos::route('/create'),
             'edit' => Pages\EditPedidos::route('/{record}/edit'),
+            'view' => Pages\ViewPedidos::route('/{record}'),
         ];
     }
 }
