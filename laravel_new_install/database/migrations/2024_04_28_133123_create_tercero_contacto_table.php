@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('terecero_marcas', function (Blueprint $table) {
+        Schema::create('tercero_contacto', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tercero_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('marca_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tercero_id')->constrained();
+            $table->string('nombre');
+            $table->string('cargo');
+            $table->string('telefono');
+            $table->string('email');
+            $table->boolean('principal')->default(false);
+
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('terecero_marcas');
+        Schema::dropIfExists('tercero_contacto');
     }
 };

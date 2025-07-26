@@ -46,9 +46,10 @@ class OrdenCompra extends Model
         return $this->belongsTo(Cotizacion::class);
     }
 
-    public function referencia()
+    public function referencias()
     {
-        return $this->belongsTo(Referencia::class);
+        return $this->belongsToMany(Referencia::class, 'orden_compra_referencia')
+            ->withPivot('cantidad', 'valor_unitario', 'valor_total');
     }
 
     public function pedidoReferencia()
