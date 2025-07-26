@@ -69,10 +69,11 @@ class CotizacionResource extends Resource
             ])
             ->actions([
 
-                Tables\Actions\Action::make('ver')
-                    ->label('Ver')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn($record) => PedidosResource::getUrl('edit', ['record' => $record->pedido_id])),
+                Tables\Actions\Action::make('imprimir')
+                    ->label('Imprimir')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn($record) => route('pdf.cotizacion', ['id' => $record->id]))
+                    ->openUrlInNewTab(),
 
             ])
             ->bulkActions([
