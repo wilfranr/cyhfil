@@ -246,9 +246,13 @@ class EditPedidos extends EditRecord
                     ->title('Cotización Generada')
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('view_pdf')
+                            ->label('Ver PDF')
+                            ->url(route('pdf.cotizacion', ['id' => $cotizacion->id]), shouldOpenInNewTab: true)
+                            ->button(),
+                    ])
                     ->send();
-
-                $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
             });
     }
 
@@ -406,10 +410,13 @@ class EditPedidos extends EditRecord
                     ->title('Cotización Generada')
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('view_pdf')
+                            ->label('Ver PDF')
+                            ->url(route('pdf.cotizacion', ['id' => $cotizacion->id]), shouldOpenInNewTab: true)
+                            ->button(),
+                    ])
                     ->send();
-
-                // Redirigir al PDF
-                $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
 
             });
     }
