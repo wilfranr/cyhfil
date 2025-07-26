@@ -192,7 +192,6 @@ class EditPedidos extends EditRecord
             ->modalDescription('Esta acción guardará todos los cambios y cambiará el estado del pedido a En Costeo.');
     }
 
-    // Acción: Generar Cotización
     private function getGenerarCotizacionAction(): Action
     {
         return Action::make('Generar Cotización')
@@ -204,16 +203,36 @@ class EditPedidos extends EditRecord
                 $record->fill($this->form->getState());
                 $record->save();
 
-                if (!PedidoReferencia::where('pedido_id', $record->id)->where('estado', 1)->exists()) {
+                // 1. Validar que todas las referencias activas tengan al menos un proveedor
+                $referenciasActivas = PedidoReferencia::where('pedido_id', $record->id)
+                    ->where('estado', 1)
+                    ->with('proveedores') // Cargar la relación para eficiencia
+                    ->get();
+
+                if ($referenciasActivas->isEmpty()) {
                     Notification::make()
-                        ->title('Error')
-                        ->body('Debe seleccionar al menos una referencia activa para generar la cotización.')
+                        ->title('Error de Validación')
+                        ->body('No hay referencias activas para generar la cotización.')
                         ->danger()
                         ->send();
-
                     return;
                 }
 
+                $referenciasSinProveedor = $referenciasActivas->filter(function ($referencia) {
+                    return $referencia->proveedores->isEmpty();
+                });
+
+                if ($referenciasSinProveedor->isNotEmpty()) {
+                    $nombresReferencias = $referenciasSinProveedor->map(fn ($ref) => $ref->referencia->referencia)->implode(', ');
+                    Notification::make()
+                        ->title('Faltan Proveedores')
+                        ->body("Las siguientes referencias no tienen proveedor asignado: {$nombresReferencias}")
+                        ->danger()
+                        ->send();
+                    return;
+                }
+
+                // 2. Cambiar estado y crear cotización (lógica existente)
                 $record->estado = 'Cotizado';
                 $record->save();
 
@@ -222,16 +241,14 @@ class EditPedidos extends EditRecord
                     'tercero_id' => $record->tercero_id,
                 ]);
 
-                // Enviar la notificación
+                // 3. Notificar y redirigir
                 Notification::make()
                     ->title('Cotización Generada')
                     ->body('La cotización ha sido generada exitosamente.')
                     ->success()
                     ->send();
 
-                // Redirigir al PDF
                 $this->redirect(route('pdf.cotizacion', ['id' => $cotizacion->id]));
-
             });
     }
 
