@@ -8,6 +8,7 @@
         "php": "^8.1",
         "altwaireb/laravel-world": "^1.0",
         "andreiio/blade-remix-icon": "^3.3",
+        "awcodes/filament-table-repeater": "^3.1",
         "barryvdh/laravel-dompdf": "^2.2",
         "bezhansalleh/filament-panel-switch": "^1.0",
         "bezhansalleh/filament-shield": "^3.2",
