@@ -48,4 +48,9 @@ class Referencia extends Model
     {
         return $this->hasMany(ArticuloJuego::class);
     }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 }
