@@ -89,4 +89,9 @@ class Tercero extends Model
     //         ->select('nombre', 'id')
     //         ->pluck('nombre', 'id');
     // }
+
+    public function categorias()
+    {
+        return $this->belongsToMany(Categoria::class);
+    }
 }
