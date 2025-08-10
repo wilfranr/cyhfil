@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\PedidosResource\Forms;
 
-use App\Models\{Articulo, Lista, Pedido, Referencia, Sistema, Tercero, Empresa};
+use App\Models\{Articulo, Lista, Pedido, Referencia, Sistema, Tercero, Empresa, Fabricante};
 use Awcodes\TableRepeater\Components\TableRepeater;
 use Awcodes\TableRepeater\Header;
 use Filament\Support\Enums\Alignment;
@@ -133,11 +133,25 @@ class ReferenciasForm
                 ->preload(),
             Hidden::make("articulo_id")->disabled(),
             Select::make("marca_id")
-                ->options(
-                    Lista::where("tipo", "Marca")
-                        ->pluck("nombre", "id")
-                        ->toArray(),
-                )
+                ->options(function () {
+                    // Asegurar que todos los fabricantes existan como listas de tipo 'Marca'
+                    $fabricantes = Fabricante::query()->select('nombre', 'descripcion')->get();
+                    foreach ($fabricantes as $fab) {
+                        Lista::firstOrCreate(
+                            ['tipo' => 'Marca', 'nombre' => $fab->nombre],
+                            ['definicion' => $fab->descripcion ?? null]
+                        );
+                    }
+
+                    // Construir opciones de marcas sin duplicados por nombre (case-insensitive)
+                    return Lista::query()
+                        ->where('tipo', 'Marca')
+                        ->orderBy('nombre')
+                        ->get()
+                        ->unique(fn($item) => mb_strtolower($item->nombre))
+                        ->pluck('nombre', 'id')
+                        ->toArray();
+                })
                 ->createOptionForm(self::getMarcaForm())
                 ->createOptionUsing(
                     fn($data) => Lista::create(
@@ -153,7 +167,7 @@ class ReferenciasForm
                         ->modalWidth("lg"),
                 )
                 ->searchable()
-                ->label("Marca"),
+                ->required(),
             TextInput::make("cantidad")
                 ->label("Cantidad")
                 ->numeric()
@@ -315,11 +329,24 @@ class ReferenciasForm
                 ->default(fn(Get $get) => $get("../../cantidad")),
             // TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
-                ->options(
-                    Lista::where("tipo", "Marca")
-                        ->pluck("nombre", "id")
-                        ->toArray(),
-                )
+                ->options(function () {
+                    // Sincroniza fabricantes a Lista como tipo 'Marca'
+                    $fabricantes = Fabricante::query()->select('nombre', 'descripcion')->get();
+                    foreach ($fabricantes as $fab) {
+                        Lista::firstOrCreate(
+                            ['tipo' => 'Marca', 'nombre' => $fab->nombre],
+                            ['definicion' => $fab->descripcion ?? null]
+                        );
+                    }
+                    // Opciones unificadas sin duplicados (insensible a mayúsculas)
+                    return Lista::query()
+                        ->where('tipo', 'Marca')
+                        ->orderBy('nombre')
+                        ->get()
+                        ->unique(fn($item) => mb_strtolower($item->nombre))
+                        ->pluck('nombre', 'id')
+                        ->toArray();
+                })
                 // ->createOptionForm(self::getMarcaForm())
                 // ->createOptionUsing(
                 //     fn($data) => Lista::create(
@@ -558,11 +585,24 @@ class ReferenciasForm
                 )
                 ->searchable(),
             Select::make("marca_id")
-                ->options(
-                    Lista::where("tipo", "Marca")
-                        ->pluck("nombre", "id")
-                        ->toArray(),
-                )
+                ->options(function () {
+                    // Sincroniza fabricantes a Lista como tipo 'Marca'
+                    $fabricantes = Fabricante::query()->select('nombre', 'descripcion')->get();
+                    foreach ($fabricantes as $fab) {
+                        Lista::firstOrCreate(
+                            ['tipo' => 'Marca', 'nombre' => $fab->nombre],
+                            ['definicion' => $fab->descripcion ?? null]
+                        );
+                    }
+                    // Opciones unificadas sin duplicados (insensible a mayúsculas)
+                    return Lista::query()
+                        ->where('tipo', 'Marca')
+                        ->orderBy('nombre')
+                        ->get()
+                        ->unique(fn($item) => mb_strtolower($item->nombre))
+                        ->pluck('nombre', 'id')
+                        ->toArray();
+                })
                 ->createOptionForm(self::getMarcaForm())
                 ->createOptionUsing(
                     fn($data) => Lista::create(
@@ -625,11 +665,24 @@ class ReferenciasForm
                     }
                 }),
             Select::make("marca_id")
-                ->options(
-                    Lista::where("tipo", "Marca")
-                        ->pluck("nombre", "id")
-                        ->toArray(),
-                )
+                ->options(function () {
+                    // Sincroniza fabricantes a Lista como tipo 'Marca'
+                    $fabricantes = Fabricante::query()->select('nombre', 'descripcion')->get();
+                    foreach ($fabricantes as $fab) {
+                        Lista::firstOrCreate(
+                            ['tipo' => 'Marca', 'nombre' => $fab->nombre],
+                            ['definicion' => $fab->descripcion ?? null]
+                        );
+                    }
+                    // Opciones unificadas sin duplicados (insensible a mayúsculas)
+                    return Lista::query()
+                        ->where('tipo', 'Marca')
+                        ->orderBy('nombre')
+                        ->get()
+                        ->unique(fn($item) => mb_strtolower($item->nombre))
+                        ->pluck('nombre', 'id')
+                        ->toArray();
+                })
                 ->createOptionForm(self::getMarcaForm())
                 ->createOptionUsing(
                     fn($data) => Lista::create(
