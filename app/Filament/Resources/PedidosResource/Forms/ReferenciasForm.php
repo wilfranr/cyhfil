@@ -29,7 +29,8 @@ class ReferenciasForm
         return Repeater::make("referencias")
             ->relationship()
             ->schema(self::getReferenciasSchema())
-            ->columns(5)
+            ->columns(12)
+            ->columnSpanFull()
             ->collapsible()
             ->itemLabel(
                 fn(array $state): ?string => $state["referencia_id"]
@@ -62,7 +63,8 @@ class ReferenciasForm
                         : null,
                 )
                 ->hintAction(fn(Get $get) => self::getInfoSistemaAction($get))
-                ->live(),
+                ->live()
+                ->columnSpan(3),
             Select::make("definicion")
                 ->label("Tipo de Artículo")
                 ->options(
@@ -78,7 +80,8 @@ class ReferenciasForm
                         ? "heroicon-o-question-mark-circle"
                         : null,
                 )
-                ->hintAction(fn(Get $get) => self::getInfoTipoAction($get)),
+                ->hintAction(fn(Get $get) => self::getInfoTipoAction($get))
+                ->columnSpan(3),
             TextInput::make("articulo_definicion")
                 ->label("Artículo")
                 ->disabled()
@@ -93,6 +96,13 @@ class ReferenciasForm
                         )
                         ->modalSubmitAction(false),
                 ),
+            TextInput::make("cantidad")
+                ->label("Cantidad")
+                ->numeric()
+                ->minValue(1)
+                ->required()
+                ->default(1)
+                ->columnSpan(2),
             Select::make("referencia_id")
                 ->searchable()
                 ->relationship("referencia", "referencia")
@@ -130,7 +140,8 @@ class ReferenciasForm
                 )
                 ->live()
                 ->placeholder("Seleccione una referencia")
-                ->preload(),
+                ->preload()
+                ->columnSpan(7),
             Hidden::make("articulo_id")->disabled(),
             Select::make("marca_id")
                 ->options(function () {
@@ -167,17 +178,13 @@ class ReferenciasForm
                         ->modalWidth("lg"),
                 )
                 ->searchable()
-                ->required(),
-            TextInput::make("cantidad")
-                ->label("Cantidad")
-                ->numeric()
-                ->minValue(1)
                 ->required()
-                ->default(1),
+                ->columnSpan(3),
             TextInput::make("articulo_descripcionEspecifica")
                 ->label("Descripción")
                 ->disabled()
-                ->Visible(fn(Get $get) => $get("articulo_id") == !null),
+                ->Visible(fn(Get $get) => $get("articulo_id") == !null)
+                ->columnSpan(12),
             TextInput::make("peso")
                 ->label("Peso (gr)")
                 ->disabled()
@@ -191,9 +198,10 @@ class ReferenciasForm
                         }
                     }
                 })
-                ->reactive(),
-            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor(),
-            Textarea::make("comentario")->label("Comentario"),
+                ->reactive()
+                ->columnSpan(6),
+            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor()->columnSpan(6),
+            Textarea::make("comentario")->label("Comentario")->columnSpan(12),
             Toggle::make("mostrar_referencia")
                 ->label("Mostrar nombre de referencia en cotización")
                 ->default(true)
@@ -215,6 +223,7 @@ class ReferenciasForm
                 TableRepeater::make("proveedores")
                     ->label("Proveedores")
                     ->relationship()
+                    ->columnSpanFull()
                     ->headers([
                         Header::make("proveedor_id")
                             ->label("Proveedor")
