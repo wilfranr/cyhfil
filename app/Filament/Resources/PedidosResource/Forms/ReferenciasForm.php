@@ -21,6 +21,8 @@ use Filament\Forms\Set;
 use Filament\Forms\Components\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReferenciasForm
 {
@@ -29,7 +31,8 @@ class ReferenciasForm
         return Repeater::make("referencias")
             ->relationship()
             ->schema(self::getReferenciasSchema())
-            ->columns(5)
+            ->columns(12)
+            ->columnSpanFull()
             ->collapsible()
             ->itemLabel(
                 fn(array $state): ?string => $state["referencia_id"]
@@ -43,7 +46,79 @@ class ReferenciasForm
     {
         return Step::make("Referencias")
             ->icon("heroicon-s-clipboard-document-list")
-            ->schema([self::getReferenciasRepeater()]);
+            ->schema([self::getReferenciasRepeater()])
+            ->columns(12);
+    }
+
+    public static function getBulkStep(): Step
+    {
+        return Step::make('Referencias Masivas')
+            ->icon('heroicon-s-clipboard-document-list')
+            ->schema([
+                Textarea::make('referencias_copiadas')
+                    ->label('Copiar Referencias')
+                    ->helperText('Pega: CANTIDAD [TAB] REFERENCIA por línea')
+                    ->placeholder("10\tREF123\n5\tREF456")
+                    ->rows(5)
+                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                        if (!is_string($state) || trim($state) === '') return;
+                        $items = $get('referencias') ?? [];
+                        $lineas = preg_split('/\r?\n/', $state);
+                        $agregadas = 0;
+                        foreach ($lineas as $linea) {
+                            if (trim($linea) === '') continue;
+                            // Aceptar TAB o uno o más espacios entre cantidad y referencia
+                            if (!preg_match('/^\s*(\d+)\s+(.+?)\s*$/u', $linea, $m)) {
+                                Log::warning('Bulk referencias: línea inválida (no coincide con CANTIDAD [WS] REFERENCIA)', [
+                                    'linea' => $linea,
+                                ]);
+                                continue;
+                            }
+                            $cantidad = (int) $m[1];
+                            $codigo = strtoupper(trim($m[2]));
+                            if ($codigo === '' || $cantidad <= 0) continue;
+                            try {
+                                Log::info('Bulk referencias: intentando crear/buscar', ['codigo' => $codigo]);
+                                $ref = DB::transaction(function () use ($codigo) {
+                                    return Referencia::firstOrCreate(
+                                        ['referencia' => $codigo],
+                                        ['referencia' => $codigo]
+                                    );
+                                });
+                                Log::info('Bulk referencias: resultado firstOrCreate', [
+                                    'codigo' => $codigo,
+                                    'id' => $ref->id,
+                                    'wasRecentlyCreated' => $ref->wasRecentlyCreated,
+                                ]);
+                                $items[] = [
+                                    'referencia_id' => $ref->id,
+                                    'cantidad' => $cantidad,
+                                    'comentario' => '',
+                                ];
+                                $agregadas++;
+                            } catch (\Throwable $e) {
+                                Log::error('Bulk referencias: error creando referencia', [
+                                    'codigo' => $codigo,
+                                    'ex' => $e->getMessage(),
+                                ]);
+                            }
+                        }
+                        // Evitar duplicados en el repeater por referencia_id + cantidad
+                        $items = collect($items)
+                            ->map(fn($i) => [
+                                'key' => $i['referencia_id'].'|'.$i['cantidad'].'|'.($i['comentario'] ?? ''),
+                                'item' => $i,
+                            ])
+                            ->unique('key')
+                            ->values()
+                            ->map(fn($r) => $r['item'])
+                            ->toArray();
+                        Log::info('Bulk referencias: items agregados', ['count' => $agregadas]);
+                        $set('referencias', $items);
+                    })->columnSpanFull(),
+            ])
+            ->columns(12)
+            ->visibleOn('create');
     }
 
     private static function getReferenciasSchema(): array
@@ -62,7 +137,8 @@ class ReferenciasForm
                         : null,
                 )
                 ->hintAction(fn(Get $get) => self::getInfoSistemaAction($get))
-                ->live(),
+                ->live()
+                ->columnSpan(3),
             Select::make("definicion")
                 ->label("Tipo de Artículo")
                 ->options(
@@ -78,11 +154,12 @@ class ReferenciasForm
                         ? "heroicon-o-question-mark-circle"
                         : null,
                 )
-                ->hintAction(fn(Get $get) => self::getInfoTipoAction($get)),
+                ->hintAction(fn(Get $get) => self::getInfoTipoAction($get))
+                ->columnSpan(3),
             TextInput::make("articulo_definicion")
                 ->label("Artículo")
                 ->disabled()
-                ->Visible(fn(Get $get) => $get("articulo_id") == !null)
+                ->visible(fn(Get $get) => $get("articulo_id") == !null)
                 ->hintIcon("heroicon-o-question-mark-circle")
                 ->hintAction(
                     Action::make("infoArticulo")
@@ -93,6 +170,12 @@ class ReferenciasForm
                         )
                         ->modalSubmitAction(false),
                 ),
+            TextInput::make("cantidad")
+                ->label("Cantidad")
+                ->numeric()
+                ->minValue(1)
+                ->default(1)
+                ->columnSpan(2),
             Select::make("referencia_id")
                 ->searchable()
                 ->relationship("referencia", "referencia")
@@ -130,7 +213,8 @@ class ReferenciasForm
                 )
                 ->live()
                 ->placeholder("Seleccione una referencia")
-                ->preload(),
+                ->preload()
+                ->columnSpan(7),
             Hidden::make("articulo_id")->disabled(),
             Select::make("marca_id")
                 ->options(function () {
@@ -167,17 +251,12 @@ class ReferenciasForm
                         ->modalWidth("lg"),
                 )
                 ->searchable()
-                ->required(),
-            TextInput::make("cantidad")
-                ->label("Cantidad")
-                ->numeric()
-                ->minValue(1)
-                ->required()
-                ->default(1),
+                ->columnSpan(3),
             TextInput::make("articulo_descripcionEspecifica")
                 ->label("Descripción")
                 ->disabled()
-                ->Visible(fn(Get $get) => $get("articulo_id") == !null),
+                ->Visible(fn(Get $get) => $get("articulo_id") == !null)
+                ->columnSpan(12),
             TextInput::make("peso")
                 ->label("Peso (gr)")
                 ->disabled()
@@ -191,9 +270,10 @@ class ReferenciasForm
                         }
                     }
                 })
-                ->reactive(),
-            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor(),
-            Textarea::make("comentario")->label("Comentario"),
+                ->reactive()
+                ->columnSpan(6),
+            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor()->columnSpan(6),
+            Textarea::make("comentario")->label("Comentario")->columnSpan(12),
             Toggle::make("mostrar_referencia")
                 ->label("Mostrar nombre de referencia en cotización")
                 ->default(true)
@@ -215,6 +295,7 @@ class ReferenciasForm
                 TableRepeater::make("proveedores")
                     ->label("Proveedores")
                     ->relationship()
+                    ->columnSpanFull()
                     ->headers([
                         Header::make("proveedor_id")
                             ->label("Proveedor")
@@ -281,7 +362,7 @@ class ReferenciasForm
                                 ),
                             ),
                     ]),
-            ]),
+            ])->hiddenOn("create"),
         ];
     }
 

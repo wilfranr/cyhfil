@@ -7,11 +7,17 @@ use Filament\Resources\Pages\CreateRecord;
 use App\Models\User;
 use Filament\Notifications\Notification; // Usamos la clase Notification de Filament
 use Filament\Notifications\Actions\Action;
+// no usamos MaxWidth enum para compatibilidad con la versión de Filament
 
 
 class CreatePedidos extends CreateRecord
 {
     protected static string $resource = PedidosResource::class;
+
+    public function getMaxContentWidth(): ?string
+    {
+        return 'full';
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -76,5 +82,8 @@ class CreatePedidos extends CreateRecord
         if ($user->hasRole('Vendedor')) {
             return '/ventas'; // Panel de ventas para el vendedor
         }
+
+        // valor por defecto si no coincide ningún rol
+        return '/admin';
     }
 }
