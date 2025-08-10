@@ -65,7 +65,8 @@ class PedidosResource extends Resource
                 Wizard::make([
                     ClienteForm::getStep(),
                     ReferenciasForm::getStep(),
-                ])->hiddenOn('edit'),
+                    ReferenciasForm::getBulkStep(),
+                ])->columnSpanFull()->hiddenOn('edit'),
                 Section::make('Referencias')
                     ->schema([
                         ReferenciasForm::getReferenciasRepeater(),

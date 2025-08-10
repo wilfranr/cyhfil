@@ -44,7 +44,43 @@ class ReferenciasForm
     {
         return Step::make("Referencias")
             ->icon("heroicon-s-clipboard-document-list")
-            ->schema([self::getReferenciasRepeater()]);
+            ->schema([self::getReferenciasRepeater()])
+            ->columns(12);
+    }
+
+    public static function getBulkStep(): Step
+    {
+        return Step::make('Referencias Masivas')
+            ->icon('heroicon-s-clipboard-document-list')
+            ->schema([
+                Textarea::make('referencias_copiadas')
+                    ->label('Copiar Referencias')
+                    ->helperText('Pega: REFERENCIA [TAB] CANTIDAD por línea')
+                    ->placeholder("REF123\t10\nREF456\t5")
+                    ->rows(5)
+                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                        if (!is_string($state) || trim($state) === '') return;
+                        $items = $get('referencias') ?? [];
+                        foreach (preg_split('/\r?\n/', $state) as $linea) {
+                            if (trim($linea) === '') continue;
+                            $parts = explode("\t", $linea);
+                            if (count($parts) !== 2) continue;
+                            [$codigo, $cant] = $parts;
+                            $codigo = trim($codigo);
+                            $cantidad = (int) trim($cant);
+                            if ($codigo === '' || $cantidad <= 0) continue;
+                            $ref = Referencia::firstOrCreate(['referencia' => $codigo], ['referencia' => $codigo]);
+                            $items[] = [
+                                'referencia_id' => $ref->id,
+                                'cantidad' => $cantidad,
+                                'comentario' => '',
+                            ];
+                        }
+                        $set('referencias', $items);
+                    }),
+            ])
+            ->columns(12)
+            ->visibleOn('create');
     }
 
     private static function getReferenciasSchema(): array
