@@ -23,21 +23,25 @@ class ReferenciasRelationManager extends RelationManager
     {
         return $form
             ->schema([
-
-                TextInput::make('referencia_id')
-                    ->label('Referencia')
-                    ->required(),
                 TextInput::make('cantidad')
                     ->numeric()
                     ->minValue(1)
                     ->required()
-                    ->label('Cantidad'),
+                    ->label('Cantidad')
+                    ->columnSpan(3),
+                TextInput::make('referencia_id')
+                    ->label('Referencia')
+                    ->required()
+                    ->columnSpan(6),
                 TextInput::make('comentario')
-                    ->label('Comentario'), 
+                    ->label('Comentario')
+                    ->columnSpan(12),
                 FileUpload::make('imagen')
                     ->image()
-                    ->label('Imagen'), 
-            ]);
+                    ->label('Imagen')
+                    ->columnSpan(12),
+            ])
+            ->columns(12);
     }
 
 
