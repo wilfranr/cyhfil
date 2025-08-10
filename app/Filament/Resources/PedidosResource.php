@@ -64,8 +64,8 @@ class PedidosResource extends Resource
                 ...InfoSections::getSections(),
                 Wizard::make([
                     ClienteForm::getStep(),
-                    ReferenciasForm::getStep(),
                     ReferenciasForm::getBulkStep(),
+                    ReferenciasForm::getStep(),
                 ])->columnSpanFull()->hiddenOn('edit'),
                 Section::make('Referencias')
                     ->schema([

@@ -21,6 +21,8 @@ use Filament\Forms\Set;
 use Filament\Forms\Components\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReferenciasForm
 {
@@ -55,29 +57,65 @@ class ReferenciasForm
             ->schema([
                 Textarea::make('referencias_copiadas')
                     ->label('Copiar Referencias')
-                    ->helperText('Pega: REFERENCIA [TAB] CANTIDAD por línea')
-                    ->placeholder("REF123\t10\nREF456\t5")
+                    ->helperText('Pega: CANTIDAD [TAB] REFERENCIA por línea')
+                    ->placeholder("10\tREF123\n5\tREF456")
                     ->rows(5)
                     ->afterStateUpdated(function (Set $set, Get $get, $state) {
                         if (!is_string($state) || trim($state) === '') return;
                         $items = $get('referencias') ?? [];
-                        foreach (preg_split('/\r?\n/', $state) as $linea) {
+                        $lineas = preg_split('/\r?\n/', $state);
+                        $agregadas = 0;
+                        foreach ($lineas as $linea) {
                             if (trim($linea) === '') continue;
-                            $parts = explode("\t", $linea);
-                            if (count($parts) !== 2) continue;
-                            [$codigo, $cant] = $parts;
-                            $codigo = trim($codigo);
-                            $cantidad = (int) trim($cant);
+                            // Aceptar TAB o uno o más espacios entre cantidad y referencia
+                            if (!preg_match('/^\s*(\d+)\s+(.+?)\s*$/u', $linea, $m)) {
+                                Log::warning('Bulk referencias: línea inválida (no coincide con CANTIDAD [WS] REFERENCIA)', [
+                                    'linea' => $linea,
+                                ]);
+                                continue;
+                            }
+                            $cantidad = (int) $m[1];
+                            $codigo = strtoupper(trim($m[2]));
                             if ($codigo === '' || $cantidad <= 0) continue;
-                            $ref = Referencia::firstOrCreate(['referencia' => $codigo], ['referencia' => $codigo]);
-                            $items[] = [
-                                'referencia_id' => $ref->id,
-                                'cantidad' => $cantidad,
-                                'comentario' => '',
-                            ];
+                            try {
+                                Log::info('Bulk referencias: intentando crear/buscar', ['codigo' => $codigo]);
+                                $ref = DB::transaction(function () use ($codigo) {
+                                    return Referencia::firstOrCreate(
+                                        ['referencia' => $codigo],
+                                        ['referencia' => $codigo]
+                                    );
+                                });
+                                Log::info('Bulk referencias: resultado firstOrCreate', [
+                                    'codigo' => $codigo,
+                                    'id' => $ref->id,
+                                    'wasRecentlyCreated' => $ref->wasRecentlyCreated,
+                                ]);
+                                $items[] = [
+                                    'referencia_id' => $ref->id,
+                                    'cantidad' => $cantidad,
+                                    'comentario' => '',
+                                ];
+                                $agregadas++;
+                            } catch (\Throwable $e) {
+                                Log::error('Bulk referencias: error creando referencia', [
+                                    'codigo' => $codigo,
+                                    'ex' => $e->getMessage(),
+                                ]);
+                            }
                         }
+                        // Evitar duplicados en el repeater por referencia_id + cantidad
+                        $items = collect($items)
+                            ->map(fn($i) => [
+                                'key' => $i['referencia_id'].'|'.$i['cantidad'].'|'.($i['comentario'] ?? ''),
+                                'item' => $i,
+                            ])
+                            ->unique('key')
+                            ->values()
+                            ->map(fn($r) => $r['item'])
+                            ->toArray();
+                        Log::info('Bulk referencias: items agregados', ['count' => $agregadas]);
                         $set('referencias', $items);
-                    }),
+                    })->columnSpanFull(),
             ])
             ->columns(12)
             ->visibleOn('create');
@@ -121,7 +159,7 @@ class ReferenciasForm
             TextInput::make("articulo_definicion")
                 ->label("Artículo")
                 ->disabled()
-                ->Visible(fn(Get $get) => $get("articulo_id") == !null)
+                ->visible(fn(Get $get) => $get("articulo_id") == !null)
                 ->hintIcon("heroicon-o-question-mark-circle")
                 ->hintAction(
                     Action::make("infoArticulo")
@@ -136,7 +174,6 @@ class ReferenciasForm
                 ->label("Cantidad")
                 ->numeric()
                 ->minValue(1)
-                ->required()
                 ->default(1)
                 ->columnSpan(2),
             Select::make("referencia_id")
@@ -214,7 +251,6 @@ class ReferenciasForm
                         ->modalWidth("lg"),
                 )
                 ->searchable()
-                ->required()
                 ->columnSpan(3),
             TextInput::make("articulo_descripcionEspecifica")
                 ->label("Descripción")
@@ -326,7 +362,7 @@ class ReferenciasForm
                                 ),
                             ),
                     ]),
-            ]),
+            ])->hiddenOn("create"),
         ];
     }
 

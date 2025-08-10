@@ -14,7 +14,7 @@ class CreatePedidos extends CreateRecord
 {
     protected static string $resource = PedidosResource::class;
 
-    protected function getMaxContentWidth(): ?string
+    public function getMaxContentWidth(): ?string
     {
         return 'full';
     }
