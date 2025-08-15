@@ -13,16 +13,17 @@ class Direccion extends Model
 
     protected $fillable = [
         'tercero_id',
-        'direccion',//placeholder reclama oficina
+        'direccion', // dirección física
         'city_id',
         'state_id',
         'country_id',
-        'principal',//boton para reclamo oficina, desactivar dirección - default: false
-        //transportadora? Foreign key
-        //Forma de pago: Al cobro Check
-        //Destinatario: Nombre
-        //Teléfono: 1234567
-        //Documento: 1234567
+        'principal', // si es la dirección principal
+        'destinatario', // nombre del destinatario
+        'nit_cc', // NIT o CC del destinatario
+        'transportadora_id', // ID de la transportadora
+        'forma_pago', // forma de pago
+        'telefono', // teléfono de contacto
+        'ciudad_texto' // ciudad en texto (alternativo a city_id)
     ];
     
     public function tercero()
@@ -43,6 +44,11 @@ class Direccion extends Model
     public function state()
     {
         return $this->belongsTo(State::class, 'state_id');
+    }
+    
+    public function transportadora()
+    {
+        return $this->belongsTo(Transportadora::class, 'transportadora_id');
     }
     protected static function booted()
     {
