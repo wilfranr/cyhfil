@@ -1,1 +1,2 @@
-@import "/vendor/awcodes/filament-table-repeater/resources/css/plugin.css";
+@import "../../vendor/awcodes/filament-table-repeater/resources/css/plugin.css";
+@import "custom-table-repeater.css";

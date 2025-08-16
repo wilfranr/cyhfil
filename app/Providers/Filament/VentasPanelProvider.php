@@ -36,7 +36,6 @@ try {
 }
 
         return $panel
-
             ->id('ventas')
             ->path('ventas')
             ->login()

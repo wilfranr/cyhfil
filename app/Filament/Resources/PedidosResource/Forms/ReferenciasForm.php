@@ -296,6 +296,9 @@ class ReferenciasForm
                     ->label("Proveedores")
                     ->relationship()
                     ->columnSpanFull()
+                    ->extraAttributes([
+                        'class' => 'custom-table-repeater',
+                    ])
                     ->headers([
                         Header::make("proveedor_id")
                             ->label("Proveedor")
@@ -305,9 +308,9 @@ class ReferenciasForm
                             ->label("Cant.")
                             ->align(Alignment::Center)
                             ->width("80px"),
-                        // Header::make("ubicacion")
-                        //     ->label("Ubicación")
-                        //     ->width("120px"),
+                        Header::make("ubicacion")
+                            ->label("Ubicación")
+                            ->width("120px"),
                         Header::make("marca_id")
                             ->label("Marca")
                             ->align(Alignment::Center)

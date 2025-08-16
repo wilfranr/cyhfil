@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use Filament\Facades\Filament;
-use Illuminate\Support\ServiceProvider;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Http;
@@ -49,11 +50,10 @@ class FilamentServiceProvider extends ServiceProvider
 }
     public function boot()
     {
+        // Register the TRM display hook
         FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
             fn (): View => view('components.trm-display', ['trm' => $this->getTrm()])
         );
-        
-        
     }
 }

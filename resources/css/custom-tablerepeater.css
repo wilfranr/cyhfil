@@ -1,0 +1,71 @@
+/* Estilos para el TableRepeater */
+.fi-ta {
+    --header-bg: #3b82f6; /* blue-500 */
+    --header-text: #ffffff;
+    --header-hover: #2563eb; /* blue-600 */
+    --header-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Modo oscuro */
+.dark .fi-ta {
+    --header-bg: #1f2937; /* gray-800 */
+    --header-text: #f9fafb; /* gray-50 */
+    --header-hover: #374151; /* gray-700 */
+    --header-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para el encabezado de la tabla */
+.fi-ta thead {
+    background-color: var(--header-bg) !important;
+    color: var(--header-text) !important;
+}
+
+/* Celdas del encabezado */
+.fi-ta thead th {
+    background-color: var(--header-bg) !important;
+    color: var(--header-text) !important;
+    border-right: 1px solid var(--header-border) !important;
+    padding: 0.75rem 1rem !important;
+    vertical-align: middle !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* Efecto hover */
+.fi-ta thead th:hover {
+    background-color: var(--header-hover) !important;
+}
+
+/* Última celda del encabezado */
+.fi-ta thead th:last-child {
+    border-right: none !important;
+}
+
+/* Asegurar que el texto del encabezado sea visible */
+.fi-ta thead th,
+.fi-ta thead th span,
+.fi-ta thead th div,
+.fi-ta thead th button {
+    color: var(--header-text) !important;
+}
+
+/* Forzar el color del texto en los botones de ordenación */
+.fi-ta thead th button span {
+    color: var(--header-text) !important;
+}
+
+/* Asegurar que los iconos de ordenación sean visibles */
+.fi-ta thead th svg {
+    color: var(--header-text) !important;
+}
+
+/* Estilos para el modo oscuro */
+.dark .fi-ta thead th,
+.dark .fi-ta thead th span,
+.dark .fi-ta thead th div,
+.dark .fi-ta thead th button {
+    background-color: var(--header-bg) !important;
+    color: var(--header-text) !important;
+}

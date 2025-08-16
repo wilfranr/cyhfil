@@ -1,0 +1,33 @@
+/* Estilos específicos para el TableRepeater */
+.table-repeater-header {
+    background-color: #2563eb !important; /* primary-600 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.table-repeater-header-column {
+    background-color: #2563eb !important; /* primary-600 */
+    color: #ffffff !important;
+}
+
+/* Estilos para el modo oscuro */
+.dark .table-repeater-header,
+.dark .table-repeater-header-column {
+    background-color: #1f2937 !important; /* gray-800 */
+    color: #f9fafb !important; /* gray-50 */
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Efecto hover en los encabezados */
+.table-repeater-header-column:hover {
+    background-color: #1d4ed8 !important; /* primary-700 */
+}
+
+.dark .table-repeater-header-column:hover {
+    background-color: #111827 !important; /* gray-900 */
+}
+
+/* Asegurar que el texto sea legible */
+.table-repeater-header-column,
+.table-repeater-header-column * {
+    color: inherit !important;
+}
