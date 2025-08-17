@@ -447,13 +447,12 @@ class ReferenciasForm
                 ->label("Marca"),
             TextInput::make("dias_entrega")
                 ->label("Días de entrega (hábiles)")
-                ->helperText("Ingrese 0 para entrega inmediata")
                 ->default(0)
                 ->numeric()
                 ->minValue(0)
                 ->step(1)
                 ->required()
-                ->suffix(fn(Get $get) => $get('dias_entrega') == 0 ? ' (Inmediata)' : ' días hábiles')
+                //->suffix(fn(Get $get) => $get('dias_entrega') == 0 ? ' (Inmediata)' : ' días hábiles')
                 ->afterStateUpdated(function (Get $get, Set $set) {
                     // Asegurar que el valor sea un entero >= 0
                     $valor = max(0, (int) $get('dias_entrega'));
