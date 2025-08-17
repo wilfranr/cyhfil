@@ -16,7 +16,6 @@ class PedidoReferenciaProveedor extends Model
         'referencia_id',
         'proveedor_id',
         'marca_id',
-        'Entrega',
         'dias_entrega',
         'costo_unidad',
         'utilidad',

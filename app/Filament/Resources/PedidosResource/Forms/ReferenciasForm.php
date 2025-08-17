@@ -320,14 +320,10 @@ class ReferenciasForm
                             ->label("Marca")
                             ->align(Alignment::Center)
                             ->width("150px"),
-                        Header::make("Entrega")
-                            ->label("Entrega")
-                            ->align(Alignment::Center)
-                            ->width("100px"),
                         Header::make("dias_entrega")
                             ->label("Días Entrega")
                             ->align(Alignment::Center)
-                            ->width("100px"),
+                            ->width("120px"),
                         Header::make("costo_unidad")
                             ->label("Costo Unidad")
                             ->align(Alignment::Center)
@@ -449,22 +445,19 @@ class ReferenciasForm
                 // )
                 ->searchable()
                 ->label("Marca"),
-            Select::make("Entrega")
-                ->options([
-                    "Inmediata" => "Inmediata",
-                    "Programada" => "Programada",
-                ])
-                ->live()
-                ->required(),
             TextInput::make("dias_entrega")
-                ->label("Días de entrega")
+                ->label("Días de entrega (hábiles)")
+                ->helperText("Ingrese 0 para entrega inmediata")
                 ->default(0)
                 ->numeric()
-                ->disabled(fn(Get $get) => $get("Entrega") !== "Programada")
+                ->minValue(0)
+                ->step(1)
+                ->required()
+                ->suffix(fn(Get $get) => $get('dias_entrega') == 0 ? ' (Inmediata)' : ' días hábiles')
                 ->afterStateUpdated(function (Get $get, Set $set) {
-                    if ($get("Entrega") !== "Programada") {
-                        $set("dias_entrega", 0);
-                    }
+                    // Asegurar que el valor sea un entero >= 0
+                    $valor = max(0, (int) $get('dias_entrega'));
+                    $set('dias_entrega', $valor);
                 }),
             TextInput::make("costo_unidad")
                 ->label("Costo Unidad")
@@ -916,7 +909,7 @@ class ReferenciasForm
     {
         $proveedor = Tercero::find($get("proveedor_id"));
         if (!$proveedor) {
-            $set("dias_entrega", null);
+            $set("dias_entrega", 0);
             $set("costo_unidad", null);
             $set("utilidad", null);
             $set("valor_total", null);
@@ -926,7 +919,9 @@ class ReferenciasForm
             "ubicacion",
             $proveedor->country_id == 48 ? "Nacional" : "Internacional",
         );
-        $set("dias_entrega", $proveedor->dias_entrega);
+        // Establecer días de entrega del proveedor, con 0 como valor por defecto si no tiene
+        $diasEntrega = $proveedor->dias_entrega ?? 0;
+        $set("dias_entrega", max(0, (int) $diasEntrega));
         $set("costo_unidad", $proveedor->costo_unidad);
         $set("utilidad", $proveedor->utilidad);
         $set("valor_total", $proveedor->valor_total);

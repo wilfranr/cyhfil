@@ -155,8 +155,8 @@ th {
         <td>{{ $articulo->descripcionEspecifica ?? 'Sin descripción' }}</td>
         <td>{{ $proveedor->cantidad }}</td>
         <td>{{ $marca->nombre ?? 'N/A' }}</td>
-        <td class="{{ $proveedor->Entrega == 'Programada' ? 'bg-yellow' : '' }}">
-          {{ $proveedor->Entrega == 'Programada' ? $proveedor->dias_entrega . ' días' : $proveedor->Entrega }}
+        <td class="{{ $proveedor->dias_entrega > 0 ? 'bg-yellow' : '' }}">
+          {{ $proveedor->dias_entrega == 0 ? 'Inmediata' : $proveedor->dias_entrega . ' días hábiles' }}
         </td>
         <td>${{ number_format($proveedor->valor_unidad, 2, ',', '.') }}</td>
         <td>${{ number_format($proveedor->valor_total, 2, ',', '.') }}</td>
