@@ -1,6 +1,6 @@
 /* Estilos específicos para el TableRepeater */
 .table-repeater-header {
-    background-color: #2563eb !important; /* primary-600 */
+    background-color: #4d525c !important; /* primary-600 */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
@@ -12,7 +12,7 @@
 /* Estilos para el modo oscuro */
 .dark .table-repeater-header,
 .dark .table-repeater-header-column {
-    background-color: #1f2937 !important; /* gray-800 */
+    background-color: #484c52 !important; /* gray-800 */
     color: #f9fafb !important; /* gray-50 */
     border-color: rgba(255, 255, 255, 0.2) !important;
 }

@@ -106,7 +106,7 @@ class ReferenciasForm
                         // Evitar duplicados en el repeater por referencia_id + cantidad
                         $items = collect($items)
                             ->map(fn($i) => [
-                                'key' => $i['referencia_id'].'|'.$i['cantidad'].'|'.($i['comentario'] ?? ''),
+                                'key' => $i['referencia_id'] . '|' . $i['cantidad'] . '|' . ($i['comentario'] ?? ''),
                                 'item' => $i,
                             ])
                             ->unique('key')
@@ -138,7 +138,7 @@ class ReferenciasForm
                 )
                 ->hintAction(fn(Get $get) => self::getInfoSistemaAction($get))
                 ->live()
-                ->columnSpan(3),
+                ->columnSpan(2),
             Select::make("definicion")
                 ->label("Tipo de Artículo")
                 ->options(
@@ -155,11 +155,12 @@ class ReferenciasForm
                         : null,
                 )
                 ->hintAction(fn(Get $get) => self::getInfoTipoAction($get))
-                ->columnSpan(3),
+                ->columnSpan(2),
             TextInput::make("articulo_definicion")
                 ->label("Artículo")
                 ->disabled()
                 ->visible(fn(Get $get) => $get("articulo_id") == !null)
+                ->columnSpan(2)
                 ->hintIcon("heroicon-o-question-mark-circle")
                 ->hintAction(
                     Action::make("infoArticulo")
@@ -175,7 +176,7 @@ class ReferenciasForm
                 ->numeric()
                 ->minValue(1)
                 ->default(1)
-                ->columnSpan(2),
+                ->columnSpan(1),
             Select::make("referencia_id")
                 ->searchable()
                 ->relationship("referencia", "referencia")
@@ -214,7 +215,7 @@ class ReferenciasForm
                 ->live()
                 ->placeholder("Seleccione una referencia")
                 ->preload()
-                ->columnSpan(7),
+                ->columnSpan(4),
             Hidden::make("articulo_id")->disabled(),
             Select::make("marca_id")
                 ->options(function () {
@@ -251,12 +252,12 @@ class ReferenciasForm
                         ->modalWidth("lg"),
                 )
                 ->searchable()
-                ->columnSpan(3),
+                ->columnSpan(2),
             TextInput::make("articulo_descripcionEspecifica")
                 ->label("Descripción")
                 ->disabled()
                 ->Visible(fn(Get $get) => $get("articulo_id") == !null)
-                ->columnSpan(12),
+                ->columnSpan(3),
             TextInput::make("peso")
                 ->label("Peso (gr)")
                 ->disabled()
@@ -271,9 +272,9 @@ class ReferenciasForm
                     }
                 })
                 ->reactive()
-                ->columnSpan(6),
-            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor()->columnSpan(6),
-            Textarea::make("comentario")->label("Comentario")->columnSpan(12),
+                ->columnSpan(1),
+            FileUpload::make("imagen")->label("Imagen")->image()->imageEditor()->columnSpan(4),
+            Textarea::make("comentario")->label("Comentario")->columnSpan(4),
             Toggle::make("mostrar_referencia")
                 ->label("Mostrar nombre de referencia en cotización")
                 ->default(true)
@@ -300,6 +301,10 @@ class ReferenciasForm
                         'class' => 'custom-table-repeater',
                     ])
                     ->headers([
+                        Header::make("estado")
+                            ->label("Seleccionar")
+                            ->align(Alignment::Center)
+                            ->width("100px"),
                         Header::make("proveedor_id")
                             ->label("Proveedor")
                             ->align(Alignment::Center)
@@ -339,10 +344,6 @@ class ReferenciasForm
                             ->label("Valor Total")
                             ->align(Alignment::Center)
                             ->width("130px"),
-                        Header::make("estado")
-                            ->label("Seleccionar")
-                            ->align(Alignment::Center)
-                            ->width("100px"),
                     ])
                     ->schema(self::getProveedoresSchema())
                     ->extraAttributes(
@@ -372,6 +373,7 @@ class ReferenciasForm
     private static function getProveedoresSchema(): array
     {
         return [
+            Toggle::make("estado")->label("Seleccionar")->default(true),
             Select::make("proveedor_id")
                 ->options(function (Get $get) {
                     $sistemaId = $get("../../sistema_id");
@@ -411,7 +413,7 @@ class ReferenciasForm
                 ->numeric()
                 ->required()
                 ->default(fn(Get $get) => $get("../../cantidad")),
-            // TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
+            TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
                 ->options(function () {
                     // Sincroniza fabricantes a Lista como tipo 'Marca'
@@ -495,7 +497,6 @@ class ReferenciasForm
                 // ->prefix('$')
                 ->readOnly()
                 ->label("Valor Total"),
-            Toggle::make("estado")->label("Seleccionar")->default(true),
         ];
     }
 
@@ -904,10 +905,10 @@ class ReferenciasForm
         $pedido = Pedido::find($get("pedido_id"));
         return $pedido
             ? !in_array($pedido->estado, ["En_Costeo", "Cotizado"]) ||
-                    in_array(Auth::user()?->roles->first()?->name, [
-                        "Analista",
-                        "Logistica",
-                    ])
+            in_array(Auth::user()?->roles->first()?->name, [
+                "Analista",
+                "Logistica",
+            ])
             : true;
     }
 
