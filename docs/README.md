@@ -25,7 +25,7 @@ Documentación de funcionalidades específicas del sistema.
 ### 📁 [DEVELOPMENT/](./DEVELOPMENT/)
 Guías para desarrolladores.
 
-- **guidelines.md** - Estándares de código (pendiente)
+- **[guidelines.md](./DEVELOPMENT/guidelines.md)** - Estándares de código y mejores prácticas
 - **api-documentation.md** - Documentación de APIs (pendiente)
 - **testing.md** - Guías de testing (pendiente)
 
@@ -34,6 +34,9 @@ Guías de despliegue y configuración.
 
 - **deployment.md** - Guía de despliegue (pendiente)
 - **environment.md** - Configuración de variables de entorno (pendiente)
+
+### 📋 [RESUMEN_EJECUTIVO.md](./RESUMEN_EJECUTIVO.md)
+Resumen ejecutivo completo del proyecto Sistema CYH.
 
 ## 🚀 Funcionalidades Principales
 
