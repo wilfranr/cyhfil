@@ -410,7 +410,17 @@ class ReferenciasForm
                 ->required()
                 ->live()
                 ->reactive()
-                ->default(fn(Get $get) => $get("../../cantidad")),
+                ->default(fn(Get $get) => $get("../../cantidad"))
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    // Solo ejecutar si tenemos todos los valores necesarios
+                    $costo_unidad = $get('costo_unidad');
+                    $utilidad = $get('utilidad');
+                    $ubicacion = $get('ubicacion');
+                    
+                    if (!empty($costo_unidad) && !empty($utilidad) && !empty($ubicacion)) {
+                        self::calculateValorTotal($set, $get);
+                    }
+                }),
             TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
                 ->options(function () {
@@ -464,87 +474,41 @@ class ReferenciasForm
                 ->label("Costo Unidad")
                 ->live()
                 ->reactive()
-                ->numeric(),
+                ->numeric()
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    // Solo ejecutar si tenemos todos los valores necesarios
+                    $cantidad = $get('cantidad');
+                    $utilidad = $get('utilidad');
+                    $ubicacion = $get('ubicacion');
+                    
+                    if (!empty($cantidad) && !empty($utilidad) && !empty($ubicacion)) {
+                        self::calculateValorTotal($set, $get);
+                    }
+                }),
             TextInput::make("utilidad")
                 ->label("Utilidad %")
                 ->reactive()
                 ->required()
                 ->live()
-                ->numeric(),
+                ->numeric()
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    // Solo ejecutar si tenemos todos los valores necesarios
+                    $cantidad = $get('cantidad');
+                    $costo_unidad = $get('costo_unidad');
+                    $ubicacion = $get('ubicacion');
+                    
+                    if (!empty($cantidad) && !empty($costo_unidad) && !empty($ubicacion)) {
+                        self::calculateValorTotal($set, $get);
+                    }
+                }),
             TextInput::make("valor_unidad")
                 ->label("Valor Unidad $")
                 ->numeric()
-                ->readOnly()
-                ->state(function (Get $get) {
-                    $costo_unidad = $get('costo_unidad');
-                    $utilidad = $get('utilidad');
-                    $cantidad = $get('cantidad');
-                    $ubicacion = $get('ubicacion');
-                    
-                    if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
-                        return null;
-                    }
-                    
-                    // Convertir a números
-                    $costo_unidad = (float) $costo_unidad;
-                    $utilidad = (float) $utilidad;
-                    $cantidad = (int) $cantidad;
-                    
-                    if ($ubicacion == "Internacional") {
-                        $peso = $get("../../peso");
-                        $trm = Empresa::query()->first()->trm;
-                        $flete = Empresa::query()->first()->flete;
-                        
-                        if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
-                            return null;
-                        }
-                        
-                        $costo_cop = $costo_unidad * $trm;
-                        $valor_base = $costo_cop + ($peso * 2.2 * $flete);
-                        $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
-                        return round($valor_unidad, -2);
-                    } else {
-                        return $costo_unidad + ($costo_unidad * $utilidad / 100);
-                    }
-                }),
+                ->readOnly(),
             TextInput::make("valor_total")
                 ->live()
                 ->readOnly()
-                ->label("Valor Total $")
-                ->state(function (Get $get) {
-                    $costo_unidad = $get('costo_unidad');
-                    $utilidad = $get('utilidad');
-                    $cantidad = $get('cantidad');
-                    $ubicacion = $get('ubicacion');
-                    
-                    if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
-                        return null;
-                    }
-                    
-                    // Convertir a números
-                    $costo_unidad = (float) $costo_unidad;
-                    $utilidad = (float) $utilidad;
-                    $cantidad = (int) $cantidad;
-                    
-                    if ($ubicacion == "Internacional") {
-                        $peso = $get("../../peso");
-                        $trm = Empresa::query()->first()->trm;
-                        $flete = Empresa::query()->first()->flete;
-                        
-                        if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
-                            return null;
-                        }
-                        
-                        $costo_cop = $costo_unidad * $trm;
-                        $valor_base = $costo_cop + ($peso * 2.2 * $flete);
-                        $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
-                        $valor_unidad = round($valor_unidad, -2);
-                        return $valor_unidad * $cantidad;
-                    } else {
-                        $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
-                        return $valor_unidad * $cantidad;
-                    }
-                }),
+                ->label("Valor Total $"),
         ];
     }
 
