@@ -11,7 +11,7 @@ Documentación detallada de todos los modelos Eloquent del sistema.
 
 - **[Empresa.md](./MODELS/Empresa.md)** - Modelo principal del sistema
 - **[User.md](./MODELS/User.md)** - Modelo de usuarios del sistema
-- **Pedido.md** - Modelo de pedidos (pendiente)
+- **[Pedido.md](./MODELS/Pedido.md)** - Modelo de pedidos principales
 - **Referencia.md** - Modelo de referencias (pendiente)
 - **Tercero.md** - Modelo de terceros/proveedores (pendiente)
 
@@ -73,10 +73,11 @@ Guías de despliegue y configuración.
 - Sistema de cálculo automático
 - Documentación del modelo Empresa
 - Documentación del modelo User
+- Documentación del modelo Pedido
 - Funcionalidad de proveedores internacionales
 
 ### 🟡 En Progreso
-- Documentación de modelos restantes (Pedido, Referencia, Tercero)
+- Documentación de modelos restantes (Referencia, Tercero)
 - Estructura de documentación
 
 ### 🔴 Pendiente
