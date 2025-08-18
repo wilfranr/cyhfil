@@ -279,7 +279,8 @@ class ReferenciasForm
                 ->label("Mostrar nombre de referencia en cotización")
                 ->default(true)
                 ->hidden(fn($get) => self::shouldHideCotizacionFields($get))
-                ->visibleOn("edit"),
+                ->visibleOn("edit")
+                ->columnSpan(2),
             ToggleButtons::make("estado")
                 ->label("Estado de referencia")
                 ->options([1 => "Activo", 0 => "Inactivo"])
@@ -290,6 +291,7 @@ class ReferenciasForm
                 ])
                 ->default(1)
                 ->inline()
+                ->columnSpan(2)
                 ->hidden(fn($get) => self::shouldHideCotizacionFields($get))
                 ->visibleOn("edit"),
             Section::make()->schema([
