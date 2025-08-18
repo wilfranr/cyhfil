@@ -998,8 +998,22 @@ class ReferenciasForm
             $trm = Empresa::query()->first()->trm;
             $flete = Empresa::query()->first()->flete;
             
+            \Log::info('calculateValorTotal - Valores internacionales obtenidos', [
+                'peso' => $peso,
+                'trm' => $trm,
+                'flete' => $flete,
+                'tipo_peso' => gettype($peso),
+                'tipo_trm' => gettype($trm),
+                'tipo_flete' => gettype($flete),
+            ]);
+            
             // Validar que tengamos todos los valores necesarios para internacional
             if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                \Log::warning('calculateValorTotal - Validación internacional fallida', [
+                    'peso_valido' => is_numeric($peso),
+                    'trm_valido' => is_numeric($trm),
+                    'flete_valido' => is_numeric($flete),
+                ]);
                 $set("valor_unidad", null);
                 $set("valor_total", null);
                 return;
