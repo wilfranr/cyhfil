@@ -10,7 +10,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Unit Tests (Laravel)
+    name: Unit Tests (Laravel + SQLite)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -42,6 +42,9 @@ jobs:
           php artisan key:generate --force
 
       - name: Run Unit Test Suite
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
         run: php artisan test --testsuite=Unit
 
   feature-tests:
@@ -113,4 +116,11 @@ jobs:
         run: php artisan migrate --force
 
       - name: Run Feature Test Suite
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: ""
         run: php artisan test --testsuite=Feature
