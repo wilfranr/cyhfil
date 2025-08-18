@@ -52,6 +52,13 @@ Resumen ejecutivo completo del proyecto Sistema CYH.
    - Configuración de TRM y flete
    - Gestión de identidad corporativa
 
+3. **Agrupación de Órdenes de Compra** ⭐ **NUEVO**
+   - Agrupación automática por proveedor y cliente
+   - Vista personalizada con diseño agrupado
+   - Gestión de referencias con cantidades y valores
+   - Compatibilidad total con temas claro/oscuro de Filament
+   - Totales calculados automáticamente por grupo
+
 ### 🚧 En Desarrollo
 
 1. **Documentación de Modelos**
@@ -80,6 +87,7 @@ Resumen ejecutivo completo del proyecto Sistema CYH.
 - Documentación del modelo Referencia
 - Documentación del modelo Tercero
 - Funcionalidad de proveedores internacionales
+- **Agrupación de Órdenes de Compra (Issue #24)** ⭐ **COMPLETADO**
 
 ### 🟡 En Progreso
 - Documentación de funcionalidades específicas

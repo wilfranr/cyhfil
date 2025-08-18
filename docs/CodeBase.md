@@ -423,18 +423,46 @@
 ## ListOrdenCompras: `app/Filament/Resources/OrdenCompraResource/Pages/ListOrdenCompras.php`
 **Namespace**: `App\Filament\Resources\OrdenCompraResource\Pages`
 **Clase**: `ListOrdenCompras`
+**Funcionalidades**:
+- **Vista personalizada** con agrupación visual por proveedor
+- **Header personalizado** con título y descripción
+- **Agrupación automática** de órdenes por proveedor y cliente
+- **Totales calculados** por proveedor y cliente
+
 **Métodos**:
-- `getHeaderActions`
+- `getHeaderActions()` - Acciones del header (Crear)
+- `getHeader()` - Vista personalizada con agrupación
+- `getTableQuery()` - Consulta con ordenamiento por proveedor y cliente
+
+**Características de la Vista**:
+- Agrupación visual por proveedor con badges de conteo
+- Sub-agrupación por cliente con totales
+- Tarjetas de órdenes con información detallada
+- Sección de referencias a comprar en cada orden
+- Diseño responsivo y compatible con temas claro/oscuro
 
 ## OrdenCompraResource: `app/Filament/Resources/OrdenCompraResource.php`
 **Namespace**: `App\Filament\Resources`
 **Clase**: `OrdenCompraResource`
+**Funcionalidades**:
+- **Agrupación automática** por proveedor y cliente
+- **Vista personalizada** con diseño agrupado
+- **Filtros avanzados** por proveedor, cliente y estado
+- **Gestión de referencias** con cantidades y valores
+
 **Métodos**:
-- `getNavigationBadge`
-- `form`
-- `table`
-- `getRelations`
-- `getPages`
+- `getNavigationBadge()` - Badge con órdenes en proceso
+- `form()` - Formulario de edición con sección de referencias
+- `table()` - Tabla con agrupación y ordenamiento
+- `getRelations()` - Relaciones del recurso
+- `getPages()` - Páginas del recurso
+
+**Características de la Tabla**:
+- Agrupación por proveedor (`proveedor_id`)
+- Ordenamiento por cliente (`tercero_id`)
+- Columnas: ID, Proveedor, Cliente, Estado, Pedido, Fechas, Valor Total
+- Filtros: Proveedor, Cliente, Estado
+- Compatibilidad con temas claro/oscuro de Filament
 
 ## CreateOrdenTrabajo: `app/Filament/Resources/OrdenTrabajoResource/Pages/CreateOrdenTrabajo.php`
 **Namespace**: `App\Filament\Resources\OrdenTrabajoResource\Pages`
@@ -1038,12 +1066,42 @@
 ## OrdenCompra: `app/Models/OrdenCompra.php`
 **Namespace**: `App\Models`
 **Clase**: `OrdenCompra`
+**Relaciones**:
+- `tercero()` - Relación con el cliente (belongsTo)
+- `proveedor()` - Relación con el proveedor (belongsTo)
+- `pedido()` - Relación con el pedido (belongsTo)
+- `cotizacion()` - Relación con la cotización (belongsTo)
+- `referencias()` - Relación many-to-many con referencias (belongsToMany)
+- `pedidoReferencia()` - Relación con pedido referencia (belongsTo)
+
 **Métodos**:
-- `tercero`
-- `pedido`
-- `cotizacion`
-- `referencia`
-- `pedidoReferencia`
+- `addReferencia($referenciaId, $cantidad, $valorUnitario, $valorTotal)` - Agregar referencia a la orden
+- `getTotalReferencias()` - Obtener total de todas las referencias
+
+**Características**:
+- Gestión de órdenes de compra con agrupación por proveedor y cliente
+- Sistema de referencias con cantidades y valores unitarios
+- Estados visuales con colores (En proceso, Entregado, Cancelado)
+
+## OrdenCompraReferencia: `app/Models/OrdenCompraReferencia.php`
+**Namespace**: `App\Models`
+**Clase**: `OrdenCompraReferencia`
+**Tipo**: Modelo Pivot para relación many-to-many
+**Tabla**: `orden_compra_referencia`
+
+**Relaciones**:
+- `ordenCompra()` - Relación con OrdenCompra (belongsTo)
+- `referencia()` - Relación con Referencia (belongsTo)
+
+**Atributos**:
+- `cantidad` - Cantidad de unidades a comprar
+- `valor_unitario` - Precio por unidad
+- `valor_total` - Valor total de la referencia
+
+**Características**:
+- Modelo pivot para la relación entre órdenes de compra y referencias
+- Gestión de cantidades y valores unitarios por referencia
+- Cálculo automático de valores totales
 
 ## OrdenTrabajo: `app/Models/OrdenTrabajo.php`
 **Namespace**: `App\Models`
@@ -1528,3 +1586,156 @@
 - `__construct`
 - `getTrm`
 - `render`
+
+---
+
+# 🚀 FUNCIONALIDADES IMPLEMENTADAS
+
+## 📋 Issue #24: Agrupación de Órdenes de Compra por Proveedor y Cliente
+
+### 🎯 **Descripción de la Tarea**
+Modificar la vista de órdenes de compra para que las órdenes se agrupen y ordenen primero por proveedor y luego por cliente.
+
+### ✅ **Criterios de Aceptación Cumplidos**
+- ✅ La vista agrupa primero todas las órdenes de compra por proveedor
+- ✅ Dentro de cada proveedor, las órdenes se ordenan por cliente
+- ✅ Se mantiene la funcionalidad de búsqueda y filtrado
+- ✅ Facilita el seguimiento y gestión masiva de órdenes por proveedor y cliente
+
+### 🛠 **Implementación Técnica**
+
+#### **Modelo OrdenCompra**
+- **Nueva relación:** `proveedor()` para acceder al proveedor de la orden
+- **Métodos:** `addReferencia()` y `getTotalReferencias()`
+- **Relaciones:** Many-to-many con referencias vía tabla pivot
+
+#### **Recurso OrdenCompraResource**
+- **Agrupación automática** por `proveedor_id` y `tercero_id`
+- **Filtros avanzados** por proveedor, cliente y estado
+- **Columnas mejoradas** con información de proveedor y cliente
+- **Compatibilidad total** con temas claro/oscuro de Filament
+
+#### **Página ListOrdenCompras**
+- **Vista personalizada** con agrupación visual
+- **Header personalizado** con título y descripción
+- **Agrupación automática** de datos por proveedor
+- **Totales calculados** por proveedor y cliente
+
+#### **Vista Personalizada**
+- **Template:** `list-orden-compras-header.blade.php`
+- **Diseño responsivo** con grid adaptativo
+- **Sección de referencias** con cantidades y valores
+- **Estados visuales** con colores e iconos
+- **Compatibilidad temas** claro/oscuro
+
+### 🎨 **Características de Diseño**
+
+#### **Agrupación Visual**
+```
+┌─ Proveedor: GECOLSA (2 órdenes) ────────── Total: $250,000 ┐
+├─ Cliente: OPERACIONES MINERAS SAS ─────── Total: $250,000 ─┤
+│  ┌─ OC-1 ──────────────────────────────────────────────┐  │
+│  │ • Pedido: #1                                        │  │
+│  │ • Entrega: 25/08/2025                               │  │
+│  │ • Valor: $100,000                                   │  │
+│  │                                                     │  │
+│  │ 📦 Referencias a Comprar:                           │  │
+│  │   ┌─ RE506680: 5 uds - $20,000 ─────────────────┐  │  │
+│  │   └─ Total: $100,000 ────────────────────────────┘  │  │
+│  └─────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Compatibilidad con Temas**
+- **Modo Claro:** Colores claros con texto oscuro
+- **Modo Oscuro:** Colores oscuros con texto claro
+- **Colores primarios:** Uso de sistema de colores de Filament
+- **Contraste optimizado:** Máxima legibilidad en ambos temas
+
+### 📊 **Estructura de Datos**
+
+#### **Tabla orden_compra_referencia**
+```sql
+CREATE TABLE orden_compra_referencia (
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    orden_compra_id bigint(20) UNSIGNED NOT NULL,
+    referencia_id bigint(20) UNSIGNED NOT NULL,
+    cantidad int(11) NOT NULL,
+    valor_unitario decimal(10,2) NOT NULL,
+    valor_total decimal(10,2) NOT NULL,
+    created_at timestamp NULL DEFAULT NULL,
+    updated_at timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (orden_compra_id) REFERENCES orden_compras(id),
+    FOREIGN KEY (referencia_id) REFERENCES referencias(id)
+);
+```
+
+#### **Relaciones del Modelo**
+```php
+// OrdenCompra
+public function proveedor() {
+    return $this->belongsTo(Tercero::class, 'proveedor_id');
+}
+
+public function referencias() {
+    return $this->belongsToMany(Referencia::class, 'orden_compra_referencia')
+        ->using(OrdenCompraReferencia::class)
+        ->withPivot('cantidad', 'valor_unitario', 'valor_total');
+}
+```
+
+### 🧪 **Testing y Validación**
+
+#### **Datos de Prueba Creados**
+- **3 órdenes de compra** con referencias asociadas
+- **2 proveedores diferentes** para probar agrupación
+- **Referencias reales** con cantidades y valores
+- **Totales calculados** automáticamente
+
+#### **Funcionalidades Validadas**
+- ✅ Agrupación por proveedor funcionando
+- ✅ Sub-agrupación por cliente funcionando
+- ✅ Referencias mostrando correctamente
+- ✅ Totales calculados automáticamente
+- ✅ Diseño responsivo funcionando
+- ✅ Compatibilidad con temas verificada
+
+### 📁 **Archivos Modificados/Creados**
+
+#### **Modelos**
+- `app/Models/OrdenCompra.php` - Relación proveedor y métodos
+- `app/Models/OrdenCompraReferencia.php` - Nuevo modelo pivot
+
+#### **Recursos Filament**
+- `app/Filament/Resources/OrdenCompraResource.php` - Tabla mejorada
+- `app/Filament/Resources/OrdenCompraResource/Pages/ListOrdenCompras.php` - Vista personalizada
+
+#### **Vistas**
+- `resources/views/filament/resources/orden-compra-resource/pages/list-orden-compras-header.blade.php` - Template de agrupación
+
+#### **Migraciones**
+- `database/migrations/2025_07_26_074225_create_orden_compras_table.php` - Tabla principal
+- `database/migrations/2025_07_26_074230_create_orden_compra_referencia_table.php` - Tabla pivot
+
+### 🚀 **Beneficios de la Implementación**
+
+1. **Gestión Eficiente:** Agrupación visual clara por proveedor y cliente
+2. **Seguimiento Simplificado:** Totales automáticos por grupo
+3. **Referencias Detalladas:** Información completa de cada orden
+4. **Diseño Moderno:** Interfaz atractiva y funcional
+5. **Compatibilidad Total:** Funciona perfectamente en ambos temas
+6. **Responsividad:** Adaptable a diferentes tamaños de pantalla
+
+### 🔮 **Próximos Pasos Sugeridos**
+
+1. **Testing en Producción:** Validar con datos reales
+2. **Métricas de Uso:** Monitorear adopción de la funcionalidad
+3. **Feedback de Usuarios:** Recopilar sugerencias de mejora
+4. **Optimizaciones:** Aplicar mejoras basadas en uso real
+
+---
+
+**Fecha de Implementación:** 18 de Agosto, 2025  
+**Commit:** `89ee644`  
+**Estado:** ✅ **COMPLETADO Y FUNCIONANDO**
