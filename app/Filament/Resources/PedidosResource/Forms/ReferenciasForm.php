@@ -946,8 +946,25 @@ class ReferenciasForm
         $cantidad = $get("cantidad");
         $ubicacion = $get("ubicacion");
         
+        // Debug: Log de valores recibidos
+        \Log::info('calculateValorTotal - Valores recibidos', [
+            'costo_unidad' => $costo_unidad,
+            'utilidad' => $utilidad,
+            'cantidad' => $cantidad,
+            'ubicacion' => $ubicacion,
+            'tipo_costo' => gettype($costo_unidad),
+            'tipo_utilidad' => gettype($utilidad),
+            'tipo_cantidad' => gettype($cantidad),
+        ]);
+        
         // Validar que los valores requeridos existan y sean numéricos válidos
         if (!is_numeric($costo_unidad) || !is_numeric($utilidad) || !is_numeric($cantidad) || !$ubicacion) {
+            \Log::warning('calculateValorTotal - Validación fallida', [
+                'costo_unidad_valido' => is_numeric($costo_unidad),
+                'utilidad_valida' => is_numeric($utilidad),
+                'cantidad_valida' => is_numeric($cantidad),
+                'ubicacion_valida' => !empty($ubicacion),
+            ]);
             $set("valor_unidad", null);
             $set("valor_total", null);
             return;
@@ -981,6 +998,13 @@ class ReferenciasForm
             // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
             
+            \Log::info('calculateValorTotal - Cálculo internacional', [
+                'costo_cop' => $costo_cop,
+                'valor_base' => $valor_base,
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total,
+            ]);
+            
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
         } else {
@@ -990,6 +1014,11 @@ class ReferenciasForm
             
             // 2. Calcular valor total: valor_unidad × cantidad
             $valor_total = $valor_unidad * $cantidad;
+            
+            \Log::info('calculateValorTotal - Cálculo nacional', [
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total,
+            ]);
             
             $set("valor_unidad", $valor_unidad);
             $set("valor_total", $valor_total);
