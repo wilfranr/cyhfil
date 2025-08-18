@@ -74,9 +74,11 @@
 </style>
 
 <div class="empresa">
-    <div class="logo">
-        <img src="{{ public_path('storage/' . $empresaActiva->logo_dark) }}" alt="Logo" width="160px" height="20px">
-    </div>
+          <div class="logo">
+        @if($empresaActiva->hasValidLogoDark())
+          <img src="{{ $empresaActiva->logo_dark_path }}" alt="Logo" width="160px" height="20px">
+        @endif
+      </div>
     <div class="empresa-datos">
         <div class="empresa-header">
             <h1>{{ $empresaActiva->nombre }}</h1>

@@ -76,7 +76,9 @@ th {
 {{-- Encabezado empresa --}}
 <div class="empresa">
   <div class="logo">
-    <img src="{{ public_path('storage/' . $empresaActiva->logo_dark) }}" alt="Logo" width="160px" height="20px">
+    @if($empresaActiva->hasValidLogoDark())
+      <img src="{{ $empresaActiva->logo_dark_path }}" alt="Logo" width="160px" height="20px">
+    @endif
   </div>
   <div class="empresa-datos">
     <div class="empresa-header">
@@ -200,5 +202,7 @@ th {
       importacioneseinversionescyh@gmail.com
     </small>
   </p>
-  <img src="{{ public_path('images/proveedores.png') }}" width="100%">
+  @if(file_exists(public_path('images/proveedores.png')))
+    <img src="{{ public_path('images/proveedores.png') }}" width="100%">
+  @endif
 </div>

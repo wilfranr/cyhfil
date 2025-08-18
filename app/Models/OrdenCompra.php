@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OrdenCompraReferencia;
 
 class OrdenCompra extends Model
 {
@@ -15,7 +16,6 @@ class OrdenCompra extends Model
         'cotizacion_id',
         'proveedor_id',
         'estado',
-        'referencia_id',
         'pedido_referencia_id',
         'fecha_expedicion',
         'fecha_entrega',
@@ -49,6 +49,7 @@ class OrdenCompra extends Model
     public function referencias()
     {
         return $this->belongsToMany(Referencia::class, 'orden_compra_referencia')
+            ->using(OrdenCompraReferencia::class)
             ->withPivot('cantidad', 'valor_unitario', 'valor_total');
     }
 
@@ -57,5 +58,23 @@ class OrdenCompra extends Model
         return $this->belongsTo(PedidoReferencia::class);
     }
 
+    /**
+     * Agregar una referencia a la orden de compra
+     */
+    public function addReferencia($referenciaId, $cantidad, $valorUnitario, $valorTotal)
+    {
+        $this->referencias()->attach($referenciaId, [
+            'cantidad' => $cantidad,
+            'valor_unitario' => $valorUnitario,
+            'valor_total' => $valorTotal,
+        ]);
+    }
 
+    /**
+     * Obtener el total de todas las referencias
+     */
+    public function getTotalReferencias()
+    {
+        return $this->referencias()->sum('valor_total');
+    }
 }

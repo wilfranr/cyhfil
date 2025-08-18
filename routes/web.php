@@ -11,21 +11,34 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 
 Route::get('/', function () {
-    if (Auth::user() == null) {
-        return redirect('/home');
-    } else {
-        $rol = Auth::user()->roles->first()->name;
-        if ($rol == 'Vendedor') {
-            return redirect('/ventas');
-        } elseif ($rol == 'Administrador') {
-            return redirect('/admin');
-        } elseif ($rol == 'Analista') {
-            return redirect('/partes');
-        } elseif ($rol == 'Logistica') {
-            return redirect('/logistica');
-        } elseif ($rol == 'super-admin' || $rol == 'Administrador') {
-            return redirect('/admin');
+    // Si el usuario no está autenticado, redirigir al login del panel home
+    if (!Auth::check()) {
+        return redirect('/home/login');
+    }
+    
+    // Si está autenticado, redirigir según su rol
+    try {
+        $user = Auth::user();
+        $rol = $user->roles->first()?->name;
+        
+        switch ($rol) {
+            case 'Vendedor':
+                return redirect('/ventas');
+            case 'Administrador':
+                return redirect('/admin');
+            case 'super_admin':
+                return redirect('/admin');
+            case 'Analista':
+                return redirect('/partes');
+            case 'Logistica':
+                return redirect('/logistica');
+            default:
+                // Si no tiene rol válido, redirigir al panel home
+                return redirect('/home');
         }
+    } catch (\Exception $e) {
+        // En caso de error, redirigir al panel home
+        return redirect('/home');
     }
 });
 Route::post('/chat/send', [ChatController::class, 'sendMessage']);

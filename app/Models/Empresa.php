@@ -128,4 +128,64 @@ class Empresa extends Model
             }
         });
     }
+
+    /**
+     * Obtiene la ruta completa del logo dark si existe y es válido.
+     * 
+     * @return string|null Ruta completa del logo o null si no existe
+     */
+    public function getLogoDarkPathAttribute()
+    {
+        if (!$this->logo_dark || empty(trim($this->logo_dark))) {
+            return null;
+        }
+
+        $path = public_path('storage/' . $this->logo_dark);
+        
+        if (file_exists($path) && !is_dir($path)) {
+            return $path;
+        }
+
+        return null;
+    }
+
+    /**
+     * Obtiene la ruta completa del logo light si existe y es válido.
+     * 
+     * @return string|null Ruta completa del logo o null si no existe
+     */
+    public function getLogoLightPathAttribute()
+    {
+        if (!$this->logo_light || empty(trim($this->logo_light))) {
+            return null;
+        }
+
+        $path = public_path('storage/' . $this->logo_light);
+        
+        if (file_exists($path) && !is_dir($path)) {
+            return $path;
+        }
+
+        return null;
+    }
+
+    /**
+     * Verifica si la empresa tiene un logo dark válido.
+     * 
+     * @return bool
+     */
+    public function hasValidLogoDark()
+    {
+        return $this->logo_dark_path !== null;
+    }
+
+    /**
+     * Verifica si la empresa tiene un logo light válido.
+     * 
+     * @return bool
+     */
+    public function hasValidLogoLight()
+    {
+        return $this->logo_light_path !== null;
+    }
 }
