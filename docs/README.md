@@ -10,7 +10,7 @@ Esta documentación cubre todos los aspectos del sistema CYH, desde la arquitect
 Documentación detallada de todos los modelos Eloquent del sistema.
 
 - **[Empresa.md](./MODELS/Empresa.md)** - Modelo principal del sistema
-- **User.md** - Modelo de usuarios (pendiente)
+- **[User.md](./MODELS/User.md)** - Modelo de usuarios del sistema
 - **Pedido.md** - Modelo de pedidos (pendiente)
 - **Referencia.md** - Modelo de referencias (pendiente)
 - **Tercero.md** - Modelo de terceros/proveedores (pendiente)
@@ -72,10 +72,11 @@ Guías de despliegue y configuración.
 ### 🟢 Completado
 - Sistema de cálculo automático
 - Documentación del modelo Empresa
+- Documentación del modelo User
 - Funcionalidad de proveedores internacionales
 
 ### 🟡 En Progreso
-- Documentación de modelos restantes
+- Documentación de modelos restantes (Pedido, Referencia, Tercero)
 - Estructura de documentación
 
 ### 🔴 Pendiente
