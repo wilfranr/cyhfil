@@ -954,15 +954,31 @@ class ReferenciasForm
         }
 
         if ($ubicacion == "Internacional") {
-            // Lógica para proveedores internacionales (mantenemos la existente por ahora)
+            // Lógica para proveedores internacionales
             $peso = $get("../../peso");
             $trm = Empresa::query()->first()->trm;
             $flete = Empresa::query()->first()->flete;
             
-            $valor_unidad = $costo_unidad + $peso * 2.2 * $flete;
-            $valor_unidad = $valor_unidad * $trm;
-            $valor_unidad = $valor_unidad + ($utilidad * $valor_unidad) / 100;
+            // Validar que tengamos todos los valores necesarios para internacional
+            if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                $set("valor_unidad", null);
+                $set("valor_total", null);
+                return;
+            }
+            
+            // Paso 1: Convertir costo USD a pesos colombianos
+            $costo_cop = $costo_unidad * $trm;
+            
+            // Paso 2: Agregar flete por peso (flete ya está en COP)
+            $valor_base = $costo_cop + ($peso * 2.2 * $flete);
+            
+            // Paso 3: Aplicar utilidad sobre el valor base
+            $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
+            
+            // Paso 4: Redondear a centenas
             $valor_unidad = round($valor_unidad, -2);
+            
+            // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
             
             $set("valor_total", $valor_total);
