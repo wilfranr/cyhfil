@@ -9,6 +9,7 @@ class OrdenCompraReferencia extends Pivot
     protected $table = 'orden_compra_referencia';
 
     protected $fillable = [
+        'id',
         'orden_compra_id',
         'referencia_id',
         'cantidad',

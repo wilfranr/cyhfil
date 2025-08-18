@@ -96,25 +96,49 @@ class OrdenCompraResource extends Resource
                     ->searchable()
                     ->formatStateUsing(fn($state) => 'OC-' . $state),
 
-                Tables\Columns\ColorColumn::make('color')
-                    ->label(''),
+                Tables\Columns\TextColumn::make('proveedor.nombre')
+                    ->label('Proveedor')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->color('info'),
+
                 Tables\Columns\TextColumn::make('tercero.nombre')
-                    ->sortable(),
+                    ->label('Cliente')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->color('success'),
+
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Estado')
+                    ->tooltip(fn($state) => match($state) {
+                        '#FFFF00' => 'En proceso',
+                        '#00ff00' => 'Entregado',
+                        '#ff0000' => 'Cancelado',
+                        default => 'Desconocido'
+                    }),
+
                 Tables\Columns\TextColumn::make('pedido_id')
                     ->label('Pedido')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => '#' . $state),
 
                 Tables\Columns\TextColumn::make('fecha_expedicion')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Fecha Expedición'),
 
                 Tables\Columns\TextColumn::make('fecha_entrega')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Fecha Entrega'),
 
-                Tables\Columns\TextColumn::make('direccion')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('valor_total')
+                    ->money('COP')
+                    ->sortable()
+                    ->label('Valor Total'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -126,7 +150,25 @@ class OrdenCompraResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('proveedor')
+                    ->relationship('proveedor', 'nombre')
+                    ->label('Filtrar por Proveedor')
+                    ->searchable()
+                    ->preload(),
+                
+                Tables\Filters\SelectFilter::make('cliente')
+                    ->relationship('tercero', 'nombre')
+                    ->label('Filtrar por Cliente')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('estado')
+                    ->options([
+                        '#FFFF00' => 'En proceso',
+                        '#00ff00' => 'Entregado',
+                        '#ff0000' => 'Cancelado',
+                    ])
+                    ->label('Estado'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -137,7 +179,9 @@ class OrdenCompraResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('id', 'desc');
+            ->defaultSort('proveedor_id', 'asc')
+            ->defaultSort('tercero_id', 'asc')
+            ->modifyQueryUsing(fn (Builder $query) => $query->orderBy('proveedor_id')->orderBy('tercero_id'));
     }
 
     public static function getRelations(): array

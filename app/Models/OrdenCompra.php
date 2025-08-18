@@ -36,6 +36,11 @@ class OrdenCompra extends Model
         return $this->belongsTo(Tercero::class);
     }
 
+    public function proveedor()
+    {
+        return $this->belongsTo(Tercero::class, 'proveedor_id');
+    }
+
     public function pedido()
     {
         return $this->belongsTo(Pedido::class);
@@ -43,7 +48,7 @@ class OrdenCompra extends Model
 
     public function cotizacion()
     {
-        return $this->belongsTo(Cotizacion::class);
+        return $this->belongsTo(Cotizacion::class, 'cotizaciones_id');
     }
 
     public function referencias()
