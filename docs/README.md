@@ -13,7 +13,7 @@ Documentación detallada de todos los modelos Eloquent del sistema.
 - **[User.md](./MODELS/User.md)** - Modelo de usuarios del sistema
 - **[Pedido.md](./MODELS/Pedido.md)** - Modelo de pedidos principales
 - **[Referencia.md](./MODELS/Referencia.md)** - Modelo de referencias de artículos
-- **Tercero.md** - Modelo de terceros/proveedores (pendiente)
+- **[Tercero.md](./MODELS/Tercero.md)** - Modelo de terceros/proveedores
 
 ### 📁 [FEATURES/](./FEATURES/)
 Documentación de funcionalidades específicas del sistema.
@@ -75,11 +75,12 @@ Guías de despliegue y configuración.
 - Documentación del modelo User
 - Documentación del modelo Pedido
 - Documentación del modelo Referencia
+- Documentación del modelo Tercero
 - Funcionalidad de proveedores internacionales
 
 ### 🟡 En Progreso
-- Documentación de modelos restantes (Tercero)
-- Estructura de documentación
+- Documentación de funcionalidades específicas
+- Guías de desarrollo y despliegue
 
 ### 🔴 Pendiente
 - Documentación de recursos Filament
