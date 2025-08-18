@@ -967,17 +967,28 @@ class ReferenciasForm
         ]);
         
         // Validar que los valores requeridos existan y sean numéricos válidos
-        if (!is_numeric($costo_unidad) || !is_numeric($utilidad) || !is_numeric($cantidad) || !$ubicacion) {
-            \Log::warning('calculateValorTotal - Validación fallida', [
-                'costo_unidad_valido' => is_numeric($costo_unidad),
-                'utilidad_valida' => is_numeric($utilidad),
-                'cantidad_valida' => is_numeric($cantidad),
-                'ubicacion_valida' => !empty($ubicacion),
+        if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
+            \Log::warning('calculateValorTotal - Validación fallida - campos vacíos', [
+                'costo_unidad_vacio' => empty($costo_unidad),
+                'utilidad_vacia' => empty($utilidad),
+                'cantidad_vacia' => empty($cantidad),
+                'ubicacion_vacia' => empty($ubicacion),
             ]);
             $set("valor_unidad", null);
             $set("valor_total", null);
             return;
         }
+        
+        // Convertir a números para asegurar cálculos correctos
+        $costo_unidad = (float) $costo_unidad;
+        $utilidad = (float) $utilidad;
+        $cantidad = (int) $cantidad;
+        
+        \Log::info('calculateValorTotal - Valores convertidos', [
+            'costo_unidad_convertido' => $costo_unidad,
+            'utilidad_convertida' => $utilidad,
+            'cantidad_convertida' => $cantidad,
+        ]);
 
         if ($ubicacion == "Internacional") {
             // Lógica para proveedores internacionales
