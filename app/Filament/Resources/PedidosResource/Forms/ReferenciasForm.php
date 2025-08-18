@@ -996,8 +996,8 @@ class ReferenciasForm
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
             
-            // Obtener empresa y diagnosticar
-            $empresa = Empresa::query()->first();
+            // Obtener empresa activa y diagnosticar
+            $empresa = Empresa::query()->where('estado', 1)->first();
             $trm = $empresa?->trm;
             $flete = $empresa?->flete;
             
