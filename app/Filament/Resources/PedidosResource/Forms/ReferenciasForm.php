@@ -412,10 +412,13 @@ class ReferenciasForm
                 ->reactive()
                 ->default(fn(Get $get) => $get("../../cantidad"))
                 ->afterStateUpdated(
-                    fn(Set $set, Get $get) => self::calculateValorTotal(
-                        $set,
-                        $get,
-                    ),
+                    function(Set $set, Get $get) {
+                        \Log::info('Campo cantidad actualizado', [
+                            'valor' => $get('cantidad'),
+                            'timestamp' => now(),
+                        ]);
+                        self::calculateValorTotal($set, $get);
+                    },
                 ),
             TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
@@ -472,10 +475,13 @@ class ReferenciasForm
                 ->reactive()
                 ->numeric()
                 ->afterStateUpdated(
-                    fn(Set $set, Get $get) => self::calculateValorTotal(
-                        $set,
-                        $get,
-                    ),
+                    function(Set $set, Get $get) {
+                        \Log::info('Campo costo_unidad actualizado', [
+                            'valor' => $get('costo_unidad'),
+                            'timestamp' => now(),
+                        ]);
+                        self::calculateValorTotal($set, $get);
+                    },
                 ),
             TextInput::make("utilidad")
                 ->label("Utilidad %")
@@ -484,10 +490,13 @@ class ReferenciasForm
                 ->live()
                 ->numeric()
                 ->afterStateUpdated(
-                    fn(Set $set, Get $get) => self::calculateValorTotal(
-                        $set,
-                        $get,
-                    ),
+                    function(Set $set, Get $get) {
+                        \Log::info('Campo utilidad actualizado', [
+                            'valor' => $get('utilidad'),
+                            'timestamp' => now(),
+                        ]);
+                        self::calculateValorTotal($set, $get);
+                    },
                 ),
             TextInput::make("valor_unidad")
                 ->label("Valor Unidad $")
