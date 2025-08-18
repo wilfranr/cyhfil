@@ -475,7 +475,7 @@ class ReferenciasForm
                 ->label("Valor Unidad $")
                 ->numeric()
                 ->readOnly()
-                ->getStateUsing(function (Get $get) {
+                ->state(function (Get $get) {
                     $costo_unidad = $get('costo_unidad');
                     $utilidad = $get('utilidad');
                     $cantidad = $get('cantidad');
@@ -511,7 +511,7 @@ class ReferenciasForm
                 ->live()
                 ->readOnly()
                 ->label("Valor Total $")
-                ->getStateUsing(function (Get $get) {
+                ->state(function (Get $get) {
                     $costo_unidad = $get('costo_unidad');
                     $utilidad = $get('utilidad');
                     $cantidad = $get('cantidad');
