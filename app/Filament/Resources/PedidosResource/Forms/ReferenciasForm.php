@@ -410,9 +410,7 @@ class ReferenciasForm
                 ->required()
                 ->live()
                 ->reactive()
-                ->default(fn(Get $get) => $get("../../cantidad"))
-                ->dehydrated()
-                ->rehydrated(),
+                ->default(fn(Get $get) => $get("../../cantidad")),
             TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
                 ->options(function () {
@@ -466,17 +464,13 @@ class ReferenciasForm
                 ->label("Costo Unidad")
                 ->live()
                 ->reactive()
-                ->numeric()
-                ->dehydrated()
-                ->rehydrated(),
+                ->numeric(),
             TextInput::make("utilidad")
                 ->label("Utilidad %")
                 ->reactive()
                 ->required()
                 ->live()
-                ->numeric()
-                ->dehydrated()
-                ->rehydrated(),
+                ->numeric(),
             TextInput::make("valor_unidad")
                 ->label("Valor Unidad $")
                 ->numeric()
