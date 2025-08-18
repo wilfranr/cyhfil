@@ -411,15 +411,8 @@ class ReferenciasForm
                 ->live()
                 ->reactive()
                 ->default(fn(Get $get) => $get("../../cantidad"))
-                ->afterStateUpdated(
-                    function(Set $set, Get $get) {
-                        \Log::info('Campo cantidad actualizado', [
-                            'valor' => $get('cantidad'),
-                            'timestamp' => now(),
-                        ]);
-                        self::calculateValorTotal($set, $get);
-                    },
-                ),
+                ->dehydrated()
+                ->rehydrated(),
             TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
                 ->options(function () {
@@ -474,39 +467,90 @@ class ReferenciasForm
                 ->live()
                 ->reactive()
                 ->numeric()
-                ->afterStateUpdated(
-                    function(Set $set, Get $get) {
-                        \Log::info('Campo costo_unidad actualizado', [
-                            'valor' => $get('costo_unidad'),
-                            'timestamp' => now(),
-                        ]);
-                        self::calculateValorTotal($set, $get);
-                    },
-                ),
+                ->dehydrated()
+                ->rehydrated(),
             TextInput::make("utilidad")
                 ->label("Utilidad %")
                 ->reactive()
                 ->required()
                 ->live()
                 ->numeric()
-                ->afterStateUpdated(
-                    function(Set $set, Get $get) {
-                        \Log::info('Campo utilidad actualizado', [
-                            'valor' => $get('utilidad'),
-                            'timestamp' => now(),
-                        ]);
-                        self::calculateValorTotal($set, $get);
-                    },
-                ),
+                ->dehydrated()
+                ->rehydrated(),
             TextInput::make("valor_unidad")
                 ->label("Valor Unidad $")
-                // ->prefix('$')
                 ->numeric()
-                ->readOnly(),
+                ->readOnly()
+                ->getStateUsing(function (Get $get) {
+                    $costo_unidad = $get('costo_unidad');
+                    $utilidad = $get('utilidad');
+                    $cantidad = $get('cantidad');
+                    $ubicacion = $get('ubicacion');
+                    
+                    if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
+                        return null;
+                    }
+                    
+                    // Convertir a números
+                    $costo_unidad = (float) $costo_unidad;
+                    $utilidad = (float) $utilidad;
+                    $cantidad = (int) $cantidad;
+                    
+                    if ($ubicacion == "Internacional") {
+                        $peso = $get("../../peso");
+                        $trm = Empresa::query()->first()->trm;
+                        $flete = Empresa::query()->first()->flete;
+                        
+                        if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                            return null;
+                        }
+                        
+                        $costo_cop = $costo_unidad * $trm;
+                        $valor_base = $costo_cop + ($peso * 2.2 * $flete);
+                        $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
+                        return round($valor_unidad, -2);
+                    } else {
+                        return $costo_unidad + ($costo_unidad * $utilidad / 100);
+                    }
+                }),
             TextInput::make("valor_total")
                 ->live()
                 ->readOnly()
-                ->label("Valor Total $"),
+                ->label("Valor Total $")
+                ->getStateUsing(function (Get $get) {
+                    $costo_unidad = $get('costo_unidad');
+                    $utilidad = $get('utilidad');
+                    $cantidad = $get('cantidad');
+                    $ubicacion = $get('ubicacion');
+                    
+                    if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
+                        return null;
+                    }
+                    
+                    // Convertir a números
+                    $costo_unidad = (float) $costo_unidad;
+                    $utilidad = (float) $utilidad;
+                    $cantidad = (int) $cantidad;
+                    
+                    if ($ubicacion == "Internacional") {
+                        $peso = $get("../../peso");
+                        $trm = Empresa::query()->first()->trm;
+                        $flete = Empresa::query()->first()->flete;
+                        
+                        if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                            return null;
+                        }
+                        
+                        $costo_cop = $costo_unidad * $trm;
+                        $valor_base = $costo_cop + ($peso * 2.2 * $flete);
+                        $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
+                        $valor_unidad = round($valor_unidad, -2);
+                        return $valor_unidad * $cantidad;
+                    } else {
+                        $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
+                        return $valor_unidad * $cantidad;
+                    }
+                }),
         ];
     }
 
