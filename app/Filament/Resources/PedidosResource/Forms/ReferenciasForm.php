@@ -995,8 +995,19 @@ class ReferenciasForm
         if ($ubicacion == "Internacional") {
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
-            $trm = Empresa::query()->first()->trm;
-            $flete = Empresa::query()->first()->flete;
+            
+            // Obtener empresa y diagnosticar
+            $empresa = Empresa::query()->first();
+            $trm = $empresa?->trm;
+            $flete = $empresa?->flete;
+            
+            \Log::info('calculateValorTotal - Empresa obtenida', [
+                'empresa_id' => $empresa?->id,
+                'empresa_nombre' => $empresa?->nombre,
+                'empresa_trm' => $empresa?->trm,
+                'empresa_flete' => $empresa?->flete,
+                'empresa_existe' => $empresa ? 'Sí' : 'No',
+            ]);
             
             \Log::info('calculateValorTotal - Valores internacionales obtenidos', [
                 'peso' => $peso,
