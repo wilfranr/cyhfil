@@ -328,16 +328,16 @@ class ReferenciasForm
                             ->label("Costo Unidad")
                             ->align(Alignment::Center)
                             ->width("130px"),
-                        Header::make("utilidad")
-                            ->label("Utilidad")
+                        Header::make("utilidad %")
+                            ->label("Utilidad %")
                             ->align(Alignment::Center)
                             ->width("100px"),
                         Header::make("valor_unidad")
-                            ->label("Valor Unidad")
+                            ->label("Valor Unidad $")
                             ->align(Alignment::Center)
                             ->width("130px"),
                         Header::make("valor_total")
-                            ->label("Valor Total")
+                            ->label("Valor Total $")
                             ->align(Alignment::Center)
                             ->width("130px"),
                     ])
@@ -408,7 +408,15 @@ class ReferenciasForm
                 ->label("Cantidad Cotizadas")
                 ->numeric()
                 ->required()
-                ->default(fn(Get $get) => $get("../../cantidad")),
+                ->live()
+                ->reactive()
+                ->default(fn(Get $get) => $get("../../cantidad"))
+                ->afterStateUpdated(
+                    fn(Set $set, Get $get) => self::calculateValorTotal(
+                        $set,
+                        $get,
+                    ),
+                ),
             TextInput::make("ubicacion")->label("Ubicación")->readOnly(),
             Select::make("marca_id")
                 ->options(function () {
@@ -460,19 +468,21 @@ class ReferenciasForm
                 }),
             TextInput::make("costo_unidad")
                 ->label("Costo Unidad")
-                // ->prefix(
-                //     fn(Get $get) => $get("ubicacion") == "Internacional"
-                //         ? 'USD $'
-                //         : 'COP $',
-                // )
-                ->numeric(),
+                ->live()
+                ->reactive()
+                ->numeric()
+                ->afterStateUpdated(
+                    fn(Set $set, Get $get) => self::calculateValorTotal(
+                        $set,
+                        $get,
+                    ),
+                ),
             TextInput::make("utilidad")
-                ->label("Utilidad")
+                ->label("Utilidad %")
                 ->reactive()
                 ->required()
                 ->live()
                 ->numeric()
-                // ->prefix("%")
                 ->afterStateUpdated(
                     fn(Set $set, Get $get) => self::calculateValorTotal(
                         $set,
@@ -480,15 +490,14 @@ class ReferenciasForm
                     ),
                 ),
             TextInput::make("valor_unidad")
-                ->label("Valor Unidad")
+                ->label("Valor Unidad $")
                 // ->prefix('$')
                 ->numeric()
                 ->readOnly(),
             TextInput::make("valor_total")
                 ->live()
-                // ->prefix('$')
                 ->readOnly()
-                ->label("Valor Total"),
+                ->label("Valor Total $"),
         ];
     }
 
@@ -912,6 +921,7 @@ class ReferenciasForm
             $set("costo_unidad", null);
             $set("utilidad", null);
             $set("valor_total", null);
+            $set("valor_unidad", null);
             return;
         }
         $set(
@@ -923,8 +933,10 @@ class ReferenciasForm
         $set("dias_entrega", max(0, (int) $diasEntrega));
         $set("costo_unidad", $proveedor->costo_unidad);
         $set("utilidad", $proveedor->utilidad);
-        $set("valor_total", $proveedor->valor_total);
         $set("cantidad", $get("cantidad"));
+        
+        // Ejecutar el cálculo automáticamente después de establecer los valores
+        self::calculateValorTotal($set, $get);
     }
 
     private static function calculateValorTotal(Set $set, Get $get): void
@@ -932,26 +944,39 @@ class ReferenciasForm
         $costo_unidad = $get("costo_unidad");
         $utilidad = $get("utilidad");
         $cantidad = $get("cantidad");
-        $peso = $get("../../peso");
-        $trm = Empresa::query()->first()->trm;
-        $flete = Empresa::query()->first()->flete;
+        $ubicacion = $get("ubicacion");
+        
+        // Validar que los valores requeridos existan y sean numéricos válidos
+        if (!is_numeric($costo_unidad) || !is_numeric($utilidad) || !is_numeric($cantidad) || !$ubicacion) {
+            $set("valor_unidad", null);
+            $set("valor_total", null);
+            return;
+        }
 
-        if ($get("ubicacion") == "Internacional") {
+        if ($ubicacion == "Internacional") {
+            // Lógica para proveedores internacionales (mantenemos la existente por ahora)
+            $peso = $get("../../peso");
+            $trm = Empresa::query()->first()->trm;
+            $flete = Empresa::query()->first()->flete;
+            
             $valor_unidad = $costo_unidad + $peso * 2.2 * $flete;
             $valor_unidad = $valor_unidad * $trm;
             $valor_unidad = $valor_unidad + ($utilidad * $valor_unidad) / 100;
             $valor_unidad = round($valor_unidad, -2);
             $valor_total = $valor_unidad * $cantidad;
+            
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
         } else {
-            $costo_total = $costo_unidad + ($utilidad * $costo_unidad) / 100;
-            $costo_total =
-                ($costo_unidad + ($utilidad * $costo_unidad) / 100) * $cantidad;
-            $valor_total = $costo_total;
-            $valor_unidad = $valor_total / $cantidad;
-            $set("valor_total", $costo_total);
+            // Lógica para proveedores nacionales
+            // 1. Calcular valor por unidad: costo + (costo × utilidad%)
+            $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
+            
+            // 2. Calcular valor total: valor_unidad × cantidad
+            $valor_total = $valor_unidad * $cantidad;
+            
             $set("valor_unidad", $valor_unidad);
+            $set("valor_total", $valor_total);
         }
     }
 
