@@ -39,8 +39,78 @@ jobs:
       - name: Prepare environment
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
-          php -r "$env = file_exists('.env') ? file_get_contents('.env') : ''; if (strpos($env, 'APP_KEY=') === false) { file_put_contents('.env', ($env ? $env."\n" : '') . 'APP_KEY='); }"
           php artisan key:generate --force
 
       - name: Run Unit Test Suite
         run: php artisan test --testsuite=Unit
+
+  feature-tests:
+    name: Feature Tests (Laravel + MySQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: unit-tests
+    continue-on-error: true # TEMPORAL: habilitar como requerido cuando las migraciones estén estables
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_ROOT_PASSWORD: ''
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          extensions: mbstring, dom, zip, fileinfo, pdo_mysql
+          tools: composer:v2
+
+      - name: Cache Composer
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare environment (.env and .env.testing)
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --force
+          cp .env .env.testing
+          echo "APP_ENV=testing" >> .env.testing
+          echo "DB_CONNECTION=mysql" >> .env.testing
+          echo "DB_HOST=127.0.0.1" >> .env.testing
+          echo "DB_PORT=3306" >> .env.testing
+          echo "DB_DATABASE=testing" >> .env.testing
+          echo "DB_USERNAME=root" >> .env.testing
+          echo "DB_PASSWORD=" >> .env.testing
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..20}; do
+            nc -z 127.0.0.1 3306 && echo "MySQL is up" && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run Feature Test Suite
+        run: php artisan test --testsuite=Feature
