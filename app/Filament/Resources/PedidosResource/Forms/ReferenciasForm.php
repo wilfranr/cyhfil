@@ -957,25 +957,10 @@ class ReferenciasForm
         $cantidad = $get("cantidad");
         $ubicacion = $get("ubicacion");
         
-        // Debug: Log de valores recibidos
-        \Log::info('calculateValorTotal - Valores recibidos', [
-            'costo_unidad' => $costo_unidad,
-            'utilidad' => $utilidad,
-            'cantidad' => $cantidad,
-            'ubicacion' => $ubicacion,
-            'tipo_costo' => gettype($costo_unidad),
-            'tipo_utilidad' => gettype($utilidad),
-            'tipo_cantidad' => gettype($cantidad),
-        ]);
+
         
         // Validar que los valores requeridos existan y sean numéricos válidos
         if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
-            \Log::warning('calculateValorTotal - Validación fallida - campos vacíos', [
-                'costo_unidad_vacio' => empty($costo_unidad),
-                'utilidad_vacia' => empty($utilidad),
-                'cantidad_vacia' => empty($cantidad),
-                'ubicacion_vacia' => empty($ubicacion),
-            ]);
             $set("valor_unidad", null);
             $set("valor_total", null);
             return;
@@ -985,46 +970,20 @@ class ReferenciasForm
         $costo_unidad = (float) $costo_unidad;
         $utilidad = (float) $utilidad;
         $cantidad = (int) $cantidad;
-        
-        \Log::info('calculateValorTotal - Valores convertidos', [
-            'costo_unidad_convertido' => $costo_unidad,
-            'utilidad_convertida' => $utilidad,
-            'cantidad_convertida' => $cantidad,
-        ]);
 
         if ($ubicacion == "Internacional") {
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
             
-            // Obtener empresa activa y diagnosticar
+            // Obtener empresa activa
             $empresa = Empresa::query()->where('estado', 1)->first();
             $trm = $empresa?->trm;
             $flete = $empresa?->flete;
             
-            \Log::info('calculateValorTotal - Empresa obtenida', [
-                'empresa_id' => $empresa?->id,
-                'empresa_nombre' => $empresa?->nombre,
-                'empresa_trm' => $empresa?->trm,
-                'empresa_flete' => $empresa?->flete,
-                'empresa_existe' => $empresa ? 'Sí' : 'No',
-            ]);
-            
-            \Log::info('calculateValorTotal - Valores internacionales obtenidos', [
-                'peso' => $peso,
-                'trm' => $trm,
-                'flete' => $flete,
-                'tipo_peso' => gettype($peso),
-                'tipo_trm' => gettype($trm),
-                'tipo_flete' => gettype($flete),
-            ]);
+
             
             // Validar que tengamos todos los valores necesarios para internacional
             if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
-                \Log::warning('calculateValorTotal - Validación internacional fallida', [
-                    'peso_valido' => is_numeric($peso),
-                    'trm_valido' => is_numeric($trm),
-                    'flete_valido' => is_numeric($flete),
-                ]);
                 $set("valor_unidad", null);
                 $set("valor_total", null);
                 return;
@@ -1045,12 +1004,7 @@ class ReferenciasForm
             // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
             
-            \Log::info('calculateValorTotal - Cálculo internacional', [
-                'costo_cop' => $costo_cop,
-                'valor_base' => $valor_base,
-                'valor_unidad' => $valor_unidad,
-                'valor_total' => $valor_total,
-            ]);
+
             
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
@@ -1062,10 +1016,7 @@ class ReferenciasForm
             // 2. Calcular valor total: valor_unidad × cantidad
             $valor_total = $valor_unidad * $cantidad;
             
-            \Log::info('calculateValorTotal - Cálculo nacional', [
-                'valor_unidad' => $valor_unidad,
-                'valor_total' => $valor_total,
-            ]);
+
             
             $set("valor_unidad", $valor_unidad);
             $set("valor_total", $valor_total);
