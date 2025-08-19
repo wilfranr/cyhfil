@@ -199,9 +199,9 @@ class EditPedidos extends EditRecord
             ->action(function () {
                 $record = $this->getRecord();
 
-                // Guardar cambios
-                $record->fill($this->form->getState());
-                $record->save();
+                // Guardar cambios del formulario completo (incluyendo relaciones)
+                $this->form->getRecord()->fill($this->form->getState());
+                $this->form->getRecord()->save();
 
                 // 1. Validar que todas las referencias activas tengan al menos un proveedor
                 $referenciasActivas = PedidoReferencia::where('pedido_id', $record->id)
@@ -328,7 +328,7 @@ class EditPedidos extends EditRecord
                     ->get()
                     ->groupBy(function ($referencia) {
                         // Agrupar por el ID del primer proveedor asociado
-                        return $referencia->proveedores->first()->proveedor_id ?? null;
+                        return $referencia->proveedores->first()->tercero_id ?? null;
                     });
 
                 // Iterar sobre cada proveedor
@@ -383,9 +383,9 @@ class EditPedidos extends EditRecord
             ->action(function () {
                 $record = $this->getRecord();
 
-                // Guardar cambios
-                $record->fill($this->form->getState());
-                $record->save();
+                // Guardar cambios del formulario completo (incluyendo relaciones)
+                $this->form->getRecord()->fill($this->form->getState());
+                $this->form->getRecord()->save();
 
                 if (!PedidoReferencia::where('pedido_id', $record->id)->where('estado', 1)->exists()) {
                     Notification::make()

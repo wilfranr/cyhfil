@@ -298,6 +298,7 @@ class ReferenciasForm
                 TableRepeater::make("proveedores")
                     ->label("Proveedores")
                     ->relationship()
+
                     ->columnSpanFull()
                     ->extraAttributes([
                         'class' => 'custom-table-repeater',
@@ -307,7 +308,7 @@ class ReferenciasForm
                             ->label("Seleccionar")
                             ->align(Alignment::Center)
                             ->width("100px"),
-                        Header::make("proveedor_id")
+                        Header::make("tercero_id")
                             ->label("Proveedor")
                             ->align(Alignment::Center)
                             ->width("300px"),
@@ -347,9 +348,12 @@ class ReferenciasForm
                     ->extraAttributes(
                         fn(Get $get) => [
                             "fabricante_id" => $get("fabricante_id"),
-                            "sistema_id" => $get("../../sistema_id"),
+                            "sistema_id" => $get("../sistema_id"),
+                            "referencia_id" => $get("../referencia_id"),
+                            "pedido_referencia_id" => $get("../id"),
                         ],
                     )
+
                     ->extraItemActions([
                         Action::make("verProveedor")
                             ->tooltip("Ver proveedor")
@@ -368,11 +372,21 @@ class ReferenciasForm
         ];
     }
 
-    private static function getProveedoresSchema(): array
+        private static function getProveedoresSchema(): array
     {
         return [
             Toggle::make("estado")->label("Seleccionar")->default(true),
-            Select::make("proveedor_id")
+            Hidden::make('referencia_id')
+                ->default(function (Get $get) {
+                    // Obtener el referencia_id desde el contexto del formulario
+                    return $get('../referencia_id');
+                }),
+            Hidden::make('pedido_referencia_id')
+                ->default(function (Get $get) {
+                    // Obtener el ID de la referencia del pedido
+                    return $get('../id');
+                }),
+            Select::make("tercero_id")
                 ->options(function (Get $get) {
                     $sistemaId = $get("../../sistema_id");
                     $fabricanteId = $get("../../../../fabricante_id");
@@ -406,6 +420,7 @@ class ReferenciasForm
                 ->reactive()
                 ->label("Proveedores")
                 ->searchable(),
+
             TextInput::make("cantidad")
                 ->label("Cantidad Cotizadas")
                 ->numeric()
@@ -458,6 +473,7 @@ class ReferenciasForm
                 //         ->modalWidth("lg"),
                 // )
                 ->searchable()
+                ->required()
                 ->label("Marca"),
             TextInput::make("dias_entrega")
                 ->label("Días de entrega (hábiles)")
@@ -928,7 +944,7 @@ class ReferenciasForm
 
     private static function updateProveedorFields(Set $set, Get $get): void
     {
-        $proveedor = Tercero::find($get("proveedor_id"));
+        $proveedor = Tercero::find($get("tercero_id"));
         if (!$proveedor) {
             $set("dias_entrega", 0);
             $set("costo_unidad", null);
@@ -1030,7 +1046,7 @@ class ReferenciasForm
         Repeater $component,
     ): ?string {
         $itemData = $component->getRawItemState($arguments["item"]);
-        $proveedorId = $itemData["proveedor_id"] ?? null;
+        $proveedorId = $itemData["tercero_id"] ?? null;
         if (!$proveedorId) {
             return null;
         }
