@@ -400,14 +400,36 @@
 ## MaquinasResource: `app/Filament/Resources/MaquinasResource.php`
 **Namespace**: `App\Filament\Resources`
 **Clase**: `MaquinasResource`
+
+**Funcionalidades**:
+- **Gestión de máquinas** con tipos, fabricantes y propietarios
+- **Formularios de creación/edición** con campos dinámicos
+- **Soporte para imágenes** (foto principal y foto ID)
+- **Relaciones** con pedidos y referencias vendidas
+
 **Métodos**:
-- `getGloballySearchableAttributes`
-- `getGlobalSearchResultDetails`
-- `form`
-- `table`
-- `infolist`
-- `getRelations`
-- `getPages`
+- `getGloballySearchableAttributes()` - Atributos para búsqueda global
+- `getGlobalSearchResultDetails()` - Detalles de resultados de búsqueda
+- `form()` - Formulario de creación/edición
+- `table()` - Tabla de listado con columnas configurables
+- `infolist()` - Vista detallada de máquina
+- `getRelations()` - Relaciones del recurso
+- `getPages()` - Páginas del recurso
+
+**Campos del Formulario**:
+- **Tipo**: Select con opción de crear/editar tipos de máquina
+- **Fabricante**: Select con opción de crear/editar fabricantes
+- **Modelo**: Texto requerido
+- **Serie**: Texto único
+- **Arreglo**: Texto opcional
+- **Propietario**: Select de terceros (excluyendo proveedores)
+- **Fotos**: Foto principal y foto ID con editor de imágenes
+
+**Bug Fix Aplicado** (v2024.08.18):
+- **Problema**: Error "Return value must be of type array, null returned" en `getEditOptionActionFormData()`
+- **Causa**: Los métodos `editOptionForm` estaban definidos como funciones anónimas que podían devolver `null`
+- **Solución**: Convertidos a arrays directos para garantizar que siempre devuelvan arrays válidos
+- **Archivos afectados**: Campos `tipo` y `fabricante_id` en el formulario
 
 ## CreateOrdenCompra: `app/Filament/Resources/OrdenCompraResource/Pages/CreateOrdenCompra.php`
 **Namespace**: `App\Filament\Resources\OrdenCompraResource\Pages`

@@ -100,24 +100,22 @@ class MaquinasResource extends Resource
                             $action->modalDescription('Crea un nuevo tipo de máquina y será asociado a la máquina automáticamente');
                             $action->modalWidth('lg');
                         })
-                        ->editOptionForm(function ($record) {
-                            return [
-                                Hidden::make('tipo')
-                                    ->default('Tipo de Máquina')
-                                    ->hidden(),
-                                TextInput::make('nombre')
-                                    ->label('Nombre')
-                                    ->required()
-                                    ->placeholder('Ingrese el nombre del tipo de máquina'),
-                                MarkdownEditor::make('definicion')
-                                    ->label('Descripción')
-                                    ->required()
-                                    ->placeholder('Proporcione una descripción del tipo de máquina'),
-                                FileUpload::make('foto')
-                                    ->label('Foto')
-                                    ->image(),
-                            ];
-                        })
+                        ->editOptionForm([
+                            Hidden::make('tipo')
+                                ->default('Tipo de Máquina')
+                                ->hidden(),
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Ingrese el nombre del tipo de máquina'),
+                            MarkdownEditor::make('definicion')
+                                ->label('Descripción')
+                                ->required()
+                                ->placeholder('Proporcione una descripción del tipo de máquina'),
+                            FileUpload::make('foto')
+                                ->label('Foto')
+                                ->image(),
+                        ])
                         ->label('Tipo')
                         ->live()
                         ->preload()
@@ -153,23 +151,21 @@ class MaquinasResource extends Resource
                                     ->image(),
                             ];
                         })
-                        ->editOptionForm(function ($record) {
-                            return [
-                                TextInput::make('nombre')
-                                    ->label('Nombre')
-                                    ->required()
-                                    ->placeholder('Nombre del fabricante'),
-                                MarkdownEditor::make('descripcion')
-                                    ->label('Descripción')
-                                    ->nullable()
-                                    ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
-                                    ->required()
-                                    ->maxLength(500),
-                                FileUpload::make('logo')
-                                    ->label('Logo')
-                                    ->image(),
-                            ];
-                        })
+                        ->editOptionForm([
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required()
+                                ->placeholder('Nombre del fabricante'),
+                            MarkdownEditor::make('descripcion')
+                                ->label('Descripción')
+                                ->nullable()
+                                ->dehydrateStateUsing(fn(string $state): string => ucwords($state))
+                                ->required()
+                                ->maxLength(500),
+                            FileUpload::make('logo')
+                                ->label('Logo')
+                                ->image(),
+                        ])
                         ->createOptionUsing(function ($data) {
                             $fabricante = Fabricante::create([
                                 'nombre' => $data['nombre'],
