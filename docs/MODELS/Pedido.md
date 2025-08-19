@@ -48,6 +48,44 @@ El modelo `Pedido` es el núcleo del flujo de trabajo de cotización y compra en
 7. **Rechazado** - Pedido rechazado por el cliente
 8. **Cancelado** - Pedido cancelado
 
+## Manejo de Referencias en Pedidos
+
+### Estructura de Referencias
+
+Cada pedido puede contener múltiples referencias, las cuales a su vez pueden tener múltiples proveedores asociados. Esta relación se gestiona a través de las tablas `pedido_referencia` y `pedido_referencia_proveedor`.
+
+#### Flujo de Referencias
+
+1. **Agregar Referencia**: 
+   - Se crea una entrada en `pedido_referencia` que vincula el pedido con una referencia específica.
+   - Se pueden agregar múltiples proveedores para cada referencia en `pedido_referencia_proveedor`.
+
+2. **Validación de Referencias**:
+   - Cada referencia debe tener al menos un proveedor asociado.
+   - Se valida que los IDs de referencia y pedido_referencia estén presentes.
+   - Se calculan automáticamente los valores unitarios y totales basados en costo y utilidad.
+
+3. **Proveedores por Referencia**:
+   - Cada referencia puede tener múltiples proveedores con diferentes precios y condiciones.
+   - Se puede seleccionar un proveedor principal para cada referencia.
+   - Se mantiene un historial de precios y condiciones por proveedor.
+
+### Validaciones Importantes
+
+- **Referencia ID**: Debe existir en la tabla `referencias`.
+- **Pedido Referencia ID**: Debe existir en la tabla `pedido_referencia`.
+- **Tercero ID**: Identifica al proveedor y debe existir en la tabla `terceros`.
+- **Marca ID**: Identifica la marca del producto y debe existir en la tabla `listas`.
+
+### Comportamiento del Sistema
+
+- Al crear una nueva referencia de proveedor, el sistema intentará obtener automáticamente los IDs necesarios de la siguiente manera:
+  1. Primero intenta obtenerlos de la relación `pedidoReferencia`.
+  2. Si no están disponibles, los busca en la solicitud HTTP.
+  3. Finalmente, verifica en la sesión del usuario.
+
+- Si no se pueden determinar los IDs requeridos, se lanzará una excepción con un mensaje descriptivo.
+
 ### Estados Especiales
 
 - **Pendiente_Revision** - Requiere revisión técnica
