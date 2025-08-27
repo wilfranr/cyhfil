@@ -372,7 +372,7 @@ class ReferenciasForm
         ];
     }
 
-        private static function getProveedoresSchema(): array
+    private static function getProveedoresSchema(): array
     {
         return [
             Toggle::make("estado")->label("Seleccionar")->default(true),
@@ -433,7 +433,7 @@ class ReferenciasForm
                     $costo_unidad = $get('costo_unidad');
                     $utilidad = $get('utilidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($costo_unidad) && !empty($utilidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -498,7 +498,7 @@ class ReferenciasForm
                     $cantidad = $get('cantidad');
                     $utilidad = $get('utilidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($cantidad) && !empty($utilidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -514,7 +514,7 @@ class ReferenciasForm
                     $cantidad = $get('cantidad');
                     $costo_unidad = $get('costo_unidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($cantidad) && !empty($costo_unidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -825,7 +825,7 @@ class ReferenciasForm
                 ->label("Tipo de Artículo")
                 ->options(
                     Lista::query()
-                        ->where("tipo", "Tipo de artículo")
+                        ->where("tipo", "Pieza Estandar")
                         ->get()
                         ->mapWithKeys(
                             fn($definicion) => [
@@ -963,7 +963,7 @@ class ReferenciasForm
         $set("costo_unidad", $proveedor->costo_unidad);
         $set("utilidad", $proveedor->utilidad);
         $set("cantidad", $get("cantidad"));
-        
+
         // Ejecutar el cálculo automáticamente después de establecer los valores
         self::calculateValorTotal($set, $get);
     }
@@ -974,16 +974,16 @@ class ReferenciasForm
         $utilidad = $get("utilidad");
         $cantidad = $get("cantidad");
         $ubicacion = $get("ubicacion");
-        
 
-        
+
+
         // Validar que los valores requeridos existan y sean numéricos válidos
         if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
             $set("valor_unidad", null);
             $set("valor_total", null);
             return;
         }
-        
+
         // Convertir a números para asegurar cálculos correctos
         $costo_unidad = (float) $costo_unidad;
         $utilidad = (float) $utilidad;
@@ -992,50 +992,50 @@ class ReferenciasForm
         if ($ubicacion == "Internacional") {
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
-            
+
             // Obtener empresa activa
             $empresa = Empresa::query()->where('estado', 1)->first();
             $trm = $empresa?->trm;
             $flete = $empresa?->flete;
-            
 
-            
+
+
             // Validar que tengamos todos los valores necesarios para internacional
             if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
                 $set("valor_unidad", null);
                 $set("valor_total", null);
                 return;
             }
-            
+
             // Paso 1: Convertir costo USD a pesos colombianos
             $costo_cop = $costo_unidad * $trm;
-            
+
             // Paso 2: Agregar flete por peso (flete ya está en COP)
             $valor_base = $costo_cop + ($peso * 2.2 * $flete);
-            
+
             // Paso 3: Aplicar utilidad sobre el valor base
             $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
-            
+
             // Paso 4: Redondear a centenas
             $valor_unidad = round($valor_unidad, -2);
-            
+
             // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
-            
 
-            
+
+
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
         } else {
             // Lógica para proveedores nacionales
             // 1. Calcular valor por unidad: costo + (costo × utilidad%)
             $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
-            
+
             // 2. Calcular valor total: valor_unidad × cantidad
             $valor_total = $valor_unidad * $cantidad;
-            
 
-            
+
+
             $set("valor_unidad", $valor_unidad);
             $set("valor_total", $valor_total);
         }

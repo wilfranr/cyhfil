@@ -115,6 +115,7 @@ class ListasResource extends Resource
                         'Unidades de medida' => 'Unidad de Medida',
                         'Tipos de medida' => 'Tipo de Medida',
                         'Nombres de medida' => 'Nombre de Medida',
+                        'Pieza Estandar' => 'Pieza Estandar',
                     ])
                     ->label('Tipo'),
             ])
