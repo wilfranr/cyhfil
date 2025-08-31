@@ -18,7 +18,8 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action as ActionComponent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -39,14 +40,21 @@ class ReferenciasForm
                     ? Referencia::find($state["referencia_id"])->referencia
                     : null,
             )
-            ->defaultItems(1);
+            ->defaultItems(1)
+            ->mutateRelationshipDataBeforeFillUsing(function (array $data): array {
+                $data['estado'] = $data['estado'] ?? true;
+                return $data;
+            });
     }
 
     public static function getStep(): Step
     {
         return Step::make("Referencias")
             ->icon("heroicon-s-clipboard-document-list")
-            ->schema([self::getReferenciasRepeater()])
+            ->schema([
+                // Repeater de referencias
+                self::getReferenciasRepeater()
+            ])
             ->columns(12);
     }
 
@@ -124,6 +132,13 @@ class ReferenciasForm
     private static function getReferenciasSchema(): array
     {
         return [
+
+            
+            // Toggle de selección individual
+            Toggle::make('estado')
+                ->label('Seleccionar')
+                ->default(true)
+                ->live(),
             Select::make("sistema_id")
                 ->label("Sistema")
                 ->searchable()
@@ -163,7 +178,7 @@ class ReferenciasForm
                 ->columnSpan(2)
                 ->hintIcon("heroicon-o-question-mark-circle")
                 ->hintAction(
-                    Action::make("infoArticulo")
+                    ActionComponent::make("infoArticulo")
                         ->label("Info")
                         ->modalHeading("Información del Artículo")
                         ->modalContent(
@@ -193,7 +208,7 @@ class ReferenciasForm
                 )
                 ->editOptionForm(self::getReferenciaEditForm())
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Referencia")
                         ->modalDescription(
                             "Crea una nueva referencia y será asociada a este pedido automáticamente",
@@ -244,7 +259,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -355,7 +370,7 @@ class ReferenciasForm
                     )
 
                     ->extraItemActions([
-                        Action::make("verProveedor")
+                        ActionComponent::make("verProveedor")
                             ->tooltip("Ver proveedor")
                             ->icon("heroicon-o-eye")
                             ->url(
@@ -543,12 +558,12 @@ class ReferenciasForm
         ];
     }
 
-    private static function getInfoSistemaAction(Get $get): ?Action
+    private static function getInfoSistemaAction(Get $get): ?ActionComponent
     {
         if (!$get("sistema_id")) {
             return null;
         }
-        return Action::make("infoSistema")
+        return ActionComponent::make("infoSistema")
             ->label("Info")
             ->modalHeading("Información del Sistema")
             ->modalContent(function () use ($get) {
@@ -567,12 +582,12 @@ class ReferenciasForm
             ->modalSubmitAction(false);
     }
 
-    private static function getInfoTipoAction(Get $get): ?Action
+    private static function getInfoTipoAction(Get $get): ?ActionComponent
     {
         if (!$get("definicion")) {
             return null;
         }
-        return Action::make("infoTipo")
+        return ActionComponent::make("infoTipo")
             ->label("Ver detalle")
             ->modalHeading("Información del Tipo de Artículo")
             ->modalContent(function () use ($get) {
@@ -691,7 +706,7 @@ class ReferenciasForm
                 ->createOptionForm(self::getArticuloForm())
                 ->createOptionUsing(fn($data) => Articulo::create($data)->id)
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("crear Artículo")
                         ->modalDescription(
                             "Crea un nuevo artículo y será asociada a esta referencia automáticamente",
@@ -725,7 +740,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -763,7 +778,7 @@ class ReferenciasForm
                 ->editOptionForm(self::getArticuloForm())
                 ->createOptionUsing(fn($data) => Articulo::create($data)->id)
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("crear Artículo")
                         ->modalWidth("lg"),
                 )
@@ -805,7 +820,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -842,7 +857,7 @@ class ReferenciasForm
                     return $definicion->nombre;
                 })
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Nuevo Tipo de Artículo")
                         ->modalWidth("lg"),
                 )

@@ -69,6 +69,52 @@ class PedidosResource extends Resource
                 ])->columnSpanFull()->hiddenOn('edit'),
                 Section::make('Referencias')
                     ->schema([
+                        // Botones de selección masiva - Solo visibles al editar
+                        \Filament\Forms\Components\Actions::make([
+                            \Filament\Forms\Components\Actions\Action::make('selectAll')
+                                ->label('✅ Seleccionar todas las referencias')
+                                ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                    $referencias = $get('referencias') ?? [];
+                                    \Log::info('SelectAll action - Referencias encontradas:', ['count' => count($referencias)]);
+                                    
+                                    foreach ($referencias as $index => $item) {
+                                        $set("referencias.{$index}.estado", true);
+                                    }
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Referencias seleccionadas')
+                                        ->body('Todas las referencias han sido seleccionadas.')
+                                        ->success()
+                                        ->send();
+                                })
+                                ->color('success')
+                                ->button()
+                                ->size('sm'),
+                            
+                            \Filament\Forms\Components\Actions\Action::make('deselectAll')
+                                ->label('❌ Deseleccionar todas las referencias')
+                                ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                    $referencias = $get('referencias') ?? [];
+                                    \Log::info('DeselectAll action - Referencias encontradas:', ['count' => count($referencias)]);
+                                    
+                                    foreach ($referencias as $index => $item) {
+                                        $set("referencias.{$index}.estado", false);
+                                    }
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Referencias deseleccionadas')
+                                        ->body('Todas las referencias han sido deseleccionadas.')
+                                        ->success()
+                                        ->send();
+                                })
+                                ->color('danger')
+                                ->button()
+                                ->size('sm'),
+                        ])
+                        ->alignCenter()
+                        ->columnSpanFull(),
+                        
+                        // Repeater de referencias
                         ReferenciasForm::getReferenciasRepeater(),
                     ])->hiddenOn('create'),
             ]);
