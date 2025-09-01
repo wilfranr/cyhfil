@@ -117,7 +117,7 @@ class PedidosResource extends Resource
                                 ->icon('heroicon-o-chart-bar')
                                 ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
                                     $referencias = $get('referencias') ?? [];
-                                    $referenciasConMultiplesProveedores = $this->getReferenciasConMultiplesProveedores($referencias);
+                                    $referenciasConMultiplesProveedores = self::getReferenciasConMultiplesProveedores($referencias);
                                     
                                     if (empty($referenciasConMultiplesProveedores)) {
                                         \Filament\Notifications\Notification::make()
@@ -128,13 +128,23 @@ class PedidosResource extends Resource
                                         return;
                                     }
                                     
-                                    // Mostrar modal con cuadro comparativo
-                                    $this->mostrarCuadroComparativo($referenciasConMultiplesProveedores);
+                                    // Generar datos y abrir modal usando JavaScript
+                                    $datos = self::generarDatosComparativos($referenciasConMultiplesProveedores);
+                                    
+                                    // Usar JavaScript para abrir el modal
+                                    $this->js("
+                                        window.dispatchEvent(new CustomEvent('open-modal', {
+                                            detail: {
+                                                id: 'cuadro-comparativo-modal',
+                                                data: " . json_encode($datos) . "
+                                            }
+                                        }));
+                                    ");
                                 })
                                 ->color('info')
                                 ->button()
                                 ->size('sm')
-                                ->visible(fn(\Filament\Forms\Get $get) => $this->hayReferenciasConMultiplesProveedores($get('referencias'))),
+                                ->visible(fn(\Filament\Forms\Get $get) => self::hayReferenciasConMultiplesProveedores($get('referencias'))),
                         ])
                         ->alignCenter()
                         ->columnSpanFull(),
