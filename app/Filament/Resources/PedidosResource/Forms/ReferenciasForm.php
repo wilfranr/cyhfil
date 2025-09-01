@@ -1093,8 +1093,8 @@ class ReferenciasForm
                 $datos = collect($proveedores)
                     ->filter(fn($proveedor) => $proveedor['estado'] ?? false)
                     ->map(function ($proveedor) {
-                        // Obtener información del proveedor con eager loading
-                        $tercero = \App\Models\Tercero::with('empresa')->find($proveedor['tercero_id']);
+                        // Obtener información del proveedor
+                        $tercero = \App\Models\Tercero::find($proveedor['tercero_id']);
                         $marca = \App\Models\Lista::find($proveedor['marca_id']);
                         
                         // Debug: Log para ver qué datos tenemos
