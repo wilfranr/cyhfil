@@ -210,7 +210,7 @@ class PedidosResource extends Resource
     }
     
     // Métodos auxiliares para el cuadro comparativo de proveedores
-    protected function hayReferenciasConMultiplesProveedores(array $referencias): bool
+    public static function hayReferenciasConMultiplesProveedores(array $referencias): bool
     {
         foreach ($referencias as $referencia) {
             if (isset($referencia['proveedores']) && count($referencia['proveedores']) > 1) {
@@ -220,23 +220,16 @@ class PedidosResource extends Resource
         return false;
     }
     
-    protected function getReferenciasConMultiplesProveedores(array $referencias): array
+    public static function getReferenciasConMultiplesProveedores(array $referencias): array
     {
         return array_filter($referencias, function ($referencia) {
             return isset($referencia['proveedores']) && count($referencia['proveedores']) > 1;
         });
     }
     
-    protected function mostrarCuadroComparativo(array $referencias): void
-    {
-        // Abrir modal con cuadro comparativo
-        $this->dispatch('open-modal', [
-            'id' => 'cuadro-comparativo-modal',
-            'data' => $this->generarDatosComparativos($referencias)
-        ]);
-    }
+
     
-    protected function generarDatosComparativos(array $referencias): array
+    public static function generarDatosComparativos(array $referencias): array
     {
         $datos = [];
         
