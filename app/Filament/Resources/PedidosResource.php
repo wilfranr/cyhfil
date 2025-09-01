@@ -72,7 +72,7 @@ class PedidosResource extends Resource
                         // Botones de selección masiva y comparación - Solo visibles al editar
                         \Filament\Forms\Components\Actions::make([
                             \Filament\Forms\Components\Actions\Action::make('selectAll')
-                                ->label('✅ Seleccionar todas las referencias')
+                                ->label('Seleccionar todas las referencias')
                                 ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
                                     $referencias = $get('referencias') ?? [];
                                     \Log::info('SelectAll action - Referencias encontradas:', ['count' => count($referencias)]);
@@ -92,7 +92,7 @@ class PedidosResource extends Resource
                                 ->size('sm'),
                             
                             \Filament\Forms\Components\Actions\Action::make('deselectAll')
-                                ->label('❌ Deseleccionar todas las referencias')
+                                ->label('Deseleccionar todas las referencias')
                                 ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
                                     $referencias = $get('referencias') ?? [];
                                     \Log::info('DeselectAll action - Referencias encontradas:', ['count' => count($referencias)]);
@@ -128,23 +128,52 @@ class PedidosResource extends Resource
                                         return;
                                     }
                                     
-                                    // Generar datos y abrir modal usando JavaScript
+                                    // Generar datos y mostrar notificación
                                     $datos = self::generarDatosComparativos($referenciasConMultiplesProveedores);
                                     
-                                    // Usar JavaScript para abrir el modal
-                                    $this->js("
-                                        window.dispatchEvent(new CustomEvent('open-modal', {
-                                            detail: {
-                                                id: 'cuadro-comparativo-modal',
-                                                data: " . json_encode($datos) . "
-                                            }
-                                        }));
-                                    ");
+                                    // Guardar datos en sesión
+                                    session(['cuadro_comparativo_data' => $datos]);
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Cuadro comparativo generado')
+                                        ->body('Los datos han sido preparados. Usa el botón "Ver comparación" en la interfaz.')
+                                        ->success()
+                                        ->send();
                                 })
                                 ->color('info')
                                 ->button()
                                 ->size('sm')
                                 ->visible(fn(\Filament\Forms\Get $get) => self::hayReferenciasConMultiplesProveedores($get('referencias'))),
+                            
+                            // Botón para abrir el modal de comparación
+                            \Filament\Forms\Components\Actions\Action::make('verComparacion')
+                                ->label('Ver comparación')
+                                ->icon('heroicon-o-eye')
+                                ->action(function () {
+                                    // Verificar si hay datos en sesión
+                                    if (!session('cuadro_comparativo_data')) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title('No hay datos para mostrar')
+                                            ->body('Primero genera el cuadro comparativo.')
+                                            ->warning()
+                                            ->send();
+                                        return;
+                                    }
+                                    
+                                    // Abrir modal usando JavaScript
+                                    $this->js("
+                                        window.dispatchEvent(new CustomEvent('open-modal', {
+                                            detail: {
+                                                id: 'cuadro-comparativo-modal',
+                                                data: " . json_encode(session('cuadro_comparativo_data')) . "
+                                            }
+                                        }));
+                                    ");
+                                })
+                                ->color('warning')
+                                ->button()
+                                ->size('sm')
+                                ->visible(fn() => session('cuadro_comparativo_data') !== null),
                         ])
                         ->alignCenter()
                         ->columnSpanFull(),
