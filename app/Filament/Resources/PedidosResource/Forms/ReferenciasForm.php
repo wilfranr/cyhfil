@@ -1009,19 +1009,51 @@ class ReferenciasForm
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
 
+            // Log adicional para depurar la obtención del peso
+            Log::info('Obtención del peso:', [
+                'peso_directo' => $peso,
+                'peso_alternativo1' => $get("peso"),
+                'peso_alternativo2' => $get("../peso"),
+                'peso_alternativo3' => $get("../../../peso"),
+                'peso_alternativo4' => $get("../../../../peso"),
+                'contexto_completo' => $get()
+            ]);
+
             // Obtener empresa activa
             $empresa = Empresa::query()->where('estado', 1)->first();
             $trm = $empresa?->trm;
             $flete = $empresa?->flete;
 
-
+            // Log de depuración
+            Log::info('Cálculo internacional - Valores obtenidos:', [
+                'peso' => $peso,
+                'trm' => $trm,
+                'flete' => $flete,
+                'costo_unidad' => $costo_unidad,
+                'utilidad' => $utilidad,
+                'cantidad' => $cantidad,
+                'ubicacion' => $ubicacion
+            ]);
 
             // Validar que tengamos todos los valores necesarios para internacional
             if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                Log::warning('Cálculo internacional - Valores inválidos:', [
+                    'peso_numeric' => is_numeric($peso),
+                    'trm_numeric' => is_numeric($trm),
+                    'flete_numeric' => is_numeric($flete),
+                    'peso_value' => $peso,
+                    'trm_value' => $trm,
+                    'flete_value' => $flete
+                ]);
                 $set("valor_unidad", null);
                 $set("valor_total", null);
                 return;
             }
+
+            // Convertir peso a float para asegurar cálculos correctos
+            $peso = (float) $peso;
+            $trm = (float) $trm;
+            $flete = (float) $flete;
 
             // Paso 1: Convertir costo USD a pesos colombianos
             $costo_cop = $costo_unidad * $trm;
@@ -1038,19 +1070,40 @@ class ReferenciasForm
             // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
 
-
+            // Log del resultado del cálculo
+            Log::info('Cálculo internacional - Resultado:', [
+                'costo_cop' => $costo_cop,
+                'valor_base' => $valor_base,
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total
+            ]);
 
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
         } else {
             // Lógica para proveedores nacionales
+            // Log de depuración
+            Log::info('Cálculo nacional - Valores obtenidos:', [
+                'costo_unidad' => $costo_unidad,
+                'utilidad' => $utilidad,
+                'cantidad' => $cantidad,
+                'ubicacion' => $ubicacion
+            ]);
+
             // 1. Calcular valor por unidad: costo + (costo × utilidad%)
             $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
 
-            // 2. Calcular valor total: valor_unidad × cantidad
+            // 2. Redondear valor por unidad a enteros para proveedores nacionales
+            $valor_unidad = round($valor_unidad);
+
+            // 3. Calcular valor total: valor_unidad × cantidad
             $valor_total = $valor_unidad * $cantidad;
 
-
+            // Log del resultado del cálculo
+            Log::info('Cálculo nacional - Resultado:', [
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total
+            ]);
 
             $set("valor_unidad", $valor_unidad);
             $set("valor_total", $valor_total);
