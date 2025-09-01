@@ -1093,13 +1093,25 @@ class ReferenciasForm
                 $datos = collect($proveedores)
                     ->filter(fn($proveedor) => $proveedor['estado'] ?? false)
                     ->map(function ($proveedor) {
+                        // Obtener información del proveedor con eager loading
+                        $tercero = \App\Models\Tercero::with('empresa')->find($proveedor['tercero_id']);
+                        $marca = \App\Models\Lista::find($proveedor['marca_id']);
+                        
+                        // Debug: Log para ver qué datos tenemos
+                        \Log::info('Proveedor data:', [
+                            'tercero_id' => $proveedor['tercero_id'],
+                            'tercero_nombre' => $tercero?->nombre ?? 'NO ENCONTRADO',
+                            'marca_id' => $proveedor['marca_id'],
+                            'marca_nombre' => $marca?->nombre ?? 'NO ENCONTRADO'
+                        ]);
+                        
                         return [
-                            'marca' => \App\Models\Lista::find($proveedor['marca_id'])?->nombre ?? 'N/A',
+                            'marca' => $marca?->nombre ?? 'N/A',
                             'tiempo_entrega' => $proveedor['dias_entrega'] ?? 'N/A',
                             'cantidad' => $proveedor['cantidad'] ?? 'N/A',
                             'costo' => $proveedor['costo_unidad'] ?? 0,
                             'estado' => $proveedor['estado'] ?? false,
-                            'proveedor_nombre' => \App\Models\Tercero::find($proveedor['tercero_id'])?->nombre ?? 'N/A',
+                            'proveedor_nombre' => $tercero?->nombre ?? 'Proveedor #' . $proveedor['tercero_id'],
                             'ubicacion' => $proveedor['ubicacion'] ?? 'N/A',
                             'valor_unidad' => $proveedor['valor_unidad'] ?? 0,
                             'valor_total' => $proveedor['valor_total'] ?? 0,
