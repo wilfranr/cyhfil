@@ -55,5 +55,11 @@ class FilamentServiceProvider extends ServiceProvider
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
             fn (): View => view('components.trm-display', ['trm' => $this->getTrm()])
         );
+        
+        // Register the modal hook for cuadro comparativo
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::BODY_END,
+            fn (): View => view('filament.components.modal-cuadro-comparativo')
+        );
     }
 }

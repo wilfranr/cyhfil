@@ -69,7 +69,7 @@ class PedidosResource extends Resource
                 ])->columnSpanFull()->hiddenOn('edit'),
                 Section::make('Referencias')
                     ->schema([
-                        // Botones de selección masiva - Solo visibles al editar
+                        // Botones de selección masiva y comparación - Solo visibles al editar
                         \Filament\Forms\Components\Actions::make([
                             \Filament\Forms\Components\Actions\Action::make('selectAll')
                                 ->label('✅ Seleccionar todas las referencias')
@@ -110,6 +110,31 @@ class PedidosResource extends Resource
                                 ->color('danger')
                                 ->button()
                                 ->size('sm'),
+                            
+                            // Botón de comparación de proveedores
+                            \Filament\Forms\Components\Actions\Action::make('compararProveedores')
+                                ->label('📊 Comparar Proveedores')
+                                ->icon('heroicon-o-chart-bar')
+                                ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                    $referencias = $get('referencias') ?? [];
+                                    $referenciasConMultiplesProveedores = $this->getReferenciasConMultiplesProveedores($referencias);
+                                    
+                                    if (empty($referenciasConMultiplesProveedores)) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title('No hay referencias para comparar')
+                                            ->body('Selecciona referencias que tengan múltiples proveedores cotizando.')
+                                            ->warning()
+                                            ->send();
+                                        return;
+                                    }
+                                    
+                                    // Mostrar modal con cuadro comparativo
+                                    $this->mostrarCuadroComparativo($referenciasConMultiplesProveedores);
+                                })
+                                ->color('info')
+                                ->button()
+                                ->size('sm')
+                                ->visible(fn(\Filament\Forms\Get $get) => $this->hayReferenciasConMultiplesProveedores($get('referencias'))),
                         ])
                         ->alignCenter()
                         ->columnSpanFull(),
@@ -172,5 +197,60 @@ class PedidosResource extends Resource
             'create' => Pages\CreatePedidos::route('/create'),
             'edit' => Pages\EditPedidos::route('/{record}/edit'),
         ];
+    }
+    
+    // Métodos auxiliares para el cuadro comparativo de proveedores
+    protected function hayReferenciasConMultiplesProveedores(array $referencias): bool
+    {
+        foreach ($referencias as $referencia) {
+            if (isset($referencia['proveedores']) && count($referencia['proveedores']) > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    protected function getReferenciasConMultiplesProveedores(array $referencias): array
+    {
+        return array_filter($referencias, function ($referencia) {
+            return isset($referencia['proveedores']) && count($referencia['proveedores']) > 1;
+        });
+    }
+    
+    protected function mostrarCuadroComparativo(array $referencias): void
+    {
+        // Abrir modal con cuadro comparativo
+        $this->dispatch('open-modal', [
+            'id' => 'cuadro-comparativo-modal',
+            'data' => $this->generarDatosComparativos($referencias)
+        ]);
+    }
+    
+    protected function generarDatosComparativos(array $referencias): array
+    {
+        $datos = [];
+        
+        foreach ($referencias as $referencia) {
+            if (isset($referencia['proveedores']) && count($referencia['proveedores']) > 1) {
+                $datos[] = [
+                    'referencia_nombre' => $referencia['referencia']['nombre'] ?? 'N/A',
+                    'proveedores' => collect($referencia['proveedores'])
+                        ->map(function ($proveedor) {
+                            return [
+                                'marca' => $proveedor['marca'] ?? 'N/A',
+                                'tiempo_entrega' => $proveedor['tiempo_entrega'] ?? 'N/A',
+                                'cantidad' => $proveedor['cantidad'] ?? 'N/A',
+                                'costo' => $proveedor['costo_cotizado'] ?? 0,
+                                'estado' => $proveedor['estado_proveedor'] ?? false,
+                            ];
+                        })
+                        ->sortBy('costo') // Ordenar por precio
+                        ->values()
+                        ->toArray()
+                ];
+            }
+        }
+        
+        return $datos;
     }
 }
