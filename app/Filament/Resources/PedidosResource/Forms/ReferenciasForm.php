@@ -136,7 +136,7 @@ class ReferenciasForm
             
             // Toggle de selección individual
             Toggle::make('estado')
-                ->label('Seleccionar')
+                ->label('')
                 ->default(true)
                 ->live(),
             Select::make("sistema_id")
@@ -313,7 +313,8 @@ class ReferenciasForm
                 TableRepeater::make("proveedores")
                     ->label("Proveedores")
                     ->relationship()
-
+                    ->hintIcon(fn(Get $get) => count($get('proveedores') ?? []) > 1 ? 'heroicon-o-chart-bar' : null)
+                    ->hintAction(fn(Get $get) => self::getCompararProveedoresAction($get))
                     ->columnSpanFull()
                     ->extraAttributes([
                         'class' => 'custom-table-repeater',
@@ -1068,5 +1069,51 @@ class ReferenciasForm
         return route("filament.admin.resources.terceros.edit", [
             "record" => $proveedorId,
         ]);
+    }
+
+    private static function getCompararProveedoresAction(Get $get): ?ActionComponent
+    {
+        $proveedores = $get('proveedores') ?? [];
+        
+        // Solo mostrar si hay más de un proveedor
+        if (count($proveedores) <= 1) {
+            return null;
+        }
+
+        return ActionComponent::make('compararProveedores')
+            ->label('Comparar proveedores')
+            ->modalHeading('Cuadro Comparativo de Proveedores')
+            ->modalWidth('7xl')
+            ->modalContent(function () use ($get) {
+                $proveedores = $get('proveedores') ?? [];
+                $referenciaNombre = $get('../../referencia_id') ? 
+                    \App\Models\Referencia::find($get('../../referencia_id'))?->referencia ?? 'N/A' : 'N/A';
+                
+                // Preparar datos para la comparación
+                $datos = collect($proveedores)
+                    ->filter(fn($proveedor) => $proveedor['estado'] ?? false)
+                    ->map(function ($proveedor) {
+                        return [
+                            'marca' => \App\Models\Lista::find($proveedor['marca_id'])?->nombre ?? 'N/A',
+                            'tiempo_entrega' => $proveedor['dias_entrega'] ?? 'N/A',
+                            'cantidad' => $proveedor['cantidad'] ?? 'N/A',
+                            'costo' => $proveedor['costo_unidad'] ?? 0,
+                            'estado' => $proveedor['estado'] ?? false,
+                            'proveedor_nombre' => \App\Models\Tercero::find($proveedor['tercero_id'])?->nombre ?? 'N/A',
+                            'ubicacion' => $proveedor['ubicacion'] ?? 'N/A',
+                            'valor_unidad' => $proveedor['valor_unidad'] ?? 0,
+                            'valor_total' => $proveedor['valor_total'] ?? 0,
+                        ];
+                    })
+                    ->sortBy('costo')
+                    ->values()
+                    ->toArray();
+
+                return view('filament.components.cuadro-comparativo-inline', [
+                    'referenciaNombre' => $referenciaNombre,
+                    'proveedores' => $datos
+                ]);
+            })
+            ->modalSubmitAction(false);
     }
 }
