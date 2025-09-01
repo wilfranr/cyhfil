@@ -1086,8 +1086,37 @@ class ReferenciasForm
             ->modalWidth('7xl')
             ->modalContent(function () use ($get) {
                 $proveedores = $get('proveedores') ?? [];
-                $referenciaNombre = $get('../../referencia_id') ? 
-                    \App\Models\Referencia::find($get('../../referencia_id'))?->referencia ?? 'N/A' : 'N/A';
+                // Intentar obtener el nombre de la referencia de múltiples formas
+                $referenciaId = null;
+                $referenciaNombre = 'N/A';
+                
+                // Opción 1: Desde el contexto del repeater de referencias
+                $referenciaId = $get('../../referencia_id');
+                
+                // Opción 2: Si no funciona, intentar desde el contexto del pedido
+                if (!$referenciaId) {
+                    $referenciaId = $get('../../../referencia_id');
+                }
+                
+                // Opción 3: Buscar en los datos del formulario actual
+                if (!$referenciaId) {
+                    $referenciaId = $get('referencia_id');
+                }
+                
+                // Debug: Log para ver qué datos tenemos
+                \Log::info('Referencia data:', [
+                    'referencia_id_opcion1' => $get('../../referencia_id'),
+                    'referencia_id_opcion2' => $get('../../../referencia_id'),
+                    'referencia_id_opcion3' => $get('referencia_id'),
+                    'referencia_id_final' => $referenciaId
+                ]);
+                
+                if ($referenciaId) {
+                    $referencia = \App\Models\Referencia::find($referenciaId);
+                    if ($referencia) {
+                        $referenciaNombre = $referencia->referencia;
+                    }
+                }
                 
                 // Preparar datos para la comparación
                 $datos = collect($proveedores)
