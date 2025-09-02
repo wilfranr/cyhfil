@@ -15,7 +15,7 @@ class ListasImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         // Lista de valores permitidos para "tipo" en mayúsculas
-        $allowedTipos = ['TIPO DE MAQUINA', 'DEFINICION DE ARTICULO', 'UNIDAD DE MEDIDA', 'TIPO DE MEDIDA', 'MARCA'];
+        $allowedTipos = ['TIPO DE MAQUINA', 'DEFINICION DE ARTICULO', 'UNIDAD DE MEDIDA', 'TIPO DE MEDIDA', 'MARCA', 'PIEZA ESTANDAR'];
 
         return new Lista([
             'tipo' => (isset($row['tipo']) && in_array(mb_strtoupper($row['tipo'], 'UTF-8'), $allowedTipos))
