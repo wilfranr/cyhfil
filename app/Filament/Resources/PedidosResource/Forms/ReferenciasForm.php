@@ -133,7 +133,7 @@ class ReferenciasForm
     {
         return [
 
-            
+
             // Toggle de selección individual
             Toggle::make('estado')
                 ->label('')
@@ -252,6 +252,7 @@ class ReferenciasForm
                         ->pluck('nombre', 'id')
                         ->toArray();
                 })
+                ->getOptionLabelUsing(fn($value) => Lista::find($value)?->nombre ?? 'N/A')
                 ->createOptionForm(self::getMarcaForm())
                 ->createOptionUsing(
                     fn($data) => Lista::create(
@@ -1009,15 +1010,6 @@ class ReferenciasForm
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
 
-            // Log adicional para depurar la obtención del peso
-            Log::info('Obtención del peso:', [
-                'peso_directo' => $peso,
-                'peso_alternativo1' => $get("peso"),
-                'peso_alternativo2' => $get("../peso"),
-                'peso_alternativo3' => $get("../../../peso"),
-                'peso_alternativo4' => $get("../../../../peso"),
-                'contexto_completo' => $get()
-            ]);
 
             // Obtener empresa activa
             $empresa = Empresa::query()->where('estado', 1)->first();
@@ -1055,14 +1047,15 @@ class ReferenciasForm
             $trm = (float) $trm;
             $flete = (float) $flete;
 
-            // Paso 1: Convertir costo USD a pesos colombianos
-            $costo_cop = $costo_unidad * $trm;
+            // Convertir peso de gramos a libras (1 libra = 453.592 gramos)
+            $peso_libras = $peso / 453.592;
 
-            // Paso 2: Agregar flete por peso (flete ya está en COP)
-            $valor_base = $costo_cop + ($peso * 2.2 * $flete);
+            // Aplicar la fórmula correcta: costo_unidad = ((peso en libras * flete) + costo_dolares) * trm
+            $costo_base_usd = ($peso_libras * $flete) + $costo_unidad;
+            $costo_base_cop = $costo_base_usd * $trm;
 
-            // Paso 3: Aplicar utilidad sobre el valor base
-            $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
+            // Aplicar utilidad sobre el costo base
+            $valor_unidad = $costo_base_cop + ($utilidad * $costo_base_cop / 100);
 
             // Paso 4: Redondear a centenas
             $valor_unidad = round($valor_unidad, -2);
@@ -1072,8 +1065,10 @@ class ReferenciasForm
 
             // Log del resultado del cálculo
             Log::info('Cálculo internacional - Resultado:', [
-                'costo_cop' => $costo_cop,
-                'valor_base' => $valor_base,
+                'peso_gramos' => $peso,
+                'peso_libras' => $peso_libras,
+                'costo_base_usd' => $costo_base_usd,
+                'costo_base_cop' => $costo_base_cop,
                 'valor_unidad' => $valor_unidad,
                 'valor_total' => $valor_total
             ]);
@@ -1127,7 +1122,7 @@ class ReferenciasForm
     private static function getCompararProveedoresAction(Get $get): ?ActionComponent
     {
         $proveedores = $get('proveedores') ?? [];
-        
+
         // Solo mostrar si hay más de un proveedor
         if (count($proveedores) <= 1) {
             return null;
@@ -1142,20 +1137,20 @@ class ReferenciasForm
                 // Intentar obtener el nombre de la referencia de múltiples formas
                 $referenciaId = null;
                 $referenciaNombre = 'N/A';
-                
+
                 // Opción 1: Desde el contexto del repeater de referencias
                 $referenciaId = $get('../../referencia_id');
-                
+
                 // Opción 2: Si no funciona, intentar desde el contexto del pedido
                 if (!$referenciaId) {
                     $referenciaId = $get('../../../referencia_id');
                 }
-                
+
                 // Opción 3: Buscar en los datos del formulario actual
                 if (!$referenciaId) {
                     $referenciaId = $get('referencia_id');
                 }
-                
+
                 // Debug: Log para ver qué datos tenemos
                 \Log::info('Referencia data:', [
                     'referencia_id_opcion1' => $get('../../referencia_id'),
@@ -1163,14 +1158,14 @@ class ReferenciasForm
                     'referencia_id_opcion3' => $get('referencia_id'),
                     'referencia_id_final' => $referenciaId
                 ]);
-                
+
                 if ($referenciaId) {
                     $referencia = \App\Models\Referencia::find($referenciaId);
                     if ($referencia) {
                         $referenciaNombre = $referencia->referencia;
                     }
                 }
-                
+
                 // Preparar datos para la comparación
                 $datos = collect($proveedores)
                     ->filter(fn($proveedor) => $proveedor['estado'] ?? false)
@@ -1178,7 +1173,7 @@ class ReferenciasForm
                         // Obtener información del proveedor
                         $tercero = \App\Models\Tercero::find($proveedor['tercero_id']);
                         $marca = \App\Models\Lista::find($proveedor['marca_id']);
-                        
+
                         // Debug: Log para ver qué datos tenemos
                         \Log::info('Proveedor data:', [
                             'tercero_id' => $proveedor['tercero_id'],
@@ -1186,7 +1181,7 @@ class ReferenciasForm
                             'marca_id' => $proveedor['marca_id'],
                             'marca_nombre' => $marca?->nombre ?? 'NO ENCONTRADO'
                         ]);
-                        
+
                         return [
                             'marca' => $marca?->nombre ?? 'N/A',
                             'tiempo_entrega' => $proveedor['dias_entrega'] ?? 'N/A',
