@@ -17,7 +17,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use App\Models\Referencia;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Tabs;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Widgets\StatsOverviewWidget as WidgetsStatsOverviewWidget;
 use Illuminate\Database\Eloquent\Model;
@@ -25,14 +24,10 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components;
-use Filament\Resources\Pages\Page;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Infolists\Components\ViewEntry;
 
@@ -51,7 +46,7 @@ class ArticulosResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            // 'cruces' => $record->referencias->pluck('referencia')->implode(', '),
+            // 'cruces' => $record->referencias->pluck('referencia')->implode(', '), // Este campo refleja las referencias cruzadas de 'Pieza Estandar'.
             'juegos' => $record->juegos,
         ];
     }
@@ -67,7 +62,7 @@ class ArticulosResource extends Resource
                             ->label('Tipo')
                             ->options(
                                 Lista::query()
-                                    ->where('tipo', 'Tipo de artículo')
+                                    ->where('tipo', 'Pieza Estandar')
                                     ->get()
                                     ->mapWithKeys(fn($definicion) => [$definicion->nombre => $definicion->nombre])
                                     ->toArray()
@@ -75,11 +70,11 @@ class ArticulosResource extends Resource
                             ->createOptionForm(function () {
                                 return [
                                     Hidden::make('tipo')
-                                        ->default('Tipo de Artículo')
+                                        ->default('Pieza Estandar')
                                         ->required(),
                                     TextInput::make('nombre')
                                         ->label('Nombre')
-                                        ->placeholder('Nombre del tipo de artículo'),
+                                        ->placeholder('Nombre del Pieza Estandar'),
                                     TextInput::make('definicion')
                                         ->label('Definición')
                                         ->placeholder('Definición del artículo'),
@@ -91,7 +86,7 @@ class ArticulosResource extends Resource
                             })
                             ->createOptionUsing(function ($data) {
                                 $definicion = Lista::create([
-                                    'tipo' => 'Tipo de Artículo',
+                                    'tipo' => 'Pieza Estandar',
                                     'nombre' => $data['nombre'],
                                     'definicion' => $data['definicion'],
                                 ]);
@@ -107,7 +102,7 @@ class ArticulosResource extends Resource
 
                         TextInput::make('descripcionEspecifica')
                             ->label('Descripción')
-                            ->placeholder('Descripción específica del artículo'),
+                            ->placeholder('Descripción específica de la Pieza Estandar'),
                         TextInput::make('peso')
                             ->label('Peso (Kg)')
                             ->placeholder('Peso del artículo en Kilogramos')
@@ -399,4 +394,3 @@ class ArticulosResource extends Resource
         ];
     }
 }
-

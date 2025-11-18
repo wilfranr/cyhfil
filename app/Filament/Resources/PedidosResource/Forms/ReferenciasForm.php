@@ -18,7 +18,8 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action as ActionComponent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -39,14 +40,21 @@ class ReferenciasForm
                     ? Referencia::find($state["referencia_id"])->referencia
                     : null,
             )
-            ->defaultItems(1);
+            ->defaultItems(1)
+            ->mutateRelationshipDataBeforeFillUsing(function (array $data): array {
+                $data['estado'] = $data['estado'] ?? true;
+                return $data;
+            });
     }
 
     public static function getStep(): Step
     {
         return Step::make("Referencias")
             ->icon("heroicon-s-clipboard-document-list")
-            ->schema([self::getReferenciasRepeater()])
+            ->schema([
+                // Repeater de referencias
+                self::getReferenciasRepeater()
+            ])
             ->columns(12);
     }
 
@@ -124,6 +132,13 @@ class ReferenciasForm
     private static function getReferenciasSchema(): array
     {
         return [
+
+
+            // Toggle de selección individual
+            Toggle::make('estado')
+                ->label('')
+                ->default(true)
+                ->live(),
             Select::make("sistema_id")
                 ->label("Sistema")
                 ->searchable()
@@ -163,7 +178,7 @@ class ReferenciasForm
                 ->columnSpan(2)
                 ->hintIcon("heroicon-o-question-mark-circle")
                 ->hintAction(
-                    Action::make("infoArticulo")
+                    ActionComponent::make("infoArticulo")
                         ->label("Info")
                         ->modalHeading("Información del Artículo")
                         ->modalContent(
@@ -193,7 +208,7 @@ class ReferenciasForm
                 )
                 ->editOptionForm(self::getReferenciaEditForm())
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Referencia")
                         ->modalDescription(
                             "Crea una nueva referencia y será asociada a este pedido automáticamente",
@@ -237,6 +252,7 @@ class ReferenciasForm
                         ->pluck('nombre', 'id')
                         ->toArray();
                 })
+                ->getOptionLabelUsing(fn($value) => Lista::find($value)?->nombre ?? 'N/A')
                 ->createOptionForm(self::getMarcaForm())
                 ->createOptionUsing(
                     fn($data) => Lista::create(
@@ -244,7 +260,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -298,7 +314,8 @@ class ReferenciasForm
                 TableRepeater::make("proveedores")
                     ->label("Proveedores")
                     ->relationship()
-
+                    ->hintIcon(fn(Get $get) => count($get('proveedores') ?? []) > 1 ? 'heroicon-o-chart-bar' : null)
+                    ->hintAction(fn(Get $get) => self::getCompararProveedoresAction($get))
                     ->columnSpanFull()
                     ->extraAttributes([
                         'class' => 'custom-table-repeater',
@@ -355,7 +372,7 @@ class ReferenciasForm
                     )
 
                     ->extraItemActions([
-                        Action::make("verProveedor")
+                        ActionComponent::make("verProveedor")
                             ->tooltip("Ver proveedor")
                             ->icon("heroicon-o-eye")
                             ->url(
@@ -372,7 +389,7 @@ class ReferenciasForm
         ];
     }
 
-        private static function getProveedoresSchema(): array
+    private static function getProveedoresSchema(): array
     {
         return [
             Toggle::make("estado")->label("Seleccionar")->default(true),
@@ -433,7 +450,7 @@ class ReferenciasForm
                     $costo_unidad = $get('costo_unidad');
                     $utilidad = $get('utilidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($costo_unidad) && !empty($utilidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -498,7 +515,7 @@ class ReferenciasForm
                     $cantidad = $get('cantidad');
                     $utilidad = $get('utilidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($cantidad) && !empty($utilidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -514,7 +531,7 @@ class ReferenciasForm
                     $cantidad = $get('cantidad');
                     $costo_unidad = $get('costo_unidad');
                     $ubicacion = $get('ubicacion');
-                    
+
                     if (!empty($cantidad) && !empty($costo_unidad) && !empty($ubicacion)) {
                         self::calculateValorTotal($set, $get);
                     }
@@ -543,12 +560,12 @@ class ReferenciasForm
         ];
     }
 
-    private static function getInfoSistemaAction(Get $get): ?Action
+    private static function getInfoSistemaAction(Get $get): ?ActionComponent
     {
         if (!$get("sistema_id")) {
             return null;
         }
-        return Action::make("infoSistema")
+        return ActionComponent::make("infoSistema")
             ->label("Info")
             ->modalHeading("Información del Sistema")
             ->modalContent(function () use ($get) {
@@ -567,12 +584,12 @@ class ReferenciasForm
             ->modalSubmitAction(false);
     }
 
-    private static function getInfoTipoAction(Get $get): ?Action
+    private static function getInfoTipoAction(Get $get): ?ActionComponent
     {
         if (!$get("definicion")) {
             return null;
         }
-        return Action::make("infoTipo")
+        return ActionComponent::make("infoTipo")
             ->label("Ver detalle")
             ->modalHeading("Información del Tipo de Artículo")
             ->modalContent(function () use ($get) {
@@ -691,7 +708,7 @@ class ReferenciasForm
                 ->createOptionForm(self::getArticuloForm())
                 ->createOptionUsing(fn($data) => Articulo::create($data)->id)
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("crear Artículo")
                         ->modalDescription(
                             "Crea un nuevo artículo y será asociada a esta referencia automáticamente",
@@ -725,7 +742,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -763,7 +780,7 @@ class ReferenciasForm
                 ->editOptionForm(self::getArticuloForm())
                 ->createOptionUsing(fn($data) => Articulo::create($data)->id)
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("crear Artículo")
                         ->modalWidth("lg"),
                 )
@@ -805,7 +822,7 @@ class ReferenciasForm
                     )->id,
                 )
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Crear Marca")
                         ->modalDescription(
                             "Crea una nueva marca y será asociada a la referencia automáticamente",
@@ -825,7 +842,7 @@ class ReferenciasForm
                 ->label("Tipo de Artículo")
                 ->options(
                     Lista::query()
-                        ->where("tipo", "Tipo de artículo")
+                        ->where("tipo", "Pieza Estandar")
                         ->get()
                         ->mapWithKeys(
                             fn($definicion) => [
@@ -842,7 +859,7 @@ class ReferenciasForm
                     return $definicion->nombre;
                 })
                 ->createOptionAction(
-                    fn(Action $action) => $action
+                    fn(ActionComponent $action) => $action
                         ->modalHeading("Nuevo Tipo de Artículo")
                         ->modalWidth("lg"),
                 )
@@ -963,7 +980,7 @@ class ReferenciasForm
         $set("costo_unidad", $proveedor->costo_unidad);
         $set("utilidad", $proveedor->utilidad);
         $set("cantidad", $get("cantidad"));
-        
+
         // Ejecutar el cálculo automáticamente después de establecer los valores
         self::calculateValorTotal($set, $get);
     }
@@ -974,16 +991,16 @@ class ReferenciasForm
         $utilidad = $get("utilidad");
         $cantidad = $get("cantidad");
         $ubicacion = $get("ubicacion");
-        
 
-        
+
+
         // Validar que los valores requeridos existan y sean numéricos válidos
         if (empty($costo_unidad) || empty($utilidad) || empty($cantidad) || empty($ubicacion)) {
             $set("valor_unidad", null);
             $set("valor_total", null);
             return;
         }
-        
+
         // Convertir a números para asegurar cálculos correctos
         $costo_unidad = (float) $costo_unidad;
         $utilidad = (float) $utilidad;
@@ -992,50 +1009,97 @@ class ReferenciasForm
         if ($ubicacion == "Internacional") {
             // Lógica para proveedores internacionales
             $peso = $get("../../peso");
-            
+
+
             // Obtener empresa activa
             $empresa = Empresa::query()->where('estado', 1)->first();
             $trm = $empresa?->trm;
             $flete = $empresa?->flete;
-            
 
-            
+            // Log de depuración
+            Log::info('Cálculo internacional - Valores obtenidos:', [
+                'peso' => $peso,
+                'trm' => $trm,
+                'flete' => $flete,
+                'costo_unidad' => $costo_unidad,
+                'utilidad' => $utilidad,
+                'cantidad' => $cantidad,
+                'ubicacion' => $ubicacion
+            ]);
+
             // Validar que tengamos todos los valores necesarios para internacional
             if (!is_numeric($peso) || !is_numeric($trm) || !is_numeric($flete)) {
+                Log::warning('Cálculo internacional - Valores inválidos:', [
+                    'peso_numeric' => is_numeric($peso),
+                    'trm_numeric' => is_numeric($trm),
+                    'flete_numeric' => is_numeric($flete),
+                    'peso_value' => $peso,
+                    'trm_value' => $trm,
+                    'flete_value' => $flete
+                ]);
                 $set("valor_unidad", null);
                 $set("valor_total", null);
                 return;
             }
-            
-            // Paso 1: Convertir costo USD a pesos colombianos
-            $costo_cop = $costo_unidad * $trm;
-            
-            // Paso 2: Agregar flete por peso (flete ya está en COP)
-            $valor_base = $costo_cop + ($peso * 2.2 * $flete);
-            
-            // Paso 3: Aplicar utilidad sobre el valor base
-            $valor_unidad = $valor_base + ($utilidad * $valor_base / 100);
-            
+
+            // Convertir peso a float para asegurar cálculos correctos
+            $peso = (float) $peso;
+            $trm = (float) $trm;
+            $flete = (float) $flete;
+
+            // Convertir peso de gramos a libras (1 libra = 453.592 gramos)
+            $peso_libras = $peso / 453.592;
+
+            // Aplicar la fórmula correcta: costo_unidad = ((peso en libras * flete) + costo_dolares) * trm
+            $costo_base_usd = ($peso_libras * $flete) + $costo_unidad;
+            $costo_base_cop = $costo_base_usd * $trm;
+
+            // Aplicar utilidad sobre el costo base
+            $valor_unidad = $costo_base_cop + ($utilidad * $costo_base_cop / 100);
+
             // Paso 4: Redondear a centenas
             $valor_unidad = round($valor_unidad, -2);
-            
+
             // Paso 5: Calcular valor total
             $valor_total = $valor_unidad * $cantidad;
-            
 
-            
+            // Log del resultado del cálculo
+            Log::info('Cálculo internacional - Resultado:', [
+                'peso_gramos' => $peso,
+                'peso_libras' => $peso_libras,
+                'costo_base_usd' => $costo_base_usd,
+                'costo_base_cop' => $costo_base_cop,
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total
+            ]);
+
             $set("valor_total", $valor_total);
             $set("valor_unidad", $valor_unidad);
         } else {
             // Lógica para proveedores nacionales
+            // Log de depuración
+            Log::info('Cálculo nacional - Valores obtenidos:', [
+                'costo_unidad' => $costo_unidad,
+                'utilidad' => $utilidad,
+                'cantidad' => $cantidad,
+                'ubicacion' => $ubicacion
+            ]);
+
             // 1. Calcular valor por unidad: costo + (costo × utilidad%)
             $valor_unidad = $costo_unidad + ($costo_unidad * $utilidad / 100);
-            
-            // 2. Calcular valor total: valor_unidad × cantidad
-            $valor_total = $valor_unidad * $cantidad;
-            
 
-            
+            // 2. Redondear valor por unidad a enteros para proveedores nacionales
+            $valor_unidad = round($valor_unidad);
+
+            // 3. Calcular valor total: valor_unidad × cantidad
+            $valor_total = $valor_unidad * $cantidad;
+
+            // Log del resultado del cálculo
+            Log::info('Cálculo nacional - Resultado:', [
+                'valor_unidad' => $valor_unidad,
+                'valor_total' => $valor_total
+            ]);
+
             $set("valor_unidad", $valor_unidad);
             $set("valor_total", $valor_total);
         }
@@ -1053,5 +1117,92 @@ class ReferenciasForm
         return route("filament.admin.resources.terceros.edit", [
             "record" => $proveedorId,
         ]);
+    }
+
+    private static function getCompararProveedoresAction(Get $get): ?ActionComponent
+    {
+        $proveedores = $get('proveedores') ?? [];
+
+        // Solo mostrar si hay más de un proveedor
+        if (count($proveedores) <= 1) {
+            return null;
+        }
+
+        return ActionComponent::make('compararProveedores')
+            ->label('Comparar proveedores')
+            ->modalHeading('Cuadro Comparativo de Proveedores')
+            ->modalWidth('7xl')
+            ->modalContent(function () use ($get) {
+                $proveedores = $get('proveedores') ?? [];
+                // Intentar obtener el nombre de la referencia de múltiples formas
+                $referenciaId = null;
+                $referenciaNombre = 'N/A';
+
+                // Opción 1: Desde el contexto del repeater de referencias
+                $referenciaId = $get('../../referencia_id');
+
+                // Opción 2: Si no funciona, intentar desde el contexto del pedido
+                if (!$referenciaId) {
+                    $referenciaId = $get('../../../referencia_id');
+                }
+
+                // Opción 3: Buscar en los datos del formulario actual
+                if (!$referenciaId) {
+                    $referenciaId = $get('referencia_id');
+                }
+
+                // Debug: Log para ver qué datos tenemos
+                \Log::info('Referencia data:', [
+                    'referencia_id_opcion1' => $get('../../referencia_id'),
+                    'referencia_id_opcion2' => $get('../../../referencia_id'),
+                    'referencia_id_opcion3' => $get('referencia_id'),
+                    'referencia_id_final' => $referenciaId
+                ]);
+
+                if ($referenciaId) {
+                    $referencia = \App\Models\Referencia::find($referenciaId);
+                    if ($referencia) {
+                        $referenciaNombre = $referencia->referencia;
+                    }
+                }
+
+                // Preparar datos para la comparación
+                $datos = collect($proveedores)
+                    ->filter(fn($proveedor) => $proveedor['estado'] ?? false)
+                    ->map(function ($proveedor) {
+                        // Obtener información del proveedor
+                        $tercero = \App\Models\Tercero::find($proveedor['tercero_id']);
+                        $marca = \App\Models\Lista::find($proveedor['marca_id']);
+
+                        // Debug: Log para ver qué datos tenemos
+                        \Log::info('Proveedor data:', [
+                            'tercero_id' => $proveedor['tercero_id'],
+                            'tercero_nombre' => $tercero?->nombre ?? 'NO ENCONTRADO',
+                            'marca_id' => $proveedor['marca_id'],
+                            'marca_nombre' => $marca?->nombre ?? 'NO ENCONTRADO'
+                        ]);
+
+                        return [
+                            'marca' => $marca?->nombre ?? 'N/A',
+                            'tiempo_entrega' => $proveedor['dias_entrega'] ?? 'N/A',
+                            'cantidad' => $proveedor['cantidad'] ?? 'N/A',
+                            'costo' => $proveedor['costo_unidad'] ?? 0,
+                            'estado' => $proveedor['estado'] ?? false,
+                            'proveedor_nombre' => $tercero?->nombre ?? 'Proveedor #' . $proveedor['tercero_id'],
+                            'ubicacion' => $proveedor['ubicacion'] ?? 'N/A',
+                            'valor_unidad' => $proveedor['valor_unidad'] ?? 0,
+                            'valor_total' => $proveedor['valor_total'] ?? 0,
+                        ];
+                    })
+                    ->sortBy('costo')
+                    ->values()
+                    ->toArray();
+
+                return view('filament.components.cuadro-comparativo-inline', [
+                    'referenciaNombre' => $referenciaNombre,
+                    'proveedores' => $datos
+                ]);
+            })
+            ->modalSubmitAction(false);
     }
 }

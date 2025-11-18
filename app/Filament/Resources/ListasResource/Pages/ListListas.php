@@ -107,6 +107,9 @@ class ListListas extends ListRecords
             'Nombres de Medida' => Tab::make()->query(function (Builder $query) {
                 $query->where('tipo', 'Nombre de Medida');
             }),
+            'Piezas Estandar' => Tab::make()->query(function (Builder $query) {
+                $query->where('tipo', 'Pieza Estandar');
+            }),
         ];
     }
 }

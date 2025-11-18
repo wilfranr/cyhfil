@@ -69,6 +69,57 @@ class PedidosResource extends Resource
                 ])->columnSpanFull()->hiddenOn('edit'),
                 Section::make('Referencias')
                     ->schema([
+                        // Componente personalizado del filtro por proveedor
+                        \Filament\Forms\Components\View::make('filament.components.filtro-proveedor-pedidos')
+                            ->hiddenOn('create')
+                            ->columnSpanFull(),
+                        
+                        // Botones de selección masiva - Solo visibles al editar
+                        \Filament\Forms\Components\Actions::make([
+                            \Filament\Forms\Components\Actions\Action::make('selectAll')
+                                ->label('Seleccionar todas las referencias')
+                                ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                    $referencias = $get('referencias') ?? [];
+                                    \Log::info('SelectAll action - Referencias encontradas:', ['count' => count($referencias)]);
+                                    
+                                    foreach ($referencias as $index => $item) {
+                                        $set("referencias.{$index}.estado", true);
+                                    }
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Referencias seleccionadas')
+                                        ->body('Todas las referencias han sido seleccionadas.')
+                                        ->success()
+                                        ->send();
+                                })
+                                ->color('success')
+                                ->button()
+                                ->size('sm'),
+                            
+                            \Filament\Forms\Components\Actions\Action::make('deselectAll')
+                                ->label('Deseleccionar todas las referencias')
+                                ->action(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                    $referencias = $get('referencias') ?? [];
+                                    \Log::info('DeselectAll action - Referencias encontradas:', ['count' => count($referencias)]);
+                                    
+                                    foreach ($referencias as $index => $item) {
+                                        $set("referencias.{$index}.estado", false);
+                                    }
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Referencias deseleccionadas')
+                                        ->body('Todas las referencias han sido deseleccionadas.')
+                                        ->success()
+                                        ->send();
+                                })
+                                ->color('danger')
+                                ->button()
+                                ->size('sm'),
+                        ])
+                        ->alignCenter()
+                        ->columnSpanFull(),
+                        
+                        // Repeater de referencias
                         ReferenciasForm::getReferenciasRepeater(),
                     ])->hiddenOn('create'),
             ]);
@@ -126,5 +177,53 @@ class PedidosResource extends Resource
             'create' => Pages\CreatePedidos::route('/create'),
             'edit' => Pages\EditPedidos::route('/{record}/edit'),
         ];
+    }
+    
+    // Métodos auxiliares para el cuadro comparativo de proveedores
+    public static function hayReferenciasConMultiplesProveedores(array $referencias): bool
+    {
+        foreach ($referencias as $referencia) {
+            if (isset($referencia['proveedores']) && count($referencia['proveedores']) > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static function getReferenciasConMultiplesProveedores(array $referencias): array
+    {
+        return array_filter($referencias, function ($referencia) {
+            return isset($referencia['proveedores']) && count($referencia['proveedores']) > 1;
+        });
+    }
+    
+
+    
+    public static function generarDatosComparativos(array $referencias): array
+    {
+        $datos = [];
+        
+        foreach ($referencias as $referencia) {
+            if (isset($referencia['proveedores']) && count($referencia['proveedores']) > 1) {
+                $datos[] = [
+                    'referencia_nombre' => $referencia['referencia']['nombre'] ?? 'N/A',
+                    'proveedores' => collect($referencia['proveedores'])
+                        ->map(function ($proveedor) {
+                            return [
+                                'marca' => $proveedor['marca'] ?? 'N/A',
+                                'tiempo_entrega' => $proveedor['tiempo_entrega'] ?? 'N/A',
+                                'cantidad' => $proveedor['cantidad'] ?? 'N/A',
+                                'costo' => $proveedor['costo_cotizado'] ?? 0,
+                                'estado' => $proveedor['estado_proveedor'] ?? false,
+                            ];
+                        })
+                        ->sortBy('costo') // Ordenar por precio
+                        ->values()
+                        ->toArray()
+                ];
+            }
+        }
+        
+        return $datos;
     }
 }

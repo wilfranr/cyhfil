@@ -1,0 +1,1754 @@
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family:
+        "Figtree",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Inicio - Contenedor principal */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 52px 0px 0px;
+    isolation: isolate;
+    position: relative;
+    width: 1440px;
+    min-height: 7748.82px;
+    margin: 0 auto;
+}
+
+/* Frame 56 */
+.page-wrapper::before {
+    content: "";
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 1440px;
+    height: 7696.82px;
+    background: url(.png);
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Navbar */
+.navbar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    position: absolute;
+    width: 1440px;
+    height: 134px;
+    left: 0px;
+    top: 52px;
+    background: #ffffff;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    z-index: 1;
+}
+
+/* Content - Contenedor principal del navbar */
+.navbar-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 64px;
+    width: 1440px;
+    height: 72px;
+    background: #0c0e0f;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+/* Logo completo horizontal */
+.navbar-logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 2.34px;
+    margin: 0 auto;
+    width: 229.74px;
+    height: 30.65px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Frame 1 - Contenedor de enlaces y acciones */
+.navbar-frame {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 32px;
+    margin: 0 auto;
+    width: 798px;
+    height: 44px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+/* Column - Columna de enlaces */
+.navbar-column {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 32px;
+    width: 667px;
+    height: 44px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Frame 12 - Primer enlace */
+.navbar-link-frame:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 181px;
+    height: 44px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Frame 12 - Segundo enlace */
+.navbar-link-frame:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 122px;
+    height: 44px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+/* Frame 13 - Tercer enlace */
+.navbar-link-frame:nth-child(3) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 144px;
+    height: 44px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
+
+/* Frame 14 - Cuarto enlace */
+.navbar-link-frame:nth-child(4) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 124px;
+    height: 44px;
+    flex: none;
+    order: 3;
+    flex-grow: 0;
+}
+
+/* Link Two */
+.navbar-link {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 10px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    text-decoration: none;
+}
+
+/* Link text - Primer enlace */
+.navbar-link-frame:nth-child(1) .link-text {
+    width: 161px;
+    height: 24px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    transition: color 0.2s ease;
+}
+
+/* Link text - Segundo enlace */
+.navbar-link-frame:nth-child(2) .link-text {
+    width: 102px;
+    height: 24px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    transition: color 0.2s ease;
+}
+
+/* Link text - Tercer enlace */
+.navbar-link-frame:nth-child(3) .link-text {
+    width: 124px;
+    height: 24px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    transition: color 0.2s ease;
+}
+
+/* Link text - Cuarto enlace */
+.navbar-link-frame:nth-child(4) .link-text {
+    width: 104px;
+    height: 24px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    transition: color 0.2s ease;
+}
+
+/* Link Two - Ajustes de ancho según el frame */
+.navbar-link-frame:nth-child(1) .navbar-link {
+    width: 161px;
+    height: 24px;
+}
+
+.navbar-link-frame:nth-child(2) .navbar-link {
+    width: 102px;
+    height: 24px;
+}
+
+.navbar-link-frame:nth-child(3) .navbar-link {
+    width: 124px;
+    height: 24px;
+}
+
+.navbar-link-frame:nth-child(4) .navbar-link {
+    width: 104px;
+    height: 24px;
+}
+
+/* Hover effects */
+.navbar-link-frame:hover .navbar-link .link-text {
+    color: #fdb831;
+}
+
+.navbar-link-frame:nth-child(1):hover .link-text {
+    color: #fdb831;
+}
+
+.navbar-link-frame:nth-child(2):hover .link-text {
+    color: #fdb831;
+}
+
+.navbar-link-frame:nth-child(3):hover .link-text {
+    color: #fdb831;
+}
+
+.navbar-link-frame:nth-child(4):hover .link-text {
+    color: #fdb831;
+}
+
+/* Actions */
+.navbar-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 16px;
+    width: 99px;
+    height: 40px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+/* Button */
+.navbar-button {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
+    width: 99px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    border-radius: 64px;
+    background: transparent;
+    cursor: pointer;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Text del botón */
+.button-text {
+    width: 67px;
+    height: 20px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    color: #ffffff;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+/* Frame 8 - Banner */
+.banner-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 54px;
+    gap: 10px;
+    width: 1440px;
+    height: 62px;
+    background: #fdb831;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+/* Article Title - Texto del banner */
+.banner-text {
+    width: 318px;
+    height: 22px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #0c0e0f;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Button del banner */
+.banner-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
+    width: 185px;
+    height: 40px;
+    background: #0c0e0f;
+    border-radius: 64px;
+    border: none;
+    cursor: pointer;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.banner-button .button-text {
+    width: 125px;
+    height: 20px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    color: #ffffff;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.download-icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
+
+.download-icon path {
+    stroke: #ffffff;
+}
+
+/* Frame 52 - Carrusel */
+.carousel-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px;
+    width: 1440px;
+    height: 796px;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.6) 61.53%
+    );
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.carousel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 1440px;
+    height: 796px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+    position: relative;
+}
+
+.carousel-slides {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.carousel-slide-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 0;
+    pointer-events: none;
+}
+
+.carousel-slide-content .carousel-text-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 0px 109px;
+    gap: 10px;
+    width: 1305.83px;
+    height: 136px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin-bottom: 58px; /* 47px (gap) + 11px (altura de dots) */
+}
+
+/* Frame 60 - Controles de navegación */
+.carousel-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0px 64px;
+    width: 1440px;
+    height: 72px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* Frame 58 - Botón izquierdo */
+.carousel-arrow-left {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 72px;
+    height: 72px;
+    background: rgba(253, 184, 49, 0.3);
+    background-blend-mode: overlay;
+    opacity: 0;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    pointer-events: all;
+    transition: opacity 0.3s ease;
+    position: relative;
+    margin: 0;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.carousel-wrapper:hover .carousel-arrow-left {
+    opacity: 1;
+}
+
+/* Frame 59 - Botón derecho */
+.carousel-arrow-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    width: 72px;
+    height: 72px;
+    background: rgba(253, 184, 49, 0.3);
+    background-blend-mode: overlay;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    pointer-events: all;
+    transition: opacity 0.3s ease;
+    position: relative;
+    margin: 0;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.carousel-arrow svg {
+    width: 52px;
+    height: 52px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    position: relative;
+}
+
+.carousel-arrow svg path {
+    stroke: rgba(247, 253, 242, 0.4);
+    stroke-width: 2.25px;
+}
+
+/* Frame 54 - Contenido del carrusel */
+.carousel-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 47px;
+    width: 1440px;
+    height: 267px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    pointer-events: none;
+}
+
+/* Frame 53 - Texto principal */
+.carousel-text-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 0px 109px;
+    gap: 10px;
+    width: 1305.83px;
+    height: 136px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    position: relative;
+}
+
+.carousel-title {
+    width: 1087.83px;
+    height: 136px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 68px;
+    letter-spacing: -0.018em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-title.active {
+    opacity: 1;
+}
+
+/* Frame 51 - Dots de navegación */
+.carousel-dots {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+    width: 343px;
+    height: 11px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.carousel-dot {
+    width: 24px;
+    height: 11px;
+    background: #d1d8da;
+    border-radius: 9999px;
+    flex: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+}
+
+.carousel-dot.active {
+    width: 24px;
+    background: #f2a900;
+}
+
+.carousel-dot:not(.active) {
+    width: 10px;
+    height: 10px;
+}
+
+/* Frame 293 - Sección de logos de marcas */
+.brands-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 64px;
+    gap: 24px;
+    width: 1440px;
+    height: 636px;
+    background: #ffffff;
+    border-radius: 0px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.brands-heading {
+    width: 992.34px;
+    height: 136px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 68px;
+    text-align: center;
+    letter-spacing: -0.018em;
+    color: #171d21;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.brands-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 1312px;
+    height: 465px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.brands-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 24px;
+    width: 1312px;
+    height: 146px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.brand-item {
+    width: 394px;
+    height: 146px;
+    background: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.brand-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Content - Sección de cotizaciones rápidas */
+.quote-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 80px 82px;
+    gap: 24px;
+    width: 1440px;
+    height: 495px;
+    background: #000000;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.quote-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    flex: none;
+    flex-grow: 0;
+}
+
+.quote-column:first-child {
+    width: 661px;
+    height: 240px;
+    order: 0;
+}
+
+.quote-column:last-child {
+    width: 591px;
+    height: 144px;
+    gap: 32px;
+    order: 1;
+}
+
+.quote-headline {
+    width: 661px;
+    height: 240px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 80px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.quote-description {
+    width: 591px;
+    height: 72px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.quote-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 16px;
+    width: 254px;
+    height: 40px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.quote-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
+    border-radius: 64px;
+    border: none;
+    cursor: pointer;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    flex: none;
+    flex-grow: 0;
+}
+
+.quote-button-primary {
+    width: 117px;
+    height: 40px;
+    background: #fdb831;
+    color: #171d21;
+    order: 0;
+}
+
+.quote-button-secondary {
+    width: 121px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    order: 1;
+}
+
+/* Frame 55 - Sección de 3 pasos */
+.steps-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 112px 64px;
+    gap: 80px;
+    width: 1440px;
+    height: 1145.82px;
+    background: #fdb831;
+    flex: none;
+    order: 3;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.steps-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 80px;
+    width: 1119px;
+    height: 433.82px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.steps-image {
+    width: 499.55px;
+    height: 433.82px;
+    background: url(.png);
+    border-radius: 0px 271.403px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    overflow: hidden;
+}
+
+.steps-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.steps-text {
+    flex: 1;
+    order: 1;
+}
+
+.steps-heading {
+    width: 539.45px;
+    height: 136px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 68px;
+    letter-spacing: -0.018em;
+    color: #0c0e0f;
+    flex: none;
+    order: 1;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.steps-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 32px;
+    width: 1312px;
+    height: 408px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    gap: 32px;
+    width: 416px;
+    height: 404px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.step-icon {
+    width: 92px;
+    height: 92px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.step-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    gap: 24px;
+    width: 416px;
+    height: 260px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.step-title {
+    width: 405px;
+    height: 64px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    text-align: center;
+    letter-spacing: -0.012em;
+    color: #0c0e0f;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.step-description {
+    width: 405px;
+    height: 56px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    text-align: center;
+    letter-spacing: -0.01em;
+    color: #0c0e0f;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+/* Header / 46 / - Sección de sistemas */
+.systems-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 64px;
+    gap: 10px;
+    width: 1440px;
+    height: 454px;
+    background: #0c0e0f;
+    flex: none;
+    order: 4;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.systems-main-heading {
+    width: 1109.95px;
+    height: 240px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 80px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+}
+
+/* Frame 282 - Secciones de sistemas */
+.systems-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    width: 1440px;
+    height: 3593px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.system-item {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 200px 150px;
+    gap: 80px;
+    width: 1440px;
+    height: 786px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.system-item-yellow {
+    background: #fdb831;
+    border-radius: 0px;
+}
+
+.system-item-black {
+    background: #171d21;
+    border-radius: 0px;
+}
+
+.system-item-motor {
+    flex-direction: row-reverse;
+}
+
+.system-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 24px;
+    width: 530px;
+    height: 386px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+.system-title {
+    width: 530px;
+    height: 58px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 120%;
+    color: #000000;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.system-title-yellow {
+    color: #e4a718;
+}
+
+.system-item-black .system-title {
+    color: #fdb831;
+}
+
+.system-description {
+    width: 530px;
+    height: 264px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    color: #000000;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.system-item-black .system-description {
+    color: #ffffff;
+}
+
+.system-image {
+    width: 530px;
+    height: 378px;
+    background: url();
+    border-radius: 48px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.system-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Frame 289 - Footer */
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 54px 0px 0px;
+    width: 1440px;
+    height: 577px;
+    background: #000000;
+    flex: none;
+    order: 5;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-top-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 52px 54px 0px;
+    width: 1440px;
+    height: 470px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.footer-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 46px;
+    width: 1332px;
+    height: 282px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.footer-top-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 46px;
+    width: 1332px;
+    height: 282px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.footer-subscription {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    gap: 10px;
+    width: 326.31px;
+    height: 282px;
+    background: #343743;
+    opacity: 0.75;
+    backdrop-filter: blur(7.4px);
+    border-radius: 12px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.subscription-title {
+    margin: 0 auto;
+    width: 278.31px;
+    height: 132px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 44px;
+    letter-spacing: -0.014em;
+    color: #9ea9ad;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.subscription-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    margin: 0 auto;
+    width: 246px;
+    height: 29px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.form-input-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 4px 0px 0px;
+    gap: 338px;
+    width: 246px;
+    height: 20px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.subscription-input {
+    margin: 0 auto;
+    width: 124px;
+    height: 20px;
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 140%;
+    color: #f3f6f6;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.input-underline {
+    width: 246px;
+    height: 1px;
+    background: #6f7b7f;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 48px;
+    width: 190px;
+    height: 270px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.footer-section-title {
+    width: 190px;
+    height: 18px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 18px;
+    letter-spacing: -0.008em;
+    text-transform: uppercase;
+    color: #f3f6f6;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.footer-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 190px;
+    height: 204px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-link {
+    margin: 0 auto;
+    width: auto;
+    height: 28px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: -0.01em;
+    color: #9ea9ad;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-location {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 48px;
+    width: 479px;
+    height: 282px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
+
+.location-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
+    width: 185px;
+    height: 40px;
+    background: #fdb831;
+    border-radius: 64px;
+    border: none;
+    cursor: pointer;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    color: #000000;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 47px;
+    width: 479px;
+    height: 48px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.contact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 186px;
+    height: 48px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.contact-label {
+    width: 186px;
+    height: 18px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 18px;
+    letter-spacing: -0.008em;
+    text-transform: uppercase;
+    color: #9ea9ad;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.contact-value {
+    width: 132px;
+    height: 22px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #ffffff;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.address-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 341px;
+    height: 48px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
+
+.address-item .contact-value {
+    width: 341px;
+}
+
+.footer-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 24px 0px;
+    gap: 10px;
+    width: 1332px;
+    height: 136px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0 auto;
+}
+
+.footer-socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 0px 0px 24px;
+    gap: 24px;
+    width: 228px;
+    height: 88px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.social-link {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    border-radius: 40px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    text-decoration: none;
+}
+
+.scroll-up-button {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    width: 88px;
+    height: 88px;
+    border: 1px solid #ffffff;
+    border-radius: 88px;
+    background: transparent;
+    cursor: pointer;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.footer-credits {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 54px;
+    gap: 24px;
+    width: 1332px;
+    height: 53px;
+    background: #0c0e0f;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0 auto;
+}
+
+.footer-credits-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px;
+    gap: 24px;
+    width: 1332px;
+    height: 53px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+.copyright {
+    margin: 0 auto;
+    width: 337px;
+    height: 21px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    color: #fdb831;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 24px;
+    margin: 0 auto;
+    width: 470px;
+    height: 21px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.footer-credit-link {
+    width: auto;
+    height: 21px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    text-decoration-line: underline;
+    color: #fdb831;
+    flex: none;
+    flex-grow: 0;
+    text-decoration: underline;
+}
+
+.external-icon {
+    width: 11px;
+    height: 11px;
+    opacity: 0.6;
+    border: 1px solid #b2b1aa;
+    display: inline-block;
+}

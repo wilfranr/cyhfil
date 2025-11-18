@@ -7,6 +7,27 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## [Unreleased]
 
+### Added
+- **Filtro por Proveedor en Pedidos**: Nueva funcionalidad que permite filtrar referencias por proveedor en la vista de edición de pedidos
+  - Selector intuitivo de proveedores con búsqueda
+  - Filtrado en tiempo real de referencias usando JavaScript del lado del cliente
+  - Indicadores visuales del estado del filtro
+  - Botón para limpiar el filtro fácilmente
+  - Compatibilidad con todos los tipos de pedidos existentes
+  - API REST para obtener proveedores de pedidos específicos
+
+### Changed
+- Mejorada la interfaz de edición de pedidos para mayor usabilidad
+- Implementado filtrado por proveedor usando JavaScript para mejor rendimiento
+
+### Technical
+- Agregada relación `pedidosReferenciaProveedor` al modelo `Tercero`
+- Implementado filtrado inteligente que solo muestra proveedores relevantes
+- Creado controlador API `PedidoController` para obtener proveedores de pedidos
+- Agregada ruta API `/api/pedidos/{pedido}/proveedores`
+- Implementado componente Blade personalizado con Alpine.js para el filtro
+- Uso de atributos de datos en repeaters para filtrado por JavaScript
+
 ## [2024.08.18] - 2024-08-18
 
 ### Fixed

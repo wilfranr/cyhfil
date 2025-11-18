@@ -4,7 +4,7 @@ Aplicación de gestión de inventario, pedidos y cotizaciones desarrollada con L
 
 ## Características principales
 
-- Panel administrativo basado en Filament para gestionar Artículos, Referencias, Fabricantes, Pedidos y Órdenes de Trabajo.
+- Panel administrativo basado en Filament para gestionar Piezas Estandar, Referencias, Fabricantes, Pedidos y Órdenes de Trabajo.
 - Chat interno en tiempo real mediante eventos y broadcasting.
 - Generación de documentos PDF para cotizaciones y órdenes de compra.
 - Importación de registros desde archivos Excel.

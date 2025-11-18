@@ -191,4 +191,15 @@ class Tercero extends Model
     {
         return $this->belongsToMany(Categoria::class);
     }
+
+    /**
+     * Relación con las referencias de proveedor del tercero.
+     * Un tercero puede tener múltiples referencias de proveedor.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pedidosReferenciaProveedor()
+    {
+        return $this->hasMany(\App\Models\PedidoReferenciaProveedor::class, 'tercero_id');
+    }
 }
