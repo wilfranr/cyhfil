@@ -17,7 +17,7 @@ body {
         sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #fff;
+    background-color: #000000;
     margin: 0;
     padding: 0;
 }
@@ -27,10 +27,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 52px 0px 0px;
     isolation: isolate;
     position: relative;
-    width: 1440px;
+    width: 100vw;
     min-height: 7748.82px;
     margin: 0 auto;
 }
@@ -42,11 +41,10 @@ body {
     flex-direction: column;
     align-items: flex-start;
     padding: 0px;
-    width: 1440px;
+    width: 100vw;
     height: 7696.82px;
     background: url(.png);
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     z-index: 0;
@@ -62,13 +60,12 @@ body {
     align-items: center;
     padding: 0px;
     position: absolute;
-    width: 1440px;
+    width: 100vw;
     height: 134px;
     left: 0px;
-    top: 52px;
+    /* top: 52px; */
     background: #ffffff;
     flex: none;
-    order: 1;
     flex-grow: 0;
     z-index: 1;
 }
@@ -80,11 +77,10 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0px 64px;
-    width: 1440px;
+    width: 100vw;
     height: 72px;
     background: #0c0e0f;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -100,7 +96,6 @@ body {
     width: 229.74px;
     height: 30.65px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -121,7 +116,6 @@ body {
     width: 798px;
     height: 44px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -135,7 +129,6 @@ body {
     width: 667px;
     height: 44px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -150,7 +143,6 @@ body {
     width: 181px;
     height: 44px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -165,7 +157,6 @@ body {
     width: 122px;
     height: 44px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -180,7 +171,6 @@ body {
     width: 144px;
     height: 44px;
     flex: none;
-    order: 2;
     flex-grow: 0;
 }
 
@@ -195,7 +185,6 @@ body {
     width: 124px;
     height: 44px;
     flex: none;
-    order: 3;
     flex-grow: 0;
 }
 
@@ -207,7 +196,6 @@ body {
     padding: 0px;
     gap: 10px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     text-decoration: none;
@@ -225,7 +213,6 @@ body {
     letter-spacing: -0.008em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     transition: color 0.2s ease;
 }
@@ -242,7 +229,6 @@ body {
     letter-spacing: -0.008em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     transition: color 0.2s ease;
 }
@@ -259,7 +245,6 @@ body {
     letter-spacing: -0.008em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     transition: color 0.2s ease;
 }
@@ -276,7 +261,6 @@ body {
     letter-spacing: -0.008em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     transition: color 0.2s ease;
 }
@@ -334,7 +318,6 @@ body {
     width: 99px;
     height: 40px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -354,7 +337,6 @@ body {
     background: transparent;
     cursor: pointer;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -370,7 +352,6 @@ body {
     letter-spacing: -0.006em;
     color: #ffffff;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -382,11 +363,10 @@ body {
     align-items: center;
     padding: 0px 54px;
     gap: 10px;
-    width: 1440px;
+    width: 100vw;
     height: 62px;
     background: #fdb831;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -413,7 +393,6 @@ body {
     letter-spacing: -0.007em;
     color: #0c0e0f;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -432,7 +411,6 @@ body {
     border: none;
     cursor: pointer;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -447,7 +425,6 @@ body {
     letter-spacing: -0.006em;
     color: #ffffff;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -455,7 +432,6 @@ body {
     width: 20px;
     height: 20px;
     flex: none;
-    order: 2;
     flex-grow: 0;
 }
 
@@ -470,7 +446,7 @@ body {
     justify-content: flex-end;
     align-items: center;
     padding: 0px;
-    width: 1440px;
+    width: 100vw;
     height: 796px;
     background: linear-gradient(
         180deg,
@@ -478,7 +454,6 @@ body {
         rgba(0, 0, 0, 0.6) 61.53%
     );
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     position: relative;
@@ -493,10 +468,9 @@ body {
     flex-direction: column;
     align-items: flex-start;
     padding: 0px;
-    width: 1440px;
+    width: 100vw;
     height: 796px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 1;
     position: relative;
@@ -557,7 +531,6 @@ body {
     width: 1305.83px;
     height: 136px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     margin-bottom: 58px; /* 47px (gap) + 11px (altura de dots) */
 }
@@ -578,7 +551,6 @@ body {
     z-index: 2;
     pointer-events: none;
     flex: none;
-    order: 0;
     flex-grow: 0;
     box-sizing: border-box;
     margin: 0;
@@ -601,7 +573,6 @@ body {
     border: none;
     cursor: pointer;
     flex: none;
-    order: 0;
     flex-grow: 0;
     pointer-events: all;
     transition: opacity 0.3s ease;
@@ -631,7 +602,6 @@ body {
     border: none;
     cursor: pointer;
     flex: none;
-    order: 1;
     flex-grow: 0;
     pointer-events: all;
     transition: opacity 0.3s ease;
@@ -645,7 +615,6 @@ body {
     width: 52px;
     height: 52px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     position: relative;
 }
@@ -671,7 +640,6 @@ body {
     transform: translateX(-50%);
     z-index: 3;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     pointer-events: none;
@@ -688,7 +656,6 @@ body {
     width: 1305.83px;
     height: 136px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     position: relative;
 }
@@ -704,7 +671,6 @@ body {
     letter-spacing: -0.018em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     margin: 0;
     position: absolute;
@@ -727,7 +693,6 @@ body {
     width: 343px;
     height: 11px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -761,12 +726,11 @@ body {
     align-items: center;
     padding: 80px 64px;
     gap: 24px;
-    width: 1440px;
+    width: 100vw;
     height: 736px;
     background: #ffffff;
     border-radius: 0px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     position: relative;
@@ -785,20 +749,19 @@ body {
     letter-spacing: -0.018em;
     color: #171d21;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
 .brands-grid {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 24px;
-    width: 1312px;
-    height: 465px;
-    flex: none;
-    order: 1;
-    align-self: stretch;
-    flex-grow: 0;
+    width: 100%;
+    max-width: 12oopx;
+    margin: 0 auto;
 }
 
 .brands-row {
@@ -811,7 +774,6 @@ body {
     width: 1312px;
     height: 146px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -821,7 +783,6 @@ body {
     height: 146px;
     background: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     display: flex;
     justify-content: center;
@@ -839,17 +800,15 @@ body {
 .quote-section {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
     padding: 80px 82px;
     gap: 24px;
-    width: 1440px;
-    height: 495px;
+    width: 100%;
     background: #000000;
     flex: none;
-    order: 2;
     flex-grow: 0;
     position: relative;
-    z-index: 1;
 }
 
 .quote-column {
@@ -864,14 +823,12 @@ body {
 .quote-column:first-child {
     width: 661px;
     height: 240px;
-    order: 0;
 }
 
 .quote-column:last-child {
     width: 591px;
     height: 144px;
     gap: 32px;
-    order: 1;
 }
 
 .quote-headline {
@@ -885,7 +842,6 @@ body {
     letter-spacing: -0.02em;
     color: #ffffff;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -902,7 +858,6 @@ body {
     letter-spacing: -0.008em;
     color: #ffffff;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -918,7 +873,6 @@ body {
     width: 254px;
     height: 40px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -943,20 +897,24 @@ body {
 }
 
 .quote-button-primary {
-    width: 117px;
     height: 40px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: #fdb831;
     color: #171d21;
-    order: 0;
 }
 
 .quote-button-secondary {
-    width: 121px;
     height: 40px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid #ffffff;
     background: transparent;
     color: #ffffff;
-    order: 1;
 }
 
 /* Frame 55 - Sección de 3 pasos */
@@ -966,14 +924,12 @@ body {
     align-items: center;
     padding: 112px 64px;
     gap: 80px;
-    width: 1440px;
+    width: 100vw;
     height: 1145.82px;
     background: #fdb831;
     flex: none;
-    order: 3;
     flex-grow: 0;
     position: relative;
-    z-index: 1;
 }
 
 .steps-content {
@@ -985,7 +941,6 @@ body {
     width: 1119px;
     height: 433.82px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -995,7 +950,6 @@ body {
     background: url(.png);
     border-radius: 0px 271.403px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     overflow: hidden;
 }
@@ -1008,7 +962,6 @@ body {
 
 .steps-text {
     flex: 1;
-    order: 1;
 }
 
 .steps-heading {
@@ -1022,7 +975,6 @@ body {
     letter-spacing: -0.018em;
     color: #0c0e0f;
     flex: none;
-    order: 1;
     flex-grow: 1;
     margin: 0;
 }
@@ -1037,7 +989,6 @@ body {
     width: 1312px;
     height: 408px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1051,7 +1002,6 @@ body {
     width: 416px;
     height: 404px;
     flex: none;
-    order: 0;
     flex-grow: 1;
 }
 
@@ -1059,7 +1009,6 @@ body {
     width: 92px;
     height: 92px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     display: flex;
     justify-content: center;
@@ -1075,7 +1024,6 @@ body {
     width: 416px;
     height: 260px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1092,7 +1040,6 @@ body {
     letter-spacing: -0.012em;
     color: #0c0e0f;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -1110,7 +1057,6 @@ body {
     letter-spacing: -0.01em;
     color: #0c0e0f;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -1128,11 +1074,10 @@ body {
     height: 454px;
     background: #0c0e0f;
     flex: none;
-    order: 4;
     align-self: stretch;
     flex-grow: 0;
     position: relative;
-    z-index: 1;
+    /* z-index: 1; */
 }
 
 .systems-main-heading {
@@ -1146,7 +1091,6 @@ body {
     letter-spacing: -0.02em;
     color: #ffffff;
     flex: none;
-    order: 0;
     flex-grow: 0;
     margin: 0;
 }
@@ -1161,7 +1105,6 @@ body {
     width: 1440px;
     height: 3593px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     position: relative;
@@ -1220,7 +1163,6 @@ body {
     line-height: 120%;
     color: #000000;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -1245,7 +1187,6 @@ body {
     letter-spacing: -0.008em;
     color: #000000;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -1283,7 +1224,6 @@ body {
     height: 577px;
     background: #000000;
     flex: none;
-    order: 5;
     align-self: stretch;
     flex-grow: 0;
     position: relative;
@@ -1298,7 +1238,6 @@ body {
     width: 1440px;
     height: 470px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1312,7 +1251,6 @@ body {
     width: 1332px;
     height: 282px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1326,7 +1264,6 @@ body {
     width: 1332px;
     height: 282px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1346,7 +1283,6 @@ body {
     backdrop-filter: blur(7.4px);
     border-radius: 12px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1363,7 +1299,6 @@ body {
     letter-spacing: -0.014em;
     color: #9ea9ad;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -1377,7 +1312,6 @@ body {
     width: 246px;
     height: 29px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -1391,7 +1325,6 @@ body {
     width: 246px;
     height: 20px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1416,7 +1349,6 @@ body {
     height: 1px;
     background: #6f7b7f;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1430,7 +1362,6 @@ body {
     width: 190px;
     height: 270px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -1446,7 +1377,6 @@ body {
     text-transform: uppercase;
     color: #f3f6f6;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 0;
     margin: 0;
@@ -1462,7 +1392,6 @@ body {
     width: 190px;
     height: 204px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     list-style: none;
@@ -1496,7 +1425,6 @@ body {
     width: 479px;
     height: 282px;
     flex: none;
-    order: 2;
     flex-grow: 0;
 }
 
@@ -1521,7 +1449,6 @@ body {
     letter-spacing: -0.006em;
     color: #000000;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -1534,7 +1461,6 @@ body {
     width: 479px;
     height: 48px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
 }
@@ -1548,7 +1474,6 @@ body {
     width: 186px;
     height: 48px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -1564,7 +1489,6 @@ body {
     text-transform: uppercase;
     color: #9ea9ad;
     flex: none;
-    order: 0;
     flex-grow: 0;
     margin: 0;
 }
@@ -1580,7 +1504,6 @@ body {
     letter-spacing: -0.007em;
     color: #ffffff;
     flex: none;
-    order: 1;
     flex-grow: 0;
     margin: 0;
 }
@@ -1594,7 +1517,6 @@ body {
     width: 341px;
     height: 48px;
     flex: none;
-    order: 2;
     flex-grow: 0;
 }
 
@@ -1612,7 +1534,6 @@ body {
     width: 1332px;
     height: 136px;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     margin: 0 auto;
@@ -1628,7 +1549,6 @@ body {
     width: 228px;
     height: 88px;
     flex: none;
-    order: 0;
     flex-grow: 0;
 }
 
@@ -1644,7 +1564,6 @@ body {
     border: 1px solid #ffffff;
     border-radius: 40px;
     flex: none;
-    order: 0;
     flex-grow: 0;
     text-decoration: none;
 }
@@ -1663,7 +1582,6 @@ body {
     background: transparent;
     cursor: pointer;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 
@@ -1678,7 +1596,6 @@ body {
     height: 53px;
     background: #0c0e0f;
     flex: none;
-    order: 1;
     align-self: stretch;
     flex-grow: 0;
     margin: 0 auto;
@@ -1694,7 +1611,6 @@ body {
     width: 1332px;
     height: 53px;
     flex: none;
-    order: 0;
     align-self: stretch;
     flex-grow: 1;
 }
@@ -1710,7 +1626,6 @@ body {
     line-height: 150%;
     color: #fdb831;
     flex: none;
-    order: 0;
     flex-grow: 0;
     margin: 0;
 }
@@ -1725,7 +1640,6 @@ body {
     width: 470px;
     height: 21px;
     flex: none;
-    order: 1;
     flex-grow: 0;
 }
 

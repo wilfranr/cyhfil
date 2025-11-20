@@ -10,23 +10,17 @@
     </div>
     <div class="steps-grid">
         <div class="step-item">
-            <div class="step-icon">
-                <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- AppWindow icon -->
-                    <rect x="9" y="9" width="74" height="74" stroke="#0C0E0F" stroke-width="2"/>
-                </svg>
-            </div>
             <div class="step-content">
                 <h3 class="step-title">Paso 1 Cotizar</h3>
+            </div>
+            <div class="step-icon">
+                <img src="{{ asset('images/icons/icon-card.svg') }}" alt="Cotizar" width="92" height="92">
                 <p class="step-description">Proceso rápido y eficiente para tus necesidades de maquinaria pesada</p>
             </div>
         </div>
         <div class="step-item">
             <div class="step-icon">
-                <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- HandPointing icon -->
-                    <path d="M46 12L46 80M12 46L80 46" stroke="#0C0E0F" stroke-width="2"/>
-                </svg>
+                <img src="{{ asset('images/icons/icon-hand.svg') }}" alt="Seleccionar" width="92" height="92">
             </div>
             <div class="step-content">
                 <h3 class="step-title">Paso 2 Seleccionar</h3>
@@ -35,10 +29,7 @@
         </div>
         <div class="step-item">
             <div class="step-icon">
-                <svg width="92" height="92" viewBox="0 0 92 92" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- PaperPlaneTilt icon -->
-                    <path d="M12 46L80 46M46 12L46 80" stroke="#0C0E0F" stroke-width="2"/>
-                </svg>
+                <img src="{{ asset('images/icons/icon-send.svg') }}" alt="Enviar" width="92" height="92">
             </div>
             <div class="step-content">
                 <h3 class="step-title">Paso 3 Enviar</h3>

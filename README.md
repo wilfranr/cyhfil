@@ -19,13 +19,31 @@ Aplicación de gestión de inventario, pedidos y cotizaciones desarrollada con L
 
 ## Instalación
 
+### Opción Rápida (Recomendada)
+
+Ejecuta el script de instalación automatizada:
+
+```bash
+./scripts/instalar_local.sh
+```
+
+### Instalación Manual
+
 1. Clonar el repositorio.
 2. Copiar `.env.example` a `.env` y ajustar las variables de entorno.
 3. Ejecutar `composer install` para instalar las dependencias de PHP.
 4. Ejecutar `npm install` para las dependencias de JavaScript.
 5. Generar la clave de la aplicación con `php artisan key:generate`.
-6. Ejecutar las migraciones con `php artisan migrate`.
-7. Levantar el entorno de desarrollo con `npm run dev`.
+6. Configurar la base de datos MySQL y crear la base de datos.
+7. Ejecutar las migraciones con `php artisan migrate`.
+8. Crear enlace simbólico con `php artisan storage:link`.
+9. En una terminal, levantar el entorno de desarrollo con `npm run dev`.
+10. En otra terminal, iniciar el servidor con `php artisan serve`.
+
+### Documentación Detallada
+
+- **Guía completa**: Ver `GUIA_INSTALACION.md`
+- **Inicio rápido**: Ver `INICIO_RAPIDO.md`
 
 ## Documentación del código
 

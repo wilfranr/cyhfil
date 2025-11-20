@@ -6,7 +6,7 @@
     <div class="quote-column">
         <p class="quote-description">Solicita tu cotización en línea de manera rápida y sencilla. Nuestro equipo te responderá con los mejores precios del mercado.</p>
         <div class="quote-actions">
-            <button class="quote-button quote-button-primary">Cotizar</button>
+            <button class="quote-button quote-button-primary">Cotizar ahora</button>
             <button class="quote-button quote-button-secondary">Aprender más</button>
         </div>
     </div>
