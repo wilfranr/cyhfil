@@ -7,7 +7,7 @@
 
 body {
     font-family:
-        "Figtree"-apple-system,
+        "Figtree" -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         Roboto,
@@ -470,11 +470,9 @@ body {
     padding: 0px;
     width: 1440px;
     height: 796px;
-    background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.6) 61.53%
-    );
+    background: linear-gradient(180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.6) 61.53%);
     flex: none;
     order: 0;
     align-self: stretch;
@@ -557,7 +555,8 @@ body {
     flex: none;
     order: 0;
     flex-grow: 0;
-    margin-bottom: 58px; /* 47px (gap) + 11px (altura de dots) */
+    margin-bottom: 58px;
+    /* 47px (gap) + 11px (altura de dots) */
 }
 
 /* Frame 60 - Controles de navegación */
@@ -1080,8 +1079,22 @@ body {
 }
 
 .step-title {
-    width: 405px;
-    height: 64px;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 56px;
+    text-align: center;
+    letter-spacing: -0.016em;
+    color: #0c0e0f;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    margin: 0;
+    min-height: 112px;
+}
+
+.step-description {
     font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 700;
@@ -1091,15 +1104,13 @@ body {
     letter-spacing: -0.012em;
     color: #0c0e0f;
     flex: none;
-    order: 0;
-    align-self: stretch;
+    order: 1;
     flex-grow: 0;
     margin: 0;
+    height: 64px;
 }
 
-.step-description {
-    width: 405px;
-    height: 56px;
+.step-supporting-text {
     font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 400;
@@ -1109,10 +1120,10 @@ body {
     letter-spacing: -0.01em;
     color: #0c0e0f;
     flex: none;
-    order: 1;
-    align-self: stretch;
+    order: 2;
     flex-grow: 0;
     margin: 0;
+    height: 56px;
 }
 
 /* Header / 46 / - Sección de sistemas */
@@ -1659,8 +1670,12 @@ body {
     height: 88px;
     border: 1px solid #ffffff;
     border-radius: 88px;
-    background: transparent;
+    background: #0c0e0f;
     cursor: pointer;
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 1000;
     flex: none;
     order: 1;
     flex-grow: 0;
@@ -1749,4 +1764,402 @@ body {
     opacity: 0.6;
     border: 1px solid #b2b1aa;
     display: inline-block;
+}
+
+/* ============================================
+   MENÚ DESPLEGABLE - NUESTROS PRODUCTOS
+   ============================================ */
+
+/* Contenedor del trigger */
+.navbar-link-frame.dropdown-trigger {
+    position: relative;
+}
+
+/* Menú desplegable principal */
+.dropdown-menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 134px;
+    margin-top: -134px;
+    position: absolute;
+    width: 100vw;
+    max-width: 1440px;
+    height: 477px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0px;
+    background: transparent;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Contenedor visible del menú */
+.dropdown-main-content {
+    pointer-events: all;
+    background: #FFFFFF;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 134px;
+}
+
+/* Mostrar el menú cuando el trigger o el menú tienen hover */
+.dropdown-trigger:hover .dropdown-menu,
+.dropdown-menu:hover {
+    display: flex;
+    pointer-events: all;
+}
+
+/* Frame 6 - Contenido principal */
+.dropdown-main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 12px 0px 0px;
+    width: 100%;
+    height: 343px;
+    background: #FFFFFF;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Menu - Sidebar izquierdo */
+.dropdown-menu-sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 24px 52px;
+    gap: 32px;
+    width: 318px;
+    height: 343px;
+    background: #0C0E0F;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-menu-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 16px;
+    width: 214px;
+    height: 274px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.dropdown-menu-title {
+    width: 214px;
+    height: 18px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 18px;
+    letter-spacing: -0.008em;
+    color: #FDB831;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-menu-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 214px;
+    height: 240px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    list-style: none;
+    margin: 0;
+    gap: 0;
+}
+
+.dropdown-menu-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 10px;
+    gap: 10px;
+    width: 214px;
+    height: 48px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-menu-item.active {
+    background: #FDB831;
+    border-radius: 6px;
+}
+
+.dropdown-menu-link {
+    width: auto;
+    height: 20px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    text-decoration: none;
+}
+
+.dropdown-menu-item.active .dropdown-menu-link {
+    color: #0C0E0F;
+}
+
+.dropdown-menu-item:not(.active) .dropdown-menu-link {
+    color: #FFFFFF;
+}
+
+/* Frame 10 - Contenido de artículos */
+.dropdown-articles-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 12px;
+    width: 1110px;
+    height: 343px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    position: relative;
+}
+
+.dropdown-articles-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px 0px 24px;
+    gap: 10px;
+    width: 1110px;
+    height: 343px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+/* Mostrar el primer contenido por defecto */
+.category-content[data-category="motores"] {
+    display: flex !important;
+}
+
+/* Ocultar todos los demás contenidos por defecto */
+.category-content:not([data-category="motores"]) {
+    display: none !important;
+}
+
+.dropdown-articles-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px 64px 0px 24px;
+    gap: 12px;
+    width: 1110px;
+    height: 319px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 10px;
+    width: 1022px;
+    height: 43px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-title {
+    width: 1022px;
+    height: 22px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #0C0E0F;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.dropdown-articles-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+    width: 1022px;
+    height: 276px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 507px;
+    height: 276px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.dropdown-blog-item {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 24px;
+    width: 507px;
+    height: 134px;
+    border: 1px solid rgba(209, 216, 218, 0.2);
+    border-radius: 12px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-blog-image {
+    width: 167.62px;
+    height: 110px;
+    background: #E5E5E5;
+    border-radius: 12px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.dropdown-blog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 291.38px;
+    height: 106px;
+    flex: none;
+    order: 1;
+    flex-grow: 1;
+}
+
+.dropdown-blog-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 4px;
+    width: 291.38px;
+    height: 66px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-blog-title {
+    width: 291.38px;
+    height: 22px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #0C0E0F;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-blog-description {
+    width: 291.38px;
+    height: 40px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    color: #0C0E0F;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-blog-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 8px;
+    width: 114px;
+    height: 32px;
+    background: #FDB831;
+    border-radius: 64px;
+    border: none;
+    cursor: pointer;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.dropdown-blog-button .dropdown-button-text {
+    width: 66px;
+    height: 20px;
+    color: #0C0E0F;
+    font-size: 14px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+}
+
+.dropdown-arrow-icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
 }

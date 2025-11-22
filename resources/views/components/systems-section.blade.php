@@ -9,23 +9,23 @@
     <div class="system-item system-item-yellow">
         <div class="system-content">
             <h3 class="system-title">Trenes de rodaje</h3>
-            <p class="system-description">Proporcionamos componentes esenciales para el sistema de rodaje, garantizando durabilidad y rendimiento óptimo en condiciones extremas.</p>
-            <p class="system-description">Nuestro catálogo incluye cadenas, eslabones, rodillos y todos los elementos necesarios para mantener su maquinaria en perfecto estado.</p>
+            <p class="system-description">Ofrecemos soluciones completas para los trenes de rodaje de maquinaria pesada, componentes cruciales para la movilidad y estabilidad de los equipos en terrenos difíciles. Nos especializamos en la importación express de piezas de alta calidad, como cadenas, rodillos, zapatas, tensores y rieles, para garantizar el rendimiento y la durabilidad de la maquinaria. </p>
+            <p class="system-description">Con un catálogo extenso que cubre los trenes de rodaje de las principales marcas del mercado, proporcionamos a nuestros clientes las mejores opciones para mantener sus equipos operando de manera eficiente, incluso en las condiciones más exigentes.</p>
         </div>
         <div class="system-image">
-            <img src="{{ asset('images/trenes-rodaje.jpg') }}" alt="Trenes de rodaje">
+            <img src="{{ asset('images/trenes-rodaje.png') }}" alt="Trenes de rodaje">
         </div>
     </div>
 
     <!-- Sistema eléctrico - Negro -->
     <div class="system-item system-item-black">
         <div class="system-image">
-            <img src="{{ asset('images/sistema-electrico.jpg') }}" alt="Sistema eléctrico">
+            <img src="{{ asset('images/sistema-electrico.png') }}" alt="Sistema eléctrico">
         </div>
         <div class="system-content">
             <h3 class="system-title system-title-yellow">Sistema eléctrico</h3>
-            <p class="system-description">Ofrecemos una amplia gama de componentes eléctricos para maquinaria pesada, desde alternadores hasta sistemas de iluminación.</p>
-            <p class="system-description">Todos nuestros productos cumplen con los más altos estándares de calidad y seguridad para garantizar un funcionamiento confiable.</p>
+            <p class="system-description">Ofrecemos una amplia gama de piezas y soluciones para el sistema eléctrico de maquinaria pesada, fundamentales para asegurar su funcionamiento óptimo. Nos especializamos en la importación express de componentes eléctricos de alta calidad, incluyendo alternadores, motores eléctricos, cables, sensores y sistemas de control. </p>
+            <p class="system-description">Contamos con un catálogo completo que abarca los sistemas eléctricos de las principales marcas de maquinaria, ayudando a nuestros clientes a encontrar las piezas correctas para garantizar la eficiencia y durabilidad de sus equipos en el campo de la construcción y minería.</p>
         </div>
     </div>
 
@@ -33,36 +33,42 @@
     <div class="system-item system-item-yellow">
         <div class="system-content">
             <h3 class="system-title">Herramienta de corte</h3>
-            <p class="system-description">Suministramos herramientas de corte de alta calidad para diversas aplicaciones en maquinaria pesada y construcción.</p>
-            <p class="system-description">Nuestros productos están diseñados para ofrecer máxima eficiencia y vida útil en los trabajos más exigentes.</p>
+            <p class="system-description">Nos especializamos en la importación express de herramientas de corte para maquinaria pesada, esenciales para mantener la productividad en la construcción y minería. </p>
+            <p class="system-description">Ofrecemos una amplia variedad de piezas de alta calidad, incluyendo cuchillas, dientes de excavadora, garfios y otros componentes de corte, diseñados para proporcionar un rendimiento duradero y eficiente. Nuestro catálogo incluye herramientas compatibles con las principales marcas de maquinaria pesada, asegurando que nuestros clientes tengan acceso a las mejores opciones para optimizar el rendimiento y la eficiencia de sus equipos de trabajo.</p>
         </div>
         <div class="system-image">
-            <img src="{{ asset('images/herramienta-corte.jpg') }}" alt="Herramienta de corte">
+            <img src="{{ asset('images/herramienta-corte.png') }}" alt="Herramienta de corte">
         </div>
     </div>
 
-    <!-- Sistema hidráulico - Negro -->
-    <div class="system-item system-item-black">
-        <div class="system-image">
-            <img src="{{ asset('images/sistema-hidraulico.jpg') }}" alt="Sistema hidráulico">
-        </div>
-        <div class="system-content">
-            <h3 class="system-title system-title-yellow">Sistema hidráulico</h3>
-            <p class="system-description">Proveemos componentes hidráulicos esenciales como bombas, válvulas, cilindros y mangueras de alta presión.</p>
-            <p class="system-description">Nuestros sistemas hidráulicos están diseñados para soportar las condiciones más adversas y garantizar un rendimiento óptimo.</p>
+<section class="machinery-showcase">
+
+    <div class="machinery-showcase__panel machinery-showcase__panel--dark">
+        <div class="machinery-showcase__content">
+            <img src="{{ asset('images/motor.png') }}" alt="Motor Caterpillar" class="machinery-showcase__img">
+
+            <h2 class="machinery-showcase__title">Motor</h2>
+
+            <div class="machinery-showcase__body">
+                <p>En Heavymarket, nos especializamos en la importación y distribución de piezas para maquinaria pesada, cubriendo todos los sistemas esenciales, incluyendo el motor. Nuestra experiencia en importación express desde cualquier parte del mundo nos permite ofrecer piezas de alta calidad y precisión, adaptadas a las necesidades específicas de la construcción y la minería.</p>
+                <p>Con un extenso catálogo de partes y accesorios para motores y otros componentes clave como el sistema hidráulico, eléctrico, y trenes de rodaje, proporcionamos a nuestros clientes las soluciones más eficaces y rápidas para mantener su maquinaria en óptimas condiciones.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Motor - Negro -->
-    <div class="system-item system-item-black system-item-motor">
-        <div class="system-content">
-            <h3 class="system-title system-title-yellow">Motor</h3>
-            <p class="system-description">Ofrecemos repuestos y componentes para motores de maquinaria pesada, incluyendo filtros, correas, bujías y sistemas de refrigeración.</p>
-            <p class="system-description">Trabajamos con las mejores marcas para asegurar que su maquinaria funcione al máximo rendimiento.</p>
-        </div>
-        <div class="system-image">
-            <img src="{{ asset('images/motor.jpg') }}" alt="Motor">
+    <div class="machinery-showcase__panel machinery-showcase__panel--slate">
+        <div class="machinery-showcase__content">
+            <h2 class="machinery-showcase__title">Sistema hidráulico</h2>
+
+            <div class="machinery-showcase__body">
+                <p>Ofrecemos piezas y soluciones para el sistema hidráulico de maquinaria pesada, esenciales para garantizar el rendimiento y la eficiencia de equipos en la construcción y minería. Nos especializamos en la importación express de componentes hidráulicos de alta calidad, que incluyen bombas, válvulas, mangueras y filtros, entre otros.</p>
+                <p>Nuestro catálogo abarca las principales marcas y tipos de maquinaria, facilitando a nuestros clientes la identificación y adquisición de las partes adecuadas para mantener sus sistemas hidráulicos funcionando sin problemas y con la máxima fiabilidad.</p>
+            </div>
+
+            <img src="{{ asset('images/hidraulico.png') }}" alt="Sistema Hidráulico" class="machinery-showcase__img machinery-showcase__img--bottom">
         </div>
     </div>
+
+</section>
 </div>
 

@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Response;
 Route::get('/', function () {
     return view('landing');
 });
+
+Route::get('/productos', function () {
+    return view('products');
+})->name('productos');
+
+Route::get('/productos/{slug}', function ($slug) {
+    return view('product-detail', ['slug' => $slug]);
+})->name('producto.detalle');
+Route::get('/cotizar', function () {
+    return view('cotizar');
+})->name('cotizar');
 Route::post('/chat/send', [ChatController::class, 'sendMessage']);
 Route::middleware('auth')->get('/chat/messages', [ChatController::class, 'fetchMessages']);
 
@@ -51,3 +62,4 @@ Route::get('storage/{path}', function ($path) {
 
     return $response;
 })->where('path', '.*');
+Route::get('/cotizar-test', function () { return view('cotizar-test'); });

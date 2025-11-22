@@ -52,19 +52,13 @@
     <div class="footer-bottom">
         <div class="footer-socials">
             <a href="#" class="social-link">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 0C3.13 0 0 3.13 0 7C0 10.87 3.13 14 7 14C10.87 14 14 10.87 14 7C14 3.13 10.87 0 7 0Z" fill="#FFFFFF"/>
-                </svg>
+                <img src="{{ asset('images/icons/icon-facebook.svg') }}" alt="Facebook">
             </a>
             <a href="#" class="social-link">
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 0H18V12H0V0Z" fill="#FFFFFF"/>
-                </svg>
+                <img src="{{ asset('images/icons/icon-youtube.svg') }}" alt="YouTube">
             </a>
-            <button class="scroll-up-button">
-                <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0L12 32M0 16L24 16" stroke="#FFFFFF" stroke-width="2"/>
-                </svg>
+            <button class="scroll-up-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <img src="{{ asset('images/icons/icon-scroll-up.svg') }}" alt="Scroll Up">
             </button>
         </div>
     </div>

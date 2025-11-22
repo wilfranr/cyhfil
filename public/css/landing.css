@@ -146,6 +146,20 @@ body {
     flex-grow: 0;
 }
 
+/* Ajuste para split button wrapper */
+.navbar-link-frame.split-btn-wrapper {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 0;
+    width: auto;
+    height: 44px;
+    flex: none;
+    flex-grow: 0;
+}
+
 /* Frame 12 - Segundo enlace */
 .navbar-link-frame:nth-child(2) {
     display: flex;
@@ -448,11 +462,9 @@ body {
     padding: 0px;
     width: 100vw;
     height: 796px;
-    background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.6) 61.53%
-    );
+    background: linear-gradient(180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.6) 61.53%);
     flex: none;
     align-self: stretch;
     flex-grow: 0;
@@ -532,7 +544,8 @@ body {
     height: 136px;
     flex: none;
     flex-grow: 0;
-    margin-bottom: 58px; /* 47px (gap) + 11px (altura de dots) */
+    margin-bottom: 58px;
+    /* 47px (gap) + 11px (altura de dots) */
 }
 
 /* Frame 60 - Controles de navegación */
@@ -922,14 +935,28 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 112px 64px;
-    gap: 80px;
+    gap: 0;
     width: 100vw;
-    height: 1145.82px;
+    min-height: auto;
     background: #fdb831;
     flex: none;
     flex-grow: 0;
     position: relative;
+}
+
+.steps-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 80px;
+    width: 100%;
+    max-width: 1312px;
+    flex: none;
+    flex-grow: 0;
 }
 
 .steps-content {
@@ -941,27 +968,20 @@ body {
     width: 1119px;
     height: 433.82px;
     flex: none;
+    order: 0;
     flex-grow: 0;
 }
 
 .steps-image {
     width: 499.55px;
     height: 433.82px;
-    background: url(.png);
+    background: url("/images/steps-image.png");
     border-radius: 0px 271.403px;
     flex: none;
+    order: 0;
     flex-grow: 0;
     overflow: hidden;
-}
-
-.steps-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.steps-text {
-    flex: 1;
+    margin-bottom: 80px;
 }
 
 .steps-heading {
@@ -975,22 +995,9 @@ body {
     letter-spacing: -0.018em;
     color: #0c0e0f;
     flex: none;
+    order: 1;
     flex-grow: 1;
     margin: 0;
-}
-
-.steps-grid {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 0px;
-    gap: 32px;
-    width: 1312px;
-    height: 408px;
-    flex: none;
-    align-self: stretch;
-    flex-grow: 0;
 }
 
 .step-item {
@@ -998,11 +1005,25 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 0px;
-    gap: 32px;
-    width: 416px;
-    height: 404px;
+    gap: 24px;
+    width: 100%;
+    max-width: 400px;
+    flex: 1;
+}
+
+.step-title {
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 56px;
+    text-align: center;
+    letter-spacing: -0.016em;
+    color: #0c0e0f;
     flex: none;
-    flex-grow: 1;
+    flex-grow: 0;
+    margin: 0;
+    min-height: 112px;
 }
 
 .step-icon {
@@ -1013,24 +1034,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 8px;
 }
 
-.step-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0px;
-    gap: 24px;
-    width: 416px;
-    height: 260px;
-    flex: none;
-    align-self: stretch;
-    flex-grow: 0;
+.step-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.step-title {
-    width: 405px;
-    height: 64px;
+.step-description {
     font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 700;
@@ -1040,14 +1053,12 @@ body {
     letter-spacing: -0.012em;
     color: #0c0e0f;
     flex: none;
-    align-self: stretch;
     flex-grow: 0;
     margin: 0;
+    height: 64px;
 }
 
-.step-description {
-    width: 405px;
-    height: 56px;
+.step-supporting-text {
     font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 400;
@@ -1057,9 +1068,10 @@ body {
     letter-spacing: -0.01em;
     color: #0c0e0f;
     flex: none;
-    align-self: stretch;
     flex-grow: 0;
     margin: 0;
+    opacity: 0.9;
+    height: 56px;
 }
 
 /* Header / 46 / - Sección de sistemas */
@@ -1070,7 +1082,7 @@ body {
     align-items: center;
     padding: 0px 64px;
     gap: 10px;
-    width: 1440px;
+    width: 100vw;
     height: 454px;
     background: #0c0e0f;
     flex: none;
@@ -1103,7 +1115,7 @@ body {
     align-items: flex-start;
     padding: 0px;
     width: 1440px;
-    height: 3593px;
+    /* height: 3593px; */
     flex: none;
     align-self: stretch;
     flex-grow: 0;
@@ -1116,9 +1128,9 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 200px 150px;
+    padding: 200px 286px;
     gap: 80px;
-    width: 1440px;
+    width: 100vw;
     height: 786px;
     flex: none;
     align-self: stretch;
@@ -1178,7 +1190,6 @@ body {
 
 .system-description {
     width: 530px;
-    height: 264px;
     font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 400;
@@ -1214,13 +1225,106 @@ body {
     object-fit: cover;
 }
 
+/* BLOQUE PRINCIPAL */
+.machinery-showcase {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100vw;
+    min-height: 100vh;
+}
+
+/* ELEMENTO: PANEL (Columna) */
+.machinery-showcase__panel {
+    flex: 1;
+    min-width: 350px;
+    /* Punto de quiebre para móviles */
+    padding: 5rem 4rem;
+    /* Padding generoso */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e0e0e0;
+}
+
+/* MODIFICADORES DE PANEL (Colores de fondo) */
+.machinery-showcase__panel--dark {
+    background-color: #000000;
+}
+
+.machinery-showcase__panel--slate {
+    background-color: #171d21;
+    /* El gris azulado específico */
+}
+
+/* ELEMENTO: WRAPPER DE CONTENIDO (Para limitar el ancho) */
+.machinery-showcase__content {
+    max-width: 480px;
+    width: 100%;
+}
+
+/* ELEMENTO: TÍTULO */
+.machinery-showcase__title {
+    color: #ffa500;
+    /* O el color exacto naranja de la marca */
+    font-size: 2.25rem;
+    /* approx 36px */
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+/* ELEMENTO: CUERPO DE TEXTO */
+.machinery-showcase__body p {
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+    font-size: 1rem;
+    color: #cfcfcf;
+    /* Un gris muy suave para lectura */
+}
+
+/* ELEMENTO: IMAGEN */
+.machinery-showcase__img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 30px;
+    /* Radio de borde pronunciado */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    /* Sombra sutil */
+    margin-bottom: 2.5rem;
+    display: block;
+}
+
+/* MODIFICADOR DE IMAGEN (Para cuando va abajo) */
+.machinery-showcase__img--bottom {
+    margin-bottom: 0;
+    margin-top: 2.5rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .machinery-showcase {
+        flex-direction: column;
+    }
+
+    .machinery-showcase__panel {
+        padding: 3rem 1.5rem;
+        min-height: auto;
+    }
+
+    .machinery-showcase__title {
+        font-size: 1.75rem;
+    }
+}
+
 /* Frame 289 - Footer */
 .footer-section {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 54px 0px 0px;
-    width: 1440px;
+    width: 100vw;
     height: 577px;
     background: #000000;
     flex: none;
@@ -1236,9 +1340,8 @@ body {
     align-items: flex-end;
     padding: 52px 54px 0px;
     width: 1440px;
-    height: 470px;
+    height: 270px;
     flex: none;
-    align-self: stretch;
     flex-grow: 0;
 }
 
@@ -1579,10 +1682,12 @@ body {
     height: 88px;
     border: 1px solid #ffffff;
     border-radius: 88px;
-    background: transparent;
+    background: #0c0e0f;
     cursor: pointer;
-    flex: none;
-    flex-grow: 0;
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 1000;
 }
 
 .footer-credits {
@@ -1664,4 +1769,503 @@ body {
     opacity: 0.6;
     border: 1px solid #b2b1aa;
     display: inline-block;
+}
+
+/* ============================================
+   MENÚ DESPLEGABLE - NUESTROS PRODUCTOS
+   ============================================ */
+
+/* Split Button Wrapper */
+.split-btn-wrapper {
+    display: inline-flex;
+    position: relative;
+    vertical-align: middle;
+    align-items: center;
+    height: 44px;
+    flex-direction: row;
+}
+
+/* Estilos compartidos para ambas partes del split button */
+.split-btn__link,
+.split-btn__trigger {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    height: 24px;
+    padding: 0;
+}
+
+/* Parte Izquierda (Link) */
+.split-btn__link {
+    padding-right: 6px;
+}
+
+.split-btn__link .link-text {
+    width: auto;
+    height: 24px;
+    color: #ffffff;
+    transition: color 0.2s ease;
+    flex: none;
+    flex-grow: 0;
+}
+
+.split-btn__link:hover .link-text {
+    color: #fdb831;
+}
+
+/* Parte Derecha (Flecha) */
+.split-btn__trigger {
+    padding-left: 6px;
+    padding-right: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 24px;
+    margin-left: 4px;
+}
+
+.split-btn__trigger .arrow {
+    color: #ffffff;
+    font-size: 10px;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.split-btn__trigger:hover .arrow {
+    color: #fdb831;
+}
+
+/* Rotar flecha cuando el menú está activo */
+.split-btn-wrapper .dropdown-menu.active ~ * .split-btn__trigger .arrow,
+.split-btn-wrapper:hover .split-btn__trigger .arrow {
+    transform: rotate(180deg);
+}
+
+/* Alternativa: usar clase en el wrapper cuando el menú está activo */
+.split-btn-wrapper.menu-active .split-btn__trigger .arrow {
+    transform: rotate(180deg);
+}
+
+/* Efecto hover unificado en el wrapper */
+.split-btn-wrapper:hover .split-btn__link .link-text,
+.split-btn-wrapper:hover .split-btn__trigger .arrow {
+    color: #fdb831;
+}
+
+/* Contenedor del trigger (mantener para compatibilidad) */
+.navbar-link-frame.dropdown-trigger {
+    position: relative;
+}
+
+/* Menú desplegable principal */
+.dropdown-menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 134px;
+    margin-top: -134px;
+    position: absolute;
+    width: 100vw;
+    max-width: 1440px;
+    height: 477px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0px;
+    background: transparent;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Contenedor visible del menú */
+.dropdown-main-content {
+    pointer-events: all;
+    background: #FFFFFF;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 134px;
+}
+
+/* Mostrar el menú solo cuando tiene la clase active (clic en el botón) o cuando se hace hover sobre el menú para mantenerlo abierto */
+.split-btn-wrapper .dropdown-menu.active,
+.dropdown-menu:hover {
+    display: flex;
+    pointer-events: all;
+}
+
+/* Frame 6 - Contenido principal */
+.dropdown-main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 12px 0px 0px;
+    width: 100%;
+    height: 343px;
+    background: #FFFFFF;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+/* Menu - Sidebar izquierdo */
+.dropdown-menu-sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 24px 52px;
+    gap: 32px;
+    width: 318px;
+    height: 343px;
+    background: #0C0E0F;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-menu-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 16px;
+    width: 214px;
+    height: 274px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.dropdown-menu-title {
+    width: 214px;
+    height: 18px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 18px;
+    letter-spacing: -0.008em;
+    color: #FDB831;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-menu-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    width: 214px;
+    height: 240px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    list-style: none;
+    margin: 0;
+    gap: 0;
+}
+
+.dropdown-menu-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 10px;
+    gap: 10px;
+    width: 214px;
+    height: 48px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-menu-item.active {
+    background: #FDB831;
+    border-radius: 6px;
+}
+
+.dropdown-menu-link {
+    width: auto;
+    height: 20px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    text-decoration: none;
+}
+
+.dropdown-menu-item.active .dropdown-menu-link {
+    color: #0C0E0F;
+}
+
+.dropdown-menu-item:not(.active) .dropdown-menu-link {
+    color: #FFFFFF;
+}
+
+/* Frame 10 - Contenido de artículos */
+.dropdown-articles-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 12px;
+    width: 1110px;
+    height: 343px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    position: relative;
+}
+
+.dropdown-articles-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px 0px 24px;
+    gap: 10px;
+    width: 1110px;
+    height: 343px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+/* Mostrar el primer contenido por defecto */
+.category-content[data-category="motores"] {
+    display: flex !important;
+}
+
+/* Ocultar todos los demás contenidos por defecto */
+.category-content:not([data-category="motores"]) {
+    display: none !important;
+}
+
+.dropdown-articles-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px 64px 0px 24px;
+    gap: 12px;
+    width: 1110px;
+    height: 319px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 10px;
+    width: 1022px;
+    height: 43px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-title {
+    width: 1022px;
+    height: 22px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #0C0E0F;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.dropdown-articles-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    gap: 8px;
+    width: 1022px;
+    height: 276px;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-articles-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 507px;
+    height: 276px;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.dropdown-blog-item {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 24px;
+    width: 507px;
+    height: 134px;
+    border: 1px solid rgba(209, 216, 218, 0.2);
+    border-radius: 12px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-blog-image {
+    width: 167.62px;
+    height: 110px;
+    background: transparent;
+    border-radius: 12px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.dropdown-blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: transparent;
+    border-radius: 12px;
+}
+
+.dropdown-blog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 8px;
+    width: 291.38px;
+    height: 106px;
+    flex: none;
+    order: 1;
+    flex-grow: 1;
+}
+
+.dropdown-blog-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 4px;
+    width: 291.38px;
+    height: 66px;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+}
+
+.dropdown-blog-title {
+    width: 291.38px;
+    height: 22px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.007em;
+    color: #0C0E0F;
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-blog-description {
+    width: 291.38px;
+    height: 40px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+    color: #0C0E0F;
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+    margin: 0;
+}
+
+.dropdown-blog-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 8px;
+    width: 114px;
+    height: 32px;
+    background: #FDB831;
+    border-radius: 64px;
+    border: none;
+    cursor: pointer;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.dropdown-blog-button .dropdown-button-text {
+    width: 66px;
+    height: 20px;
+    color: #0C0E0F;
+    font-size: 14px;
+    font-family: 'Figtree', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.006em;
+}
+
+.dropdown-arrow-icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
 }
