@@ -19,33 +19,19 @@
                 <div class="products-hero-content">
                     <div class="products-hero-overlay"></div>
                     <div class="products-hero-inner">
-                        <div class="products-categories-tabs">
-                            <div class="products-category-tag active" data-category="all">Categoría</div>
-                            <div class="products-category-tag" data-category="motores">Motores</div>
-                            <div class="products-category-tag" data-category="trenes-rodaje">Trenes de rodaje</div>
-                            <div class="products-category-tag" data-category="chasis">Chasis y articulaciones</div>
-                            <div class="products-category-tag" data-category="hidraulicos">Hidráulicos</div>
-                            <div class="products-category-tag" data-category="orugas">Orugas de goma</div>
-                            <div class="products-category-tag" data-category="herramienta">Herramienta de corte</div>
-                            <div class="products-category-tag" data-category="electronicos">Electrónicos</div>
-                            <div class="products-category-tag" data-category="accesorios-motor">Accesorios de motor</div>
-                            <div class="products-category-tag" data-category="aire">Aire acc</div>
-                            <div class="products-category-tag" data-category="transmisiones">Transmisiones</div>
-                            <div class="products-category-tag" data-category="filtros">Filtros</div>
-                            <div class="products-category-tag" data-category="lubricantes">Lubricantes</div>
-                            <div class="products-category-tag" data-category="electrico">Sistema eléctrico</div>
-                            <div class="products-category-tag" data-category="refrigeracion">Refrigeración</div>
-                            <div class="products-category-tag" data-category="combustible">Sistema de combustible</div>
-                            <div class="products-category-tag" data-category="escape">Sistema de escape</div>
-                            <div class="products-category-tag" data-category="arranque">Sistema de arranque</div>
-                            <div class="products-category-tag" data-category="carga">Sistema de carga</div>
-                            <div class="products-category-tag" data-category="direccion">Sistema de dirección</div>
-                            <div class="products-category-tag" data-category="frenos">Sistema de frenos</div>
-                            <div class="products-category-tag" data-category="suspension">Suspensión</div>
-                            <div class="products-category-tag" data-category="neumaticos">Neumáticos</div>
-                            <div class="products-category-tag" data-category="ruedas">Ruedas</div>
-                            <div class="products-category-tag" data-category="mas">Más</div>
-                            <button class="products-category-arrow">
+                        <div class="products-categories-tabs-wrapper">
+                            <button class="products-category-arrow products-category-arrow-left" style="display: none;">
+                                <svg width="41" height="41" viewBox="0 0 41 41" fill="none">
+                                    <path d="M25 10L15 20.5L25 31" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="products-categories-tabs">
+                                <div class="products-category-tag active" data-category="all">Todas</div>
+                                @foreach($categorias as $categoria)
+                                <div class="products-category-tag" data-category="{{ $categoria->slug }}">{{ $categoria->nombre }}</div>
+                                @endforeach
+                            </div>
+                            <button class="products-category-arrow products-category-arrow-right">
                                 <svg width="41" height="41" viewBox="0 0 41 41" fill="none">
                                     <path d="M15 10L25 20.5L15 31" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -54,12 +40,16 @@
                         <div class="products-search-container">
                             <div class="products-search-box">
                                 <div class="products-search-filter">
-                                    <span>Categoría</span>
+                                    <span class="products-search-filter-text">Categoría</span>
+                                    <span class="products-search-category-name">Todas</span>
                                 </div>
                                 <div class="products-search-input-wrapper">
                                     <div class="products-search-input-inner">
-                                        <span class="products-search-text">Motores</span>
-                                        <span class="products-search-close">×</span>
+                                        <input type="text" 
+                                               class="products-search-input" 
+                                               placeholder="Buscar productos..." 
+                                               aria-label="Buscar productos">
+                                        <span class="products-search-close" style="display: none;">×</span>
                                     </div>
                                     <button class="products-search-button">
                                         <span>Buscar</span>
@@ -79,327 +69,42 @@
                 <!-- Header de productos -->
                 <div class="products-header">
                     <h1 class="products-title">Nuestros productos</h1>
-                    <p class="products-breadcrumb">Motores / Productos</p>
+                    <p class="products-breadcrumb">Categorías / Productos</p>
                 </div>
 
                 <!-- Descripción -->
                 <div class="products-description">
-                    <p>El Motor es el corazón de su máquina. Aquí encontrará desde motores completos hasta los componentes esenciales para su óptimo funcionamiento y reparación. Entendemos que un motor eficiente es crucial, por eso ofrecemos productos que transforman la energía en la potencia mecánica que necesitas. Suministramos repuestos de las mejores marcas del mercado para la mayoría de Fabricantes existentes. Componentes fabricados con materiales de alta resistencia, estos están diseñados para soportar las más altas exigencias, asegurando rendimiento, durabilidad y la potencia necesaria.</p>
+                    <p id="categoria-descripcion">{{ $categorias->first()->descripcion_general ?? 'Explore nuestro catálogo completo de productos para maquinaria pesada.' }}</p>
                 </div>
 
                 <!-- Grid de productos -->
                 <div class="products-grid" id="products-grid">
-                    <!-- Producto 1: Kits de reparación motor -->
-                    <div class="product-card" data-category="motores">
+                    @foreach($categorias as $categoria)
+                        @foreach($categoria->subcategorias as $subcategoria)
+                    <div class="product-card" data-category="{{ $categoria->slug }}">
                         <div class="product-card-inner">
                             <div class="product-image">
-                                <img src="{{ asset('images/kit-reparacion-motor.png') }}" alt="Kits de reparación motor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
+                                <img src="{{ $subcategoria->imagen_url ?: asset('images/no-image.png') }}" 
+                                     alt="{{ $subcategoria->nombre }}" 
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/no-image.png') }}';">
                             </div>
                             <div class="product-info">
                                 <div class="product-header-info">
                                     <div class="product-name-wrapper">
-                                        <h3 class="product-name">Kits de reparación motor</h3>
-                                        <span class="product-category-tag">Motores</span>
+                                        <h3 class="product-name">{{ $subcategoria->nombre }}</h3>
+                                        <span class="product-category-tag">{{ $categoria->nombre }}</span>
                                     </div>
                                 </div>
-                                <p class="product-description">Mantenga su motor en perfecto estado con los más completos Kits de Reparación para Motor. Kits con los componentes esenciales para realizar un mantenimiento preventivo.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
+                                <p class="product-description">{{ Str::limit($subcategoria->descripcion, 150) }}</p>
+                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', [$categoria->slug, $subcategoria->slug]) }}'">
                                     <span class="button-text">Saber más</span>
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Producto 2: Pistones -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/pistones.png') }}" alt="Pistones" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Pistones</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Tenemos una amplia gama de Pistones, tanto enteros como articulados. Fabricados generalmente en aleaciones que brindan alta resistencia.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'pistones']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 3: Casquetes -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/casquetes.png') }}" alt="Casquetes" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Casquetes</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Los Casquetes, también conocidos como cojinetes de biela o bancada, son elementos cruciales para la longevidad y el correcto funcionamiento del motor.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'casquetes']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 4: Empaquetaduras -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/empaquetaduras2.png') }}" alt="Empaquetaduras" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Empaquetaduras</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Encuentre los juegos de empaques y sellos que necesita para garantizar la estanqueidad perfecta en todas las uniones críticas de tu motor.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'empaquetaduras']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 5: Válvulas -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/valvulas2.png') }}" alt="Válvulas" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Válvulas</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Las Válvulas de Motor son componentes esenciales que controlan el flujo de gases dentro y fuera de los cilindros.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'valvulas']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 6: Cigüeñal -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/ciguenal.png') }}" alt="Cigüeñal" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Cigüeñal</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">El Cigüeñal es una de las piezas más importantes del motor, responsable de convertir el movimiento lineal y alternativo de los pistones en un movimiento rotativo.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'ciguenal']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 7: Árbol de levas -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/arbol-levas.png') }}" alt="Árbol de levas" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Árbol de levas</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Un árbol de levas de alta calidad controlará adecuadamente la apertura y el cierre de las válvulas de admisión y escape.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'arbol-levas']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Producto 8: Culatas -->
-                    <div class="product-card" data-category="motores">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <img src="{{ asset('images/culatas.png') }}" alt="Culatas" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #E5E5E5; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Culatas</h3>
-                                        <span class="product-category-tag">Motores</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Una culata de buena calidad, sellará apropiadamente el motor, formando una cámara de combustión de alta eficiencia.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'culatas']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Productos de otras categorías para pruebas -->
-                    <!-- Transmisiones -->
-                    <div class="product-card" data-category="transmisiones">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/caja-cambios.png') }}" alt="Caja de cambios" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Caja de cambios" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Caja de cambios</h3>
-                                        <span class="product-category-tag">Transmisiones</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Cajas de cambios de alta calidad para maquinaria pesada. Diseñadas para soportar las condiciones más exigentes.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="transmisiones">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/convertidor-par.png') }}" alt="Convertidor de par" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Convertidor de par" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Convertidor de par</h3>
-                                        <span class="product-category-tag">Transmisiones</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Convertidores de par para transmisiones automáticas. Componentes esenciales para el funcionamiento suave de la maquinaria.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filtros -->
-                    <div class="product-card" data-category="filtros">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/filtro-aceite.png') }}" alt="Filtro de aceite" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Filtro de aceite" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Filtro de aceite</h3>
-                                        <span class="product-category-tag">Filtros</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Filtros de aceite de alta eficiencia para proteger el motor. Filtración superior y durabilidad excepcional.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="filtros">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/filtro-aire.png') }}" alt="Filtro de aire" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Filtro de aire" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Filtro de aire</h3>
-                                        <span class="product-category-tag">Filtros</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Filtros de aire para sistemas de admisión. Protegen el motor de partículas y contaminantes.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Hidráulicos -->
-                    <div class="product-card" data-category="hidraulicos">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/bomba-hidraulica.png') }}" alt="Bomba hidráulica" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Bomba hidráulica" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Bomba hidráulica</h3>
-                                        <span class="product-category-tag">Hidráulicos</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Bombas hidráulicas de alta presión para sistemas hidráulicos. Rendimiento confiable y eficiencia energética.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="hidraulicos">
-                        <div class="product-card-inner">
-                            <div class="product-image">
-                                <!-- <img src="{{ asset('images/cilindro-hidraulico.png') }}" alt="Cilindro hidráulico" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> -->
-                                <img src="{{ asset('images/no-image.png') }}" alt="Cilindro hidráulico" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: transparent; border-radius: 5.62727px;"></div>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-header-info">
-                                    <div class="product-name-wrapper">
-                                        <h3 class="product-name">Cilindro hidráulico</h3>
-                                        <span class="product-category-tag">Hidráulicos</span>
-                                    </div>
-                                </div>
-                                <p class="product-description">Cilindros hidráulicos de doble efecto. Potencia y precisión para aplicaciones industriales.</p>
-                                <button class="product-button" onclick="window.location.href='{{ route('producto.detalle', ['slug' => 'kits-reparacion-motor']) }}'">
-                                    <span class="button-text">Saber más</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        @endforeach
+                    @endforeach
                 </div>
             </div>
 
@@ -412,7 +117,7 @@
                     <div class="products-cta-column">
                         <p class="products-cta-description">Nuestra plataforma te permite solicitar cotizaciones en solo tres pasos sencillos. Ahorra tiempo y obtén las mejores ofertas para tus necesidades de maquinaria.</p>
                         <div class="products-cta-actions">
-                            <button class="products-cta-button-primary">Cotizar ahora</button>
+                            <button class="products-cta-button-primary" onclick="window.location.href='{{ route('cotizar') }}'">Cotizar ahora</button>
                             <button class="products-cta-button-secondary">Aprender más</button>
                         </div>
                     </div>
@@ -425,81 +130,285 @@
 
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const categoryTabs = document.querySelectorAll('.products-category-tag');
+            const categoryTabsContainer = document.querySelector('.products-categories-tabs');
+            const categoryTabs = document.querySelectorAll('.products-categories-tabs .products-category-tag');
             const productCards = document.querySelectorAll('.product-card');
-            const searchText = document.querySelector('.products-search-text');
+            const searchInput = document.querySelector('.products-search-input');
+            const searchButton = document.querySelector('.products-search-button');
+            const searchClose = document.querySelector('.products-search-close');
+            const categoryNameDisplay = document.querySelector('.products-search-category-name');
+            const categoriaDescripcion = document.getElementById('categoria-descripcion');
+            const arrowLeft = document.querySelector('.products-category-arrow-left');
+            const arrowRight = document.querySelector('.products-category-arrow-right');
             
-            // Mapeo de categorías a nombres para mostrar
+            let currentCategory = 'all';
+            let currentSearchTerm = '';
+            
+            // Mapeo de categorías a nombres y descripciones
             const categoryNames = {
-                'all': 'Categoría',
-                'motores': 'Motores',
-                'trenes-rodaje': 'Trenes de rodaje',
-                'chasis': 'Chasis y articulaciones',
-                'hidraulicos': 'Hidráulicos',
-                'orugas': 'Orugas de goma',
-                'herramienta': 'Herramienta de corte',
-                'electronicos': 'Electrónicos',
-                'accesorios-motor': 'Accesorios de motor',
-                'aire': 'Aire acc',
-                'transmisiones': 'Transmisiones',
-                'filtros': 'Filtros',
-                'lubricantes': 'Lubricantes',
-                'electrico': 'Sistema eléctrico',
-                'refrigeracion': 'Refrigeración',
-                'combustible': 'Sistema de combustible',
-                'escape': 'Sistema de escape',
-                'arranque': 'Sistema de arranque',
-                'carga': 'Sistema de carga',
-                'direccion': 'Sistema de dirección',
-                'frenos': 'Sistema de frenos',
-                'suspension': 'Suspensión',
-                'neumaticos': 'Neumáticos',
-                'ruedas': 'Ruedas',
-                'mas': 'Más'
+                'all': 'Todas',
+                @foreach($categorias as $categoria)
+                '{{ $categoria->slug }}': '{{ $categoria->nombre }}',
+                @endforeach
             };
 
-            // Función para filtrar productos
-            function filterProducts(category) {
+            // Descripciones de categorías
+            const categoriasDescripciones = {
+                'all': '{{ $categorias->first()->descripcion_general ?? "Explore nuestro catálogo completo de productos para maquinaria pesada." }}',
+                @foreach($categorias as $categoria)
+                '{{ $categoria->slug }}': {!! json_encode($categoria->descripcion_general) !!},
+                @endforeach
+            };
+
+            // Función para normalizar texto (quitar acentos, lowercase)
+            function normalizeText(text) {
+                return text.toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            }
+
+            // Función para actualizar visibilidad de flechas
+            function updateArrows() {
+                if (!categoryTabsContainer || !arrowLeft || !arrowRight) return;
+                
+                const scrollLeft = categoryTabsContainer.scrollLeft;
+                const maxScroll = categoryTabsContainer.scrollWidth - categoryTabsContainer.clientWidth;
+                
+                // Mostrar/ocultar flecha izquierda
+                if (scrollLeft > 10) {
+                    arrowLeft.style.display = 'flex';
+                } else {
+                    arrowLeft.style.display = 'none';
+                }
+                
+                // Mostrar/ocultar flecha derecha
+                if (scrollLeft < maxScroll - 10) {
+                    arrowRight.style.display = 'flex';
+                } else {
+                    arrowRight.style.display = 'none';
+                }
+            }
+
+            // Función para hacer scroll
+            function scrollTabs(direction) {
+                if (!categoryTabsContainer) return;
+                
+                const scrollAmount = categoryTabsContainer.clientWidth * 0.8;
+                const targetScroll = categoryTabsContainer.scrollLeft + (direction === 'right' ? scrollAmount : -scrollAmount);
+                
+                categoryTabsContainer.scrollTo({
+                    left: targetScroll,
+                    behavior: 'smooth'
+                });
+            }
+
+            // Event listeners para las flechas
+            if (arrowLeft) {
+                arrowLeft.addEventListener('click', () => scrollTabs('left'));
+            }
+            
+            if (arrowRight) {
+                arrowRight.addEventListener('click', () => scrollTabs('right'));
+            }
+
+            // Event listener para actualizar flechas al hacer scroll
+            if (categoryTabsContainer) {
+                categoryTabsContainer.addEventListener('scroll', updateArrows);
+                // Actualizar al cargar y al redimensionar
+                window.addEventListener('resize', updateArrows);
+                updateArrows();
+            }
+
+            // Función principal para filtrar productos
+            function filterProducts(category = currentCategory, searchTerm = currentSearchTerm) {
+                currentCategory = category;
+                currentSearchTerm = searchTerm;
+                
+                const normalizedSearch = normalizeText(searchTerm);
+                let visibleCount = 0;
+
+                // Filtrar productos
+                productCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    // Obtener texto del producto para búsqueda
+                    const productName = normalizeText(card.querySelector('.product-name')?.textContent || '');
+                    const productDescription = normalizeText(card.querySelector('.product-description')?.textContent || '');
+                    const productCategoryTag = normalizeText(card.querySelector('.product-category-tag')?.textContent || '');
+                    
+                    // Verificar si cumple con el filtro de categoría
+                    const matchesCategory = category === 'all' || cardCategory === category;
+                    
+                    // Verificar si cumple con el término de búsqueda
+                    const matchesSearch = !normalizedSearch || 
+                        productName.includes(normalizedSearch) || 
+                        productDescription.includes(normalizedSearch) ||
+                        productCategoryTag.includes(normalizedSearch);
+                    
+                    // Mostrar/ocultar producto
+                    if (matchesCategory && matchesSearch) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Actualizar UI
+                updateCategoryUI(category);
+                
+                // Mostrar mensaje si no hay resultados
+                updateNoResultsMessage(visibleCount);
+            }
+
+            // Función para actualizar la UI de categorías
+            function updateCategoryUI(category) {
                 // Remover clase active de todas las tabs
                 categoryTabs.forEach(tab => {
                     tab.classList.remove('active');
                 });
 
                 // Agregar clase active a la tab seleccionada
-                const selectedTab = document.querySelector(`[data-category="${category}"]`);
+                const selectedTab = document.querySelector(`.products-categories-tabs .products-category-tag[data-category="${category}"]`);
                 if (selectedTab) {
                     selectedTab.classList.add('active');
                 }
 
-                // Filtrar productos
-                productCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    
-                    if (category === 'all' || cardCategory === category) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
+                // Actualizar nombre de categoría
+                if (categoryNameDisplay && categoryNames[category]) {
+                    categoryNameDisplay.textContent = categoryNames[category];
+                }
+
+                // Actualizar descripción de categoría
+                if (categoriaDescripcion && categoriasDescripciones[category]) {
+                    categoriaDescripcion.textContent = categoriasDescripciones[category];
+                }
+            }
+
+            // Función para mostrar mensaje de "sin resultados"
+            function updateNoResultsMessage(visibleCount) {
+                let noResultsMsg = document.querySelector('.no-results-message');
+                
+                if (visibleCount === 0) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('div');
+                        noResultsMsg.className = 'no-results-message';
+                        noResultsMsg.innerHTML = `
+                            <p style="text-align: center; padding: 40px; font-size: 18px; color: #666;">
+                                No se encontraron productos que coincidan con tu búsqueda.
+                            </p>
+                        `;
+                        const grid = document.getElementById('products-grid');
+                        if (grid) {
+                            grid.appendChild(noResultsMsg);
+                        }
                     }
+                } else {
+                    if (noResultsMsg) {
+                        noResultsMsg.remove();
+                    }
+                }
+            }
+
+            // Event listener para el input de búsqueda (tiempo real)
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.trim();
+                    
+                    // Mostrar/ocultar botón de cerrar
+                    if (searchClose) {
+                        searchClose.style.display = searchTerm ? 'flex' : 'none';
+                    }
+                    
+                    // Filtrar productos
+                    filterProducts(currentCategory, searchTerm);
                 });
 
-                // Actualizar texto de búsqueda
-                if (searchText && categoryNames[category]) {
-                    searchText.textContent = categoryNames[category];
-                }
+                // Búsqueda al presionar Enter
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        filterProducts(currentCategory, this.value.trim());
+                    }
+                });
+            }
+
+            // Event listener para el botón de búsqueda
+            if (searchButton) {
+                searchButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (searchInput) {
+                        filterProducts(currentCategory, searchInput.value.trim());
+                    }
+                });
+            }
+
+            // Event listener para el botón de cerrar
+            if (searchClose) {
+                searchClose.addEventListener('click', function() {
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                    this.style.display = 'none';
+                    filterProducts(currentCategory, '');
+                });
             }
 
             // Agregar event listeners a las tabs
             categoryTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const category = this.getAttribute('data-category');
-                    filterProducts(category);
+                    filterProducts(category, currentSearchTerm);
                 });
             });
 
+            // Intersection Observer para animar tarjetas al hacer scroll
+            const observerOptions = {
+                root: null,
+                rootMargin: '50px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        // Una vez que la animación se ha aplicado, podemos dejar de observar
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Función para observar tarjetas visibles
+            function observeVisibleCards() {
+                productCards.forEach(card => {
+                    // Solo observar tarjetas que están visibles (display: flex)
+                    const isVisible = card.style.display !== 'none' && 
+                                     (card.style.display === 'flex' || !card.style.display);
+                    if (isVisible && !card.classList.contains('fade-in')) {
+                        card.classList.remove('fade-in');
+                        observer.observe(card);
+                    }
+                });
+            }
+
+            // Guardar la función original de filterProducts
+            const originalFilterProducts = filterProducts;
+            
+            // Sobrescribir filterProducts para re-observar después del filtrado
+            filterProducts = function(category, searchTerm) {
+                originalFilterProducts(category, searchTerm);
+                // Re-observar las tarjetas visibles después del filtrado
+                setTimeout(observeVisibleCards, 100);
+            };
+
             // Inicializar con "all" (mostrar todos)
-            filterProducts('all');
+            filterProducts('all', '');
+            
+            // Observar tarjetas iniciales
+            observeVisibleCards();
         });
         </script>
     </body>
 </html>
-
