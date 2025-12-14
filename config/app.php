@@ -174,6 +174,7 @@ return [
         App\Providers\Filament\LogisticaPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\FilamentServiceProvider::class,
+        App\Providers\ViewServiceProvider::class,
 
         // Barryvdh\DomPDF\ServiceProvider::class,
     ])->toArray(),

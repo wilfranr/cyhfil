@@ -17,7 +17,7 @@
                 <li><a href="#" class="footer-link">Servicios</a></li>
                 <li><a href="#" class="footer-link">Preguntas frecuentes</a></li>
                 <li><a href="#" class="footer-link">Blog</a></li>
-                <li><a href="#" class="footer-link">Nuestra política de entrega <span class="external-icon"></span></a></li>
+                <li><a href="#" class="footer-link">Nuestra política de entrega <span class="external-icon"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.5 0.5L10.5 4.5M10.5 0.5L6.5 0.5M10.5 0.5L0.5 10.5M10.5 4.5L10.5 10.5H0.5V0.5H4.5" stroke="#b2b1aa" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
             </ul>
         </div>
         <div class="footer-location">

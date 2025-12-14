@@ -3,6 +3,7 @@
 use App\Http\Controllers\Cotizacion;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\OrdenTrabajoController;
+use App\Http\Controllers\ProductosController;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -14,13 +15,9 @@ Route::get('/', function () {
     return view('landing');
 });
 
-Route::get('/productos', function () {
-    return view('products');
-})->name('productos');
+Route::get('/productos', [ProductosController::class, 'index'])->name('productos');
 
-Route::get('/productos/{slug}', function ($slug) {
-    return view('product-detail', ['slug' => $slug]);
-})->name('producto.detalle');
+Route::get('/productos/{categoriaSlug}/{subcategoriaSlug}', [ProductosController::class, 'show'])->name('producto.detalle');
 Route::get('/cotizar', function () {
     return view('cotizar');
 })->name('cotizar');
