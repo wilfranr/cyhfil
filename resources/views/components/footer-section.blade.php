@@ -31,21 +31,21 @@
             <div class="contact-list">
                 <div class="contact-item">
                     <h5 class="contact-label">CONTACTO SOPORTE</h5>
-                    <p class="contact-value">+57 891 989-11-92</p>
+                    <p class="contact-value">+57 3208400279</p>
                 </div>
                 <div class="contact-item">
                     <h5 class="contact-label">SERVICIO AL CLIENTE</h5>
-                    <p class="contact-value">+57 891 989-11-93</p>
+                    <p class="contact-value">+57 3208038810</p>
                 </div>
                 <div class="contact-item">
                     <h5 class="contact-label">CORREO</h5>
-                    <p class="contact-value">info@logoipsum.com</p>
+                    <p class="contact-value">comercial@heavymarket.net</p>
                 </div>
             </div>
-            <div class="address-item">
+            {{-- <div class="address-item">
                 <h5 class="contact-label">DIRECCIÓN</h5>
                 <p class="contact-value">Calle 47 No. 14-81, C.P. 11001, Bogotá, Colombia</p>
-            </div>
+            </div> --}}
         </div>
         </div>
     </div>
