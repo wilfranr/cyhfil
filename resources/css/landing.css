@@ -470,9 +470,11 @@ body {
     padding: 0px;
     width: 1440px;
     height: 796px;
-    background: linear-gradient(180deg,
-            rgba(0, 0, 0, 0) 0%,
-            rgba(0, 0, 0, 0.6) 61.53%);
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.6) 61.53%
+    );
     flex: none;
     order: 0;
     align-self: stretch;
@@ -1437,7 +1439,7 @@ body {
     align-items: flex-start;
     padding: 0px;
     gap: 48px;
-    width: 190px;
+    width: 270px;
     height: 270px;
     flex: none;
     order: 0;
@@ -1771,6 +1773,59 @@ body {
    ============================================ */
 
 /* Contenedor del trigger */
+/* Wrapper para el menú de productos */
+.navbar-link-frame.products-menu-wrapper {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 0;
+    width: auto;
+    height: 44px;
+    flex: none;
+    flex-grow: 0;
+    position: relative;
+}
+
+.products-menu-wrapper {
+    display: inline-flex;
+    position: relative;
+    vertical-align: middle;
+    align-items: center;
+    height: 44px;
+    flex-direction: row;
+}
+
+.products-menu-wrapper .products-link {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    font-family: "Figtree", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.008em;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+    height: 24px;
+    padding: 0;
+}
+
+.products-menu-wrapper .products-link .link-text {
+    color: #ffffff;
+    transition: color 0.2s ease;
+}
+
+.products-menu-wrapper:hover .products-link .link-text,
+.products-menu-wrapper.menu-active .products-link .link-text {
+    color: #fdb831;
+}
+
 .navbar-link-frame.dropdown-trigger {
     position: relative;
 }
@@ -1796,15 +1851,23 @@ body {
 
 /* Contenedor visible del menú */
 .dropdown-main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 12px 0px 0px;
+    width: 1440px;
+    height: 343px;
+    background: #ffffff;
+    flex: none;
+    order: 2;
+    flex-grow: 0;
     pointer-events: all;
-    background: #FFFFFF;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 134px;
 }
 
-/* Mostrar el menú cuando el trigger o el menú tienen hover */
-.dropdown-trigger:hover .dropdown-menu,
-.dropdown-menu:hover {
+/* Mostrar el menú cuando tiene la clase active (hover) */
+.products-menu-wrapper .dropdown-menu.active {
     display: flex;
     pointer-events: all;
 }
@@ -1817,7 +1880,7 @@ body {
     padding: 0px 12px 0px 0px;
     width: 100%;
     height: 343px;
-    background: #FFFFFF;
+    background: #ffffff;
     flex: none;
     order: 0;
     flex-grow: 0;
@@ -1832,7 +1895,7 @@ body {
     gap: 32px;
     width: 318px;
     height: 343px;
-    background: #0C0E0F;
+    background: #0c0e0f;
     flex: none;
     order: 0;
     align-self: stretch;
@@ -1855,13 +1918,13 @@ body {
 .dropdown-menu-title {
     width: 214px;
     height: 18px;
-    font-family: 'Figtree', sans-serif;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 18px;
     line-height: 18px;
     letter-spacing: -0.008em;
-    color: #FDB831;
+    color: #fdb831;
     flex: none;
     order: 0;
     align-self: stretch;
@@ -1899,14 +1962,14 @@ body {
 }
 
 .dropdown-menu-item.active {
-    background: #FDB831;
+    background: #fdb831;
     border-radius: 6px;
 }
 
 .dropdown-menu-link {
     width: auto;
     height: 20px;
-    font-family: 'Figtree', sans-serif;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -1919,11 +1982,11 @@ body {
 }
 
 .dropdown-menu-item.active .dropdown-menu-link {
-    color: #0C0E0F;
+    color: #0c0e0f;
 }
 
 .dropdown-menu-item:not(.active) .dropdown-menu-link {
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 /* Frame 10 - Contenido de artículos */
@@ -1969,7 +2032,7 @@ body {
 .dropdown-articles-inner {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     padding: 0px 64px 0px 24px;
     gap: 12px;
     width: 1110px;
@@ -1998,17 +2061,18 @@ body {
 .dropdown-articles-title {
     width: 1022px;
     height: 22px;
-    font-family: 'Figtree', sans-serif;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
     line-height: 22px;
     letter-spacing: -0.007em;
-    color: #0C0E0F;
+    color: #0c0e0f;
     flex: none;
     order: 0;
     flex-grow: 1;
     margin: 0;
+    text-align: left;
 }
 
 .dropdown-articles-grid {
@@ -2049,20 +2113,38 @@ body {
     height: 134px;
     border: 1px solid rgba(209, 216, 218, 0.2);
     border-radius: 12px;
+    background: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
     flex: none;
     order: 0;
     align-self: stretch;
     flex-grow: 0;
 }
 
+.dropdown-blog-item:hover {
+    background: #FDB831;
+    border-color: #FDB831;
+    box-shadow: 0 4px 12px rgba(253, 184, 49, 0.3);
+    transform: translateY(-2px);
+}
+
 .dropdown-blog-image {
     width: 167.62px;
     height: 110px;
-    background: #E5E5E5;
+    background: transparent;
     border-radius: 12px;
     flex: none;
     order: 0;
     flex-grow: 0;
+}
+
+.dropdown-blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: transparent;
+    border-radius: 12px;
 }
 
 .dropdown-blog-content {
@@ -2084,8 +2166,8 @@ body {
     align-items: flex-start;
     padding: 0px;
     gap: 4px;
-    width: 291.38px;
-    height: 66px;
+    width: 100%;
+    height: auto;
     flex: none;
     order: 0;
     align-self: stretch;
@@ -2093,37 +2175,38 @@ body {
 }
 
 .dropdown-blog-title {
-    width: 291.38px;
-    height: 22px;
-    font-family: 'Figtree', sans-serif;
+    width: 100%;
+    height: auto;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 700;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 18px;
+    line-height: 24px;
     letter-spacing: -0.007em;
-    color: #0C0E0F;
+    color: #0c0e0f;
     flex: none;
     order: 0;
     align-self: stretch;
     flex-grow: 0;
-    margin: 0;
+    margin: 0 0 8px 0;
 }
 
 .dropdown-blog-description {
-    width: 291.38px;
-    height: 40px;
-    font-family: 'Figtree', sans-serif;
+    width: 100%;
+    height: auto;
+    min-height: 60px;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
     letter-spacing: -0.006em;
-    color: #0C0E0F;
+    color: #0c0e0f;
     flex: none;
     order: 1;
     align-self: stretch;
     flex-grow: 0;
-    margin: 0;
+    margin: 0 0 12px 0;
 }
 
 .dropdown-blog-button {
@@ -2135,21 +2218,34 @@ body {
     gap: 8px;
     width: 114px;
     height: 32px;
-    background: #FDB831;
+    background: #fdb831;
     border-radius: 64px;
     border: none;
     cursor: pointer;
     flex: none;
     order: 1;
     flex-grow: 0;
+    transition: all 0.3s ease;
+}
+
+.dropdown-blog-item:hover .dropdown-blog-button {
+    background: #0C0E0F;
+}
+
+.dropdown-blog-item:hover .dropdown-blog-button .dropdown-button-text {
+    color: #FFFFFF;
+}
+
+.dropdown-blog-item:hover .dropdown-blog-button .dropdown-arrow-icon path {
+    stroke: #FFFFFF;
 }
 
 .dropdown-blog-button .dropdown-button-text {
     width: 66px;
     height: 20px;
-    color: #0C0E0F;
+    color: #0c0e0f;
     font-size: 14px;
-    font-family: 'Figtree', sans-serif;
+    font-family: "Figtree", sans-serif;
     font-style: normal;
     font-weight: 600;
     line-height: 20px;
@@ -2163,3 +2259,4 @@ body {
     order: 2;
     flex-grow: 0;
 }
+
